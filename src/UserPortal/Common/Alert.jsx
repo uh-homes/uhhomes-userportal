@@ -22,7 +22,6 @@ const Alert = () => {
   // Filters
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("ALL");
-  const [channelFilter, setChannelFilter] = useState("ALL");
   const [readFilter, setReadFilter] = useState("ALL");
   const [dateFilter, setDateFilter] = useState("ALL");
 
@@ -33,7 +32,6 @@ const Alert = () => {
       const params = new URLSearchParams();
 
       if (typeFilter !== "ALL") params.append("type", typeFilter);
-      if (channelFilter !== "ALL") params.append("channel", channelFilter);
       if (readFilter !== "ALL")
         params.append("read", readFilter === "UNREAD" ? "false" : "true");
       if (dateFilter !== "ALL") {
@@ -75,7 +73,7 @@ const Alert = () => {
   useEffect(() => {
     fetchAlerts();
     fetchUnreadCount();
-  }, [typeFilter, channelFilter, readFilter, dateFilter]);
+  }, [typeFilter, readFilter, dateFilter]);
 
   // Apply search filter
   useEffect(() => {
@@ -239,18 +237,6 @@ const Alert = () => {
             <option value="UPDATE">Updates</option>
           </select> */}
 
-          {/* Channel Filter */}
-          <select
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            value={channelFilter}
-            onChange={(e) => setChannelFilter(e.target.value)}
-          >
-            <option value="ALL">All Channels</option>
-            <option value="EMAIL">Email</option>
-            <option value="SMS">SMS</option>
-            {/* <option value="PUSH">Push</option>
-            <option value="IN_APP">In-App</option> */}
-          </select>
 
           {/* Read Status Filter */}
           <select
@@ -286,7 +272,6 @@ const Alert = () => {
             <p className="text-sm mt-2">
               {searchTerm ||
               typeFilter !== "ALL" ||
-              channelFilter !== "ALL" ||
               readFilter !== "ALL" ||
               dateFilter !== "ALL"
                 ? "Try adjusting your filters"

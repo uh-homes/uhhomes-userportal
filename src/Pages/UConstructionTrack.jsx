@@ -11,7 +11,6 @@ export default function UConstructionTrack() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  console.log("Project Data:", project);
   useEffect(() => {
     const fetchProjectData = async () => {
       try {

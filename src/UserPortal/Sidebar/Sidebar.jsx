@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from "react";
+import logoUhhomes from "../../assets/new uhhomes 2.webp";
+import faviconLogo from "../../assets/favicon_uhhomes.webp";
+import { FaChevronDown } from "react-icons/fa";
 import {
-  FaHome,
-  FaTools,
-  FaHeart,
-  FaBell,
-  FaCog,
-  FaInbox,
-  FaBars,
-  FaChevronDown,
-} from "react-icons/fa";
+  HiOutlineViewGrid,
+  HiOutlineBell,
+  HiOutlineLocationMarker,
+  HiOutlineClock,
+  HiOutlineHeart,
+  HiOutlineCog,
+  HiOutlineX,
+  HiOutlineInbox,
+} from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import { path } from "motion/react-client";
-import { RxDashboard } from "react-icons/rx";
-import { CiLocationOn } from "react-icons/ci";
-import { RiHeartAdd2Line } from "react-icons/ri";
-import { LuBellPlus } from "react-icons/lu";
-import { TfiLocationPin } from "react-icons/tfi";
 import { useSelector } from "react-redux";
-import { FaX } from "react-icons/fa6";
 
-const Sidebar = ({ open, setOpen }) => {
+const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
 
@@ -28,27 +24,32 @@ const Sidebar = ({ open, setOpen }) => {
   const menuItems = [
     {
       title: "Dashboard",
-      icon: <RxDashboard />,
+      icon: <HiOutlineViewGrid />,
       path: "/userportal",
     },
     {
-      title: "Construction Tracker",
-      icon: <TfiLocationPin />,
-      path: "/userconstruction",
-    },
-    {
-      title: "Favorites",
-      icon: <RiHeartAdd2Line />,
-      path: "/favorites",
-    },
-    {
       title: "Alerts",
-      icon: <LuBellPlus />,
+      icon: <HiOutlineBell />,
       path: "/alerts",
     },
     {
+      title: "Construction Tracker",
+      icon: <HiOutlineLocationMarker />,
+      path: "/userconstruction",
+    },
+    {
+      title: "Construction Timeline",
+      icon: <HiOutlineClock />,
+      path: "/construction-timeline",
+    },
+    {
+      title: "Favorites",
+      icon: <HiOutlineHeart />,
+      path: "/favorites",
+    },
+    {
       title: "Settings",
-      icon: <FaCog />,
+      icon: <HiOutlineCog />,
       path: "/profile",
     },
   ];
@@ -110,8 +111,7 @@ const Sidebar = ({ open, setOpen }) => {
 
   return (
     <motion.div
-      animate={{ width: open ? "250px" : "70px" }}
-      className={`bg-white shadow-md 
+      className={`bg-white w-full overflow-hidden
        h-screen p-4 md:flex flex-col justify-between fixed md:relative z-50 ${
          open ? "" : "hidden md:flex"
        }`}
@@ -121,34 +121,27 @@ const Sidebar = ({ open, setOpen }) => {
         <div className="flex items-center justify-between mb-6">
           <div className="items-center gap-3 flex">
             <Link to={"/"} onClick={handleLinkClick}>
-              <img
-                src="https://res.cloudinary.com/davr2ejkc/image/upload/v1754028102/WhatsApp_Image_2025-07-29_at_11.01.04_PM_1_ycfp4n.png"
-                alt="logo"
-                className={`transition-all duration-300 ${
-                  open ? "w-10" : "w-8"
-                }`}
-              />
+              {open ? (
+                <img
+                  src={logoUhhomes}
+                  alt="UHHomes logo"
+                  className="transition-all duration-200"
+                  style={{ width: `${Math.max(sidebarWidth * 0.85, 150)}px` }}
+                />
+              ) : (
+                <img
+                  src={faviconLogo}
+                  alt="UHHomes"
+                  className="w-10 h-10 transition-all duration-300"
+                />
+              )}
             </Link>
-            <div className="">
-              <AnimatePresence>
-                {open && (
-                  <motion.p
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    className=" text-2xl font-[400] text-gray-800 whitespace-nowrap overflow-hidden"
-                  >
-                    UH HOMES
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </div>
           </div>
           <button
             onClick={() => setOpen(!open)}
             className="text-gray-800 focus:outline-none md:hidden"
           >
-            <FaX />
+            <HiOutlineX />
           </button>
         </div>
 
@@ -240,7 +233,7 @@ const Sidebar = ({ open, setOpen }) => {
           }`}
           onClick={handleLinkClick}
         >
-          <FaInbox />
+          <HiOutlineInbox />
           <AnimatePresence>
             {open && (
               <motion.span

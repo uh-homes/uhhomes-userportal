@@ -10,8 +10,6 @@ const Favorites = () => {
   const [loadingById, setLoadingById] = useState({});
   const [error, setError] = useState(null);
 
-  console.log("Favorites from Redux:", favorites);
-
   const formatPrice = (price) => {
     const num = Number(price);
     return new Intl.NumberFormat("en-US", {
@@ -62,8 +60,7 @@ const Favorites = () => {
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 15;
       const contentWidth = pageWidth - margin * 2;
-      const logoUrl =
-        "https://res.cloudinary.com/davr2ejkc/image/upload/v1761543739/Capture-Photoroom_c2bjdj.png";
+      const logoUrl = new URL("../../assets/logo_uhhomes.webp", import.meta.url).href;
 
       // Fonts
       const headerFont = { name: "times", style: "bold", size: 22 };

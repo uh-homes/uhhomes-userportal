@@ -12,8 +12,7 @@ export default function useProject() {
       const fetchedProject = await api.get(`/user-projects`);
       setProject(fetchedProject.data.data);
     } catch (error) {
-      console.log(error);
-      setError(error.response.data.message);
+      setError(error?.response?.data?.message || error?.message || "Failed to load project");
     } finally {
       setIsLoading(false);
     }

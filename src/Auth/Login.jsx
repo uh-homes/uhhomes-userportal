@@ -78,14 +78,14 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-4xl text-center">Welcome</h2>
-      <p className="text-center text-gray-800 mt-1">
+      <h2 className="text-4xl text-center text-white">Welcome</h2>
+      <p className="text-center text-gray-400 mt-1">
         Please enter your credentials to continue.
       </p>
 
       <form onSubmit={handleLogin} className="space-y-4">
         <div className="relative">
-          <HiOutlineMail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlineMail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type="email"
             placeholder="Email"
@@ -93,12 +93,12 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
         </div>
 
         <div className="relative">
-          <HiOutlineLockClosed className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlineLockClosed className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
@@ -106,11 +106,11 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
           <button
             type="button"
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#C5A572] cursor-pointer transition-colors"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
@@ -125,7 +125,7 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
             type="button"
             onClick={goToForgot}
             disabled={loading}
-            className="text-sm text-primary cursor-pointer"
+            className="text-sm text-[#C5A572] hover:text-[#D4AF37] cursor-pointer transition-colors"
           >
             Forgot Password?
           </button>
@@ -135,15 +135,15 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
           type="submit"
           disabled={loading}
           aria-busy={loading}
-          className="w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-[#0D0D0D] font-semibold py-2.5 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-opacity"
         >
           {loading && (
-            <span className="h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+            <span className="h-4 w-4 border-2 border-[#0D0D0D]/50 border-t-transparent rounded-full animate-spin"></span>
           )}
           {loading ? "Signing in..." : "Log In"}
         </button>
         {errorMessage && (
-          <p className="mt-2 text-sm text-red-600 text-center">
+          <p className="mt-2 text-sm text-red-400 text-center">
             {errorMessage}
           </p>
         )}
@@ -153,13 +153,13 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
         <button
           onClick={goToSignup}
           disabled={loading}
-          className="text-sm text-primary cursor-pointer"
+          className="text-sm text-[#C5A572] hover:text-[#D4AF37] cursor-pointer transition-colors"
         >
           Create an account
         </button>
       </div>
 
-      <div className="text-center border-t pt-4">
+      <div className="text-center border-t border-[#333] pt-4">
         <button
           onClick={() =>
             (window.location.href = `${
@@ -167,7 +167,7 @@ export const Login = ({ goToSignup, onClose, goToForgot }) => {
             }/auth/google`)
           }
           disabled={loading}
-          className="w-full border p-2 rounded flex justify-center items-center gap-2 cursor-pointer disabled:opacity-60"
+          className="w-full border border-[#333] hover:border-[#C5A572] p-2.5 rounded-lg flex justify-center items-center gap-2 cursor-pointer disabled:opacity-60 text-white transition-colors"
         >
           <img
             src="https://res.cloudinary.com/davr2ejkc/image/upload/v1757742819/search_najbxq.png"

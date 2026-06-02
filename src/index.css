@@ -13,8 +13,22 @@
 
 
 @theme{
-    --color-primary: #178472;
-   
+    --color-primary: #C5A572;
+    --color-gold: #C5A572;
+    --color-gold-light: #D4AF37;
+    --color-gold-dark: #B8960C;
+    --color-gold-muted: #E8D5A3;
+    --color-gold-50: #FAF6ED;
+    --color-gold-100: #F5ECD8;
+    --color-gold-200: #E8D5A3;
+    --color-gold-300: #D4AF37;
+    --color-gold-400: #C5A572;
+    --color-gold-500: #B8960C;
+    --color-gold-600: #9A7D0A;
+    --color-dark: #1A1A1A;
+    --color-dark-light: #333333;
+    --color-dark-muted: #666666;
+    --font-gotham: 'Gotham', 'Open Sans', sans-serif;
 }
 
 @layer utilities {

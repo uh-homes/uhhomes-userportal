@@ -158,10 +158,10 @@ const ProfileSettings = () => {
     } catch (error) {
       console.error("Error during logout:", error);
       // Even if API call fails, still clear local state
-      dispatch(logout());
+      dispatch(removeUser());
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "/login";
+      window.location.href = "/";
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +169,7 @@ const ProfileSettings = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-green-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#FBF8F1] flex items-center justify-center">
         <div className="text-center">
           <p>Please log in to view your profile settings</p>
         </div>
@@ -178,7 +178,7 @@ const ProfileSettings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-green-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#FBF8F1] flex items-center justify-center p-6">
       <div className="w-full max-w-3xl space-y-8">
         {/* Success/Error Message */}
         {message && (
@@ -204,7 +204,7 @@ const ProfileSettings = () => {
             </p>
             <p className="text-sm text-gray-800">{user?.email}</p>
             <p className="text-sm text-gray-800">{user?.phone}</p>
-            <div className="flex items-center gap-1 text-green-600 text-sm font-medium mt-1">
+            <div className="flex items-center gap-1 text-[#C5A572] text-sm font-medium mt-1">
               <FaCheckCircle />
               Verified
             </div>
@@ -234,7 +234,7 @@ const ProfileSettings = () => {
                   }
                   disabled={isLoading}
                 />
-                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors"></div>
+                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-[#C5A572] transition-colors"></div>
                 <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
               </label>
             </div>
@@ -290,7 +290,7 @@ const ProfileSettings = () => {
                           }}
                           disabled={isLoading}
                         />
-                        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors"></div>
+                        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-[#C5A572] transition-colors"></div>
                         <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
                       </label>
                     </div>
@@ -303,26 +303,13 @@ const ProfileSettings = () => {
         {/* Security */}
         <div className="bg-white rounded-xl shadow p-5">
           <p className="text-gray-800 font-semibold mb-4 flex items-center gap-2">
-            <FaShieldAlt className="text-green-500" />
+            <FaShieldAlt className="text-[#C5A572]" />
             Security
           </p>
           <div className="divide-y divide-gray-200 rounded-lg">
             <div className="flex justify-between items-center p-3 cursor-pointer hover:bg-gray-50" onClick={() => setPasswordModalOpen(true)}>
               <span>Change Password</span>
               <FaChevronRight className="text-gray-400" />
-            </div>
-            <div className="flex justify-between items-center p-3">
-              <span>2 Factor Authentication</span>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  defaultChecked
-                  disabled
-                />
-                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors"></div>
-                <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
-              </label>
             </div>
           </div>
         </div>

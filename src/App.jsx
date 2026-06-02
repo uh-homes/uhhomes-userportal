@@ -7,6 +7,7 @@ import "./App.css";
 import DashboardLayout from "./Layout/DashboardLayout";
 import UDashboard from "./Pages/UDashboard";
 import UConstructionTrack from "./Pages/UConstructionTrack";
+import UConstructionTimeline from "./Pages/UConstructionTimeline";
 import Inbox from "./UserPortal/Common/Inbox";
 import ProfileSettings from "./UserPortal/Common/ProfileSettings";
 import Alert from "./UserPortal/Common/Alert";
@@ -15,6 +16,7 @@ import UpdatesPage from "./UserPortal/Common/UpdatesPage";
 import useWishlist from "./hooks/useWishlist";
 import useCurrentUser from "./hooks/useCurrentUser";
 import LoginPage from "./Pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const location = useLocation();
@@ -30,14 +32,17 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
 
-        <Route element={<DashboardLayout />}>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<DashboardLayout />}>
           <Route path="/userportal" element={<UDashboard />} />
           <Route path="/userconstruction" element={<UConstructionTrack />} />
+          <Route path="/construction-timeline" element={<UConstructionTimeline />} />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/profile" element={<ProfileSettings />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/alerts" element={<Alert />} />
           <Route path="/updates" element={<UpdatesPage />} />
+          </Route>
         </Route>
 
         <Route
