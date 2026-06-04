@@ -13,6 +13,14 @@ const Gallery = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    milestoneId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    phase: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     caption: {
       type: DataTypes.STRING,
       allowNull: true,

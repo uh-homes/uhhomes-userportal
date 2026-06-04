@@ -10,3 +10,31 @@ export default function ProtectedRoute() {
 
   return <Outlet />;
 }
+
+export function AdminRoute() {
+  const user = useSelector((state) => state?.user);
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user.role !== "admin") {
+    return <Navigate to="/userportal" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export function UserRoute() {
+  const user = useSelector((state) => state?.user);
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user.role === "admin") {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}

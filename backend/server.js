@@ -15,6 +15,7 @@ const favoriteRoutes = require("./routes/favoriteRoutes");
 const alertRoutes = require("./routes/alertRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +43,7 @@ app.use("/favorites", favoriteRoutes);
 app.use("/alerts", alertRoutes);
 app.use("/properties", propertyRoutes);
 app.use("/settings", settingsRoutes);
+app.use("/admin", adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -58,7 +60,7 @@ const startServer = async () => {
     console.log("✅ Database connected successfully.");
 
     // Sync models (creates tables if they don't exist)
-    await sequelize.sync({ alter: process.env.NODE_ENV === "development" });
+    await sequelize.sync();
     console.log("✅ Database synced.");
 
     app.listen(PORT, () => {

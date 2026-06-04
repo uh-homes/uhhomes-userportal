@@ -20,11 +20,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      navigate("/userportal");
+      navigate(user.role === "admin" ? "/admin/dashboard" : "/userportal");
     }
   }, [user, navigate]);
 
-  const handleClose = () => navigate("/userportal");
+  const handleClose = () => navigate(user?.role === "admin" ? "/admin/dashboard" : "/userportal");
 
   const renderStep = () => {
     switch (step) {
