@@ -35,14 +35,14 @@ const Alert = () => {
       if (readFilter !== "ALL")
         params.append("read", readFilter === "UNREAD" ? "false" : "true");
       if (dateFilter !== "ALL") {
-        const today = new Date();
+        const now = new Date();
         if (dateFilter === "TODAY") {
-          params.append("startDate", today.toISOString().split("T")[0]);
+          params.append("startDate", now.toISOString().split("T")[0]);
         } else if (dateFilter === "WEEK") {
-          const weekAgo = new Date(today.setDate(today.getDate() - 7));
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
           params.append("startDate", weekAgo.toISOString().split("T")[0]);
         } else if (dateFilter === "MONTH") {
-          const monthAgo = new Date(today.setMonth(today.getMonth() - 1));
+          const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
           params.append("startDate", monthAgo.toISOString().split("T")[0]);
         }
       }
@@ -137,12 +137,14 @@ const Alert = () => {
   // Get alert icon based on type
   const getAlertIcon = (type) => {
     switch (type) {
-      case "URGENT":
+      case "ERROR":
         return <FaExclamationTriangle className="text-red-500" />;
+      case "WARNING":
+        return <FaExclamationTriangle className="text-yellow-500" />;
+      case "SUCCESS":
+        return <FaCheck className="text-green-500" />;
       case "INFO":
         return <FaInfoCircle className="text-blue-500" />;
-      case "UPDATE":
-        return <FaBell className="text-yellow-500" />;
       default:
         return <FaEnvelope className="text-gray-500" />;
     }
@@ -192,7 +194,7 @@ const Alert = () => {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center">
             <FaBell className="text-2xl text-blue-600 mr-3" />
-            <h1 className="text-2xl  text-gray-800">Alerts & Notifications</h1>
+            <h1 className="text-2xl  text-gray-800">Alerts</h1>
             {unreadCount > 0 && (
               <span className="ml-3 bg-red-500 text-white text-sm px-2 py-1 rounded-full">
                 {unreadCount} unread
@@ -226,16 +228,17 @@ const Alert = () => {
           </div>
 
           {/* Type Filter */}
-          {/* <select
+          <select
             className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
             <option value="ALL">All Types</option>
-            <option value="URGENT">Urgent</option>
-            <option value="INFO">Information</option>
-            <option value="UPDATE">Updates</option>
-          </select> */}
+            <option value="INFO">Info</option>
+            <option value="WARNING">Warning</option>
+            <option value="SUCCESS">Success</option>
+            <option value="ERROR">Error</option>
+          </select>
 
 
           {/* Read Status Filter */}
@@ -308,28 +311,14 @@ const Alert = () => {
 
                       <p className="text-gray-800 mt-2">{alert.message}</p>
 
-                      {/* Project/Property context */}
-                      {(alert.project || alert.property) && (
-                        <div className="mt-3 p-3 bg-gray-100 rounded-lg">
-                          <p className="text-sm text-gray-800">
-                            {alert.project &&
-                              `Project: ${alert.project.property.name}`}
-                            {alert.property &&
-                              `Property: ${alert.property.name}`}
-                            {alert.property?.community &&
-                              ` • Community: ${alert.property.community.title}`}
-                          </p>
-                        </div>
-                      )}
-
                       {/* Alert metadata */}
                       <div className="flex items-center space-x-4 mt-3 text-xs text-gray-500">
                         <span className="capitalize">
-                          {alert.type.toLowerCase()}
+                          {alert.type?.toLowerCase() || "alert"}
                         </span>
                         <span>•</span>
                         <span className="capitalize">
-                          {alert.channel.toLowerCase()}
+                          {alert.channel?.toLowerCase() || "in-app"}
                         </span>
                         {alert.read && (
                           <>

@@ -1,4 +1,5 @@
 import useProject from "../hooks/useProject";
+import DocumentsSection from "../UserPortal/Construction/DocumentsSection";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -179,6 +180,35 @@ export default function UDashboard() {
           </div>
         </div>
 
+        {/* Project Info */}
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+          <h4 className="text-base font-bold text-dark mb-4">Project Info</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center justify-between md:flex-col md:items-start">
+              <span className="text-sm text-dark-muted">Start Date</span>
+              <span className="text-sm font-medium text-dark">
+                {project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between md:flex-col md:items-start">
+              <span className="text-sm text-dark-muted">Est. Completion</span>
+              <span className="text-sm font-medium text-dark">
+                {project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between md:flex-col md:items-start">
+              <span className="text-sm text-dark-muted">Milestones</span>
+              <span className="text-sm font-medium text-dark">
+                {project.milestones?.filter((m) => m.status === "COMPLETE").length || 0}/{project.milestones?.length || 0} done
+              </span>
+            </div>
+            <div className="flex items-center justify-between md:flex-col md:items-start">
+              <span className="text-sm text-dark-muted">Unread Alerts</span>
+              <span className="text-sm font-medium text-gold-600">{alerts.length}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Main 2-column layout: Content Left, Images Right */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -188,7 +218,7 @@ export default function UDashboard() {
             {/* 1. Alerts / Latest Updates */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-dark">Alerts & Latest Updates</h3>
+                <h3 className="text-base font-bold text-dark">Latest Updates</h3>
                 {alerts.length > 0 && (
                   <span className="text-xs bg-gold-50 text-gold-600 px-2 py-0.5 rounded-full font-medium">
                     {alerts.length} new
@@ -449,37 +479,14 @@ export default function UDashboard() {
               )}
             </div>
 
-            {/* Quick Stats */}
-            <div className="bg-white rounded-2xl shadow-sm p-4">
-              <h4 className="text-sm font-bold text-dark mb-3">Project Info</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-dark-muted">Start Date</span>
-                  <span className="text-xs font-medium text-dark">
-                    {project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-dark-muted">Est. Completion</span>
-                  <span className="text-xs font-medium text-dark">
-                    {project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-dark-muted">Milestones</span>
-                  <span className="text-xs font-medium text-dark">
-                    {project.milestones?.filter((m) => m.status === "COMPLETE").length || 0}/{project.milestones?.length || 0} done
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-dark-muted">Unread Alerts</span>
-                  <span className="text-xs font-medium text-gold-600">{alerts.length}</span>
-                </div>
-              </div>
-            </div>
 
 
           </div>
+        </div>
+
+        {/* Documents */}
+        <div className="bg-white rounded-2xl shadow-sm mt-6 overflow-hidden">
+          <DocumentsSection documents={project.documents || []} />
         </div>
 
         {/* Footer */}

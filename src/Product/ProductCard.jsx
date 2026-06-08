@@ -117,9 +117,13 @@ const PropertyCard = ({
       <div className="flex h-full flex-col overflow-hidden rounded-sm border border-gray-100 bg-white shadow-md">
         <div className="relative flex-shrink-0">
           <img
-            src={thumbnail}
+            src={thumbnail || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800"}
             alt={name}
             className="h-56 w-full object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
+            }}
           />
           <button
             onClick={onToggleFavorite}
