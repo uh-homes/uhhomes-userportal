@@ -8,6 +8,8 @@ import {
   FaHardHat,
   FaClock,
   FaExclamationTriangle,
+  FaChevronLeft,
+  FaChevronRight,
 } from "react-icons/fa";
 
 export default function UDashboard() {
@@ -15,17 +17,13 @@ export default function UDashboard() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const [alerts, setAlerts] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   useEffect(() => {
     const fetchExtras = async () => {
       try {
-        const [alertsRes, favsRes] = await Promise.all([
-          api.get("/alerts?read=false").catch(() => null),
-          api.get("/favorites").catch(() => null),
-        ]);
+        const alertsRes = await api.get("/alerts?read=false").catch(() => null);
         if (alertsRes?.data?.data?.alerts) setAlerts(alertsRes.data.data.alerts.slice(0, 3));
-        if (favsRes?.data?.data) setFavorites(favsRes.data.data.slice(0, 3));
       } catch {}
     };
     fetchExtras();
@@ -404,22 +402,50 @@ export default function UDashboard() {
               </div>
             </div>
 
-            {/* Photo Gallery */}
+            {/* Photo Gallery Slider */}
             <div className="bg-white rounded-2xl shadow-sm p-4">
               <h4 className="text-sm font-bold text-dark mb-3">Construction Photos</h4>
-              <div className="grid grid-cols-2 gap-2">
-                {galleryImages.slice(0, 6).map((url, idx) => (
-                  <img
-                    key={idx}
-                    src={url}
-                    alt={`Site photo ${idx + 1}`}
-                    className="w-full h-20 object-cover rounded-lg"
-                    onError={(e) => { e.target.style.display = "none"; }}
-                  />
-                ))}
+              <div className="relative group">
+                <img
+                  src={galleryImages[photoIndex]}
+                  alt={`Site photo ${photoIndex + 1}`}
+                  className="w-full h-48 object-cover rounded-lg"
+                  onError={(e) => {
+                    e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
+                  }}
+                />
+                {galleryImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setPhotoIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <FaChevronLeft className="w-3 h-3" />
+                    </button>
+                    <button
+                      onClick={() => setPhotoIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <FaChevronRight className="w-3 h-3" />
+                    </button>
+                  </>
+                )}
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
+                  {photoIndex + 1} / {galleryImages.length}
+                </div>
               </div>
-              {galleryImages.length > 6 && (
-                <p className="text-xs text-dark-muted text-center mt-2">+{galleryImages.length - 6} more photos</p>
+              {galleryImages.length > 1 && (
+                <div className="flex justify-center gap-1.5 mt-3">
+                  {galleryImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setPhotoIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        idx === photoIndex ? "bg-gold-400" : "bg-gray-200 hover:bg-gray-300"
+                      }`}
+                    />
+                  ))}
+                </div>
               )}
             </div>
 
@@ -452,33 +478,6 @@ export default function UDashboard() {
               </div>
             </div>
 
-            {/* Saved Properties Preview */}
-            {favorites.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm p-4">
-                <h4 className="text-sm font-bold text-dark mb-3">Saved Properties</h4>
-                <div className="space-y-2">
-                  {favorites.map((fav) => (
-                    <div key={fav.id} className="flex items-center gap-2">
-                      <img
-                        src={fav.property?.thumbnail || "https://via.placeholder.com/40x40"}
-                        alt={fav.property?.name}
-                        className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="text-xs font-medium text-dark truncate">{fav.property?.name || "Property"}</p>
-                        <p className="text-[10px] text-dark-muted">{fav.property?.location || ""}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => navigate("/favorites")}
-                  className="mt-3 text-xs text-gold-400 font-medium hover:text-gold-dark"
-                >
-                  View all →
-                </button>
-              </div>
-            )}
 
           </div>
         </div>

@@ -44,25 +44,25 @@ export default function ResetPasswordForm({ email, otp, onBack, onDone }) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl">Reset Password</h2>
-        <p className="text-sm text-gray-800 mt-1">
+        <h2 className="text-2xl text-white">Reset Password</h2>
+        <p className="text-sm text-gray-400 mt-1">
           Create a new password for {email}
         </p>
       </div>
 
       <div className="relative">
-        <HiOutlineLockClosed className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+        <HiOutlineLockClosed className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500" />
         <input
           type={show ? "text" : "password"}
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           placeholder="New password"
           disabled={loading}
-          className="w-full border rounded pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+          className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
         />
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#C5A572] transition-colors"
           onClick={() => setShow((v) => !v)}
         >
           {show ? (
@@ -77,10 +77,10 @@ export default function ResetPasswordForm({ email, otp, onBack, onDone }) {
         <button
           onClick={handleReset}
           disabled={loading || !newPassword}
-          className="flex-1 bg-purple-600 text-white py-2 rounded hover:bg-purple-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-[#0D0D0D] font-semibold py-2.5 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-opacity"
         >
           {loading && (
-            <span className="h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+            <span className="h-4 w-4 border-2 border-[#0D0D0D]/50 border-t-transparent rounded-full animate-spin"></span>
           )}
           {loading ? "Saving..." : "Reset Password"}
         </button>
@@ -88,7 +88,7 @@ export default function ResetPasswordForm({ email, otp, onBack, onDone }) {
           type="button"
           onClick={onBack}
           disabled={loading}
-          className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-60"
+          className="px-4 py-2.5 border border-[#333] text-gray-300 rounded-lg hover:bg-[#1a1a1a] disabled:opacity-60 transition-colors"
         >
           Back
         </button>

@@ -26,6 +26,7 @@ const { getProjectGallery, createGallery, addPhotos, deletePhoto, deleteGallery 
 const { generateProjectReport, generateSummaryReport } = require("../controllers/adminReportController");
 const { sendPushNotification, sendBulkNotifications, getNotificationHistory } = require("../controllers/adminNotificationController");
 const { generateWeeklySummary, sendWeeklySummary, sendAllWeeklySummaries } = require("../controllers/adminAISummaryController");
+const { getAllInquiries, respondToInquiry, deleteInquiry } = require("../controllers/adminInquiryController");
 
 // All routes require auth + admin
 router.use(protect, adminOnly);
@@ -79,5 +80,10 @@ router.get("/notifications/history", getNotificationHistory);
 router.post("/ai-summary/generate/:projectId", generateWeeklySummary);
 router.post("/ai-summary/send/:projectId", sendWeeklySummary);
 router.post("/ai-summary/send-all", sendAllWeeklySummaries);
+
+// Inquiries management
+router.get("/inquiries", getAllInquiries);
+router.put("/inquiries/:id/respond", respondToInquiry);
+router.delete("/inquiries/:id", deleteInquiry);
 
 module.exports = router;

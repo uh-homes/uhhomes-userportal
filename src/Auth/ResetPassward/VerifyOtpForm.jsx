@@ -36,19 +36,19 @@ export default function VerifyOtpForm({ email, onVerified, onBack }) {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-2xl">Verify OTP</h2>
-        <p className="text-sm text-gray-800 mt-1">We sent a code to {email}</p>
+        <h2 className="text-2xl text-white">Verify OTP</h2>
+        <p className="text-sm text-gray-400 mt-1">We sent a code to {email}</p>
       </div>
 
       <div className="relative">
-        <HiOutlineKey className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
+        <HiOutlineKey className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500" />
         <input
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           placeholder="6-digit code"
           inputMode="numeric"
           disabled={loading}
-          className="w-full border rounded pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+          className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
         />
       </div>
 
@@ -56,10 +56,10 @@ export default function VerifyOtpForm({ email, onVerified, onBack }) {
         <button
           onClick={handleVerify}
           disabled={loading || !otp}
-          className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="flex-1 bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-[#0D0D0D] font-semibold py-2.5 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-opacity"
         >
           {loading && (
-            <span className="h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+            <span className="h-4 w-4 border-2 border-[#0D0D0D]/50 border-t-transparent rounded-full animate-spin"></span>
           )}
           {loading ? "Verifying..." : "Verify OTP"}
         </button>
@@ -67,7 +67,7 @@ export default function VerifyOtpForm({ email, onVerified, onBack }) {
           type="button"
           onClick={onBack}
           disabled={loading}
-          className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-60"
+          className="px-4 py-2.5 border border-[#333] text-gray-300 rounded-lg hover:bg-[#1a1a1a] disabled:opacity-60 transition-colors"
         >
           Back
         </button>

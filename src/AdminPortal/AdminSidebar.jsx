@@ -14,6 +14,7 @@ import {
   HiOutlineDocumentDownload,
   HiOutlinePaperAirplane,
   HiOutlineSparkles,
+  HiOutlineMail,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -31,6 +32,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     { title: "Construction Timeline", icon: <HiOutlineClock />, path: "/admin/timeline" },
     { title: "Photo Gallery", icon: <HiOutlinePhotograph />, path: "/admin/gallery" },
     { title: "PDF Reports", icon: <HiOutlineDocumentDownload />, path: "/admin/reports" },
+    { title: "Inquiries", icon: <HiOutlineMail />, path: "/admin/inquiries" },
     { title: "Notifications", icon: <HiOutlinePaperAirplane />, path: "/admin/notifications" },
     { title: "AI Summary", icon: <HiOutlineSparkles />, path: "/admin/ai-summary" },
     { title: "Properties", icon: <HiOutlineHome />, path: "/admin/properties" },

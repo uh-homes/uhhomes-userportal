@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   FaSearch,
   FaFilter,
@@ -8,10 +9,14 @@ import {
   FaRegCircle,
   FaEnvelope,
   FaArrowLeft,
+  FaPen,
+  FaChevronDown,
+  FaTimes,
 } from "react-icons/fa";
 import api from "../../Api/api";
 
 const Inbox = () => {
+  const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,6 +25,28 @@ const Inbox = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isMobileView, setIsMobileView] = useState(false);
+
+  // Compose form state
+  const [showCompose, setShowCompose] = useState(false);
+  const [composeProjectId, setComposeProjectId] = useState(null);
+  const [composeDropdownOpen, setComposeDropdownOpen] = useState(false);
+  const [composeSubject, setComposeSubject] = useState("GENERAL QUESTION");
+  const [composeMessage, setComposeMessage] = useState("");
+  const [composeSending, setComposeSending] = useState(false);
+
+  const subjectOptions = ["GENERAL QUESTION", "SALES INQUIRY", "SUPPORT", "OTHER"];
+
+  // Open compose if navigated from construction tracker
+  useEffect(() => {
+    if (location.state?.compose) {
+      setShowCompose(true);
+      if (location.state?.projectId) {
+        setComposeProjectId(location.state.projectId);
+      }
+      // Clear the state so it doesn't persist on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   // Check screen size for mobile view
   useEffect(() => {
@@ -32,24 +59,49 @@ const Inbox = () => {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
+  const fetchQuestions = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get("/user-projects/question");
+      setQuestions(response.data.data);
+      setFilteredQuestions(response.data.data);
+    } catch (err) {
+      setError(err.message || "Failed to fetch questions");
+      console.error("Error fetching questions:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Fetch user's questions
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        setIsLoading(true);
-        const response = await api.get("/user-projects/question");
-        setQuestions(response.data.data);
-        setFilteredQuestions(response.data.data);
-      } catch (err) {
-        setError(err.message || "Failed to fetch questions");
-        console.error("Error fetching questions:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchQuestions();
   }, []);
+
+  // Submit new inquiry
+  const handleComposeSend = async (e) => {
+    e.preventDefault();
+    if (!composeMessage.trim()) return;
+
+    setComposeSending(true);
+    try {
+      await api.post("/user-projects/question", {
+        subject: composeSubject,
+        message: composeMessage.trim(),
+        projectId: composeProjectId || null,
+      });
+      setComposeMessage("");
+      setComposeSubject("GENERAL QUESTION");
+      setShowCompose(false);
+      setSelectedQuestion(null);
+      fetchQuestions();
+    } catch (err) {
+      console.error("Error submitting question:", err);
+      alert("Failed to submit your question. Please try again.");
+    } finally {
+      setComposeSending(false);
+    }
+  };
 
   // Filter questions based on search term and status
   useEffect(() => {
@@ -167,7 +219,19 @@ const Inbox = () => {
       >
         {/* Header with search and filter */}
         <div className="p-4 border-b border-gray-200">
-          <h2 className="text-xl mb-4 text-gray-800">My Questions</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl text-gray-800">My Questions</h2>
+            <button
+              onClick={() => {
+                setShowCompose(!showCompose);
+                setSelectedQuestion(null);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient text-white rounded-lg text-sm font-medium hover:opacity-90 transition"
+            >
+              <FaPen className="text-xs" />
+              New
+            </button>
+          </div>
 
           {/* Search */}
           <div className="relative mb-3">
@@ -212,11 +276,8 @@ const Inbox = () => {
                     You haven't asked any questions yet
                   </p>
                   <button
-                    onClick={() => {
-                      // You can add functionality to ask a new question here
-                      console.log("Ask a new question");
-                    }}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    onClick={() => setShowCompose(true)}
+                    className="mt-4 px-4 py-2 bg-gradient text-white rounded-lg hover:opacity-90 transition-colors"
                   >
                     Ask Your First Question
                   </button>
@@ -276,7 +337,77 @@ const Inbox = () => {
         flex flex-col
       `}
       >
-        {selectedQuestion ? (
+        {/* Compose New Question */}
+        {showCompose ? (
+          <div className="flex flex-col h-full">
+            {/* Compose Header */}
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
+              <h2 className="text-xl text-gray-800">New Inquiry</h2>
+              <button
+                onClick={() => setShowCompose(false)}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <FaTimes className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Compose Form */}
+            <form onSubmit={handleComposeSend} className="flex-1 p-4 md:p-6 flex flex-col">
+              {/* Subject Dropdown */}
+              <div className="flex items-center justify-between mb-4">
+                <label className="text-sm font-medium text-gray-700">Subject</label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setComposeDropdownOpen(!composeDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-2 text-xs bg-gradient text-white rounded-md font-medium"
+                  >
+                    {composeSubject}
+                    <FaChevronDown className="text-xs" />
+                  </button>
+                  {composeDropdownOpen && (
+                    <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                      {subjectOptions.map((opt) => (
+                        <div
+                          key={opt}
+                          onClick={() => {
+                            setComposeSubject(opt);
+                            setComposeDropdownOpen(false);
+                          }}
+                          className="px-3 py-2 text-xs hover:bg-gray-100 cursor-pointer"
+                        >
+                          {opt}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Message */}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea
+                placeholder="Type your question here..."
+                value={composeMessage}
+                onChange={(e) => setComposeMessage(e.target.value)}
+                className="w-full flex-1 min-h-[180px] border border-gray-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none mb-4"
+                required
+              />
+
+              <button
+                type="submit"
+                disabled={composeSending || !composeMessage.trim()}
+                className="w-full py-3 bg-gradient text-white rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50"
+              >
+                {composeSending ? "Sending..." : "Send Message"}
+              </button>
+
+              <p className="text-xs text-gray-400 mt-3 text-center">
+                Your inquiry will be sent to the UH Homes team. Expect a reply within 24–48 hours.
+              </p>
+            </form>
+          </div>
+        ) : selectedQuestion ? (
           <>
             {/* Mobile Back Button */}
             {isMobileView && (
