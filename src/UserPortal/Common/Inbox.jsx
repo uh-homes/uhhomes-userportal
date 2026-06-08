@@ -30,11 +30,12 @@ const Inbox = () => {
   const [showCompose, setShowCompose] = useState(false);
   const [composeProjectId, setComposeProjectId] = useState(null);
   const [composeDropdownOpen, setComposeDropdownOpen] = useState(false);
-  const [composeSubject, setComposeSubject] = useState("GENERAL QUESTION");
+  const [composeTopic, setComposeTopic] = useState("GENERAL QUESTION");
+  const [composeSubject, setComposeSubject] = useState("");
   const [composeMessage, setComposeMessage] = useState("");
   const [composeSending, setComposeSending] = useState(false);
 
-  const subjectOptions = ["GENERAL QUESTION", "SALES INQUIRY", "SUPPORT", "OTHER"];
+  const topicOptions = ["GENERAL QUESTION", "SALES INQUIRY", "SUPPORT", "OTHER"];
 
   // Open compose if navigated from construction tracker
   useEffect(() => {
@@ -85,13 +86,18 @@ const Inbox = () => {
 
     setComposeSending(true);
     try {
+      const fullSubject = composeSubject.trim()
+        ? `[${composeTopic}] ${composeSubject.trim()}`
+        : composeTopic;
+
       await api.post("/user-projects/question", {
-        subject: composeSubject,
+        subject: fullSubject,
         message: composeMessage.trim(),
         projectId: composeProjectId || null,
       });
       setComposeMessage("");
-      setComposeSubject("GENERAL QUESTION");
+      setComposeTopic("GENERAL QUESTION");
+      setComposeSubject("");
       setShowCompose(false);
       setSelectedQuestion(null);
       fetchQuestions();
@@ -353,28 +359,32 @@ const Inbox = () => {
 
             {/* Compose Form */}
             <form onSubmit={handleComposeSend} className="flex-1 p-4 md:p-6 flex flex-col">
-              {/* Subject Dropdown */}
-              <div className="flex items-center justify-between mb-4">
-                <label className="text-sm font-medium text-gray-700">Subject</label>
+              {/* Topic Dropdown */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Topic</label>
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setComposeDropdownOpen(!composeDropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-2 text-xs bg-gradient text-white rounded-md font-medium"
+                    className="w-full flex items-center justify-between px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white hover:border-gray-300 transition"
                   >
-                    {composeSubject}
-                    <FaChevronDown className="text-xs" />
+                    <span className="text-gray-800">{composeTopic}</span>
+                    <FaChevronDown className="text-xs text-gray-400" />
                   </button>
                   {composeDropdownOpen && (
-                    <div className="absolute right-0 mt-1 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-                      {subjectOptions.map((opt) => (
+                    <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                      {topicOptions.map((opt) => (
                         <div
                           key={opt}
                           onClick={() => {
-                            setComposeSubject(opt);
+                            setComposeTopic(opt);
                             setComposeDropdownOpen(false);
                           }}
-                          className="px-3 py-2 text-xs hover:bg-gray-100 cursor-pointer"
+                          className={`px-3 py-2.5 text-sm cursor-pointer transition ${
+                            composeTopic === opt
+                              ? "bg-gray-50 text-gray-900 font-medium"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
                         >
                           {opt}
                         </div>
@@ -382,6 +392,18 @@ const Inbox = () => {
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Subject */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                <input
+                  type="text"
+                  placeholder="Brief description of your inquiry..."
+                  value={composeSubject}
+                  onChange={(e) => setComposeSubject(e.target.value)}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
 
               {/* Message */}

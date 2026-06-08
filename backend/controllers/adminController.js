@@ -1,4 +1,4 @@
-const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, sequelize } = require("../models");
+const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
 
@@ -13,6 +13,21 @@ const getStats = async (req, res) => {
     const unreadAlerts = await Alert.count({ where: { read: false } });
     const totalProperties = await Property.count();
     const totalFavorites = await Favorite.count();
+
+    // Inquiry stats
+    const totalInquiries = await Question.count();
+    const pendingInquiries = await Question.count({ where: { status: "PENDING" } });
+
+    // Recent pending inquiries (last 5)
+    const recentInquiries = await Question.findAll({
+      where: { status: "PENDING" },
+      include: [
+        { model: User, as: "user", attributes: ["id", "fullName", "email"] },
+        { model: Project, as: "project", attributes: ["id", "name"] },
+      ],
+      order: [["createdAt", "DESC"]],
+      limit: 5,
+    });
 
     // Recent users (last 30 days)
     const thirtyDaysAgo = new Date();
@@ -39,6 +54,9 @@ const getStats = async (req, res) => {
         totalProperties,
         totalFavorites,
         avgCompletion: Math.round(avgCompletion?.dataValues?.avg || 0),
+        totalInquiries,
+        pendingInquiries,
+        recentInquiries,
       },
     });
   } catch (error) {
