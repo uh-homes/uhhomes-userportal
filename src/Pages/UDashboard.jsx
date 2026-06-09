@@ -12,6 +12,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaDownload,
+  FaBell,
 } from "react-icons/fa";
 
 export default function UDashboard() {
@@ -19,6 +20,7 @@ export default function UDashboard() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const [alerts, setAlerts] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [downloading, setDownloading] = useState(false);
 
@@ -47,9 +49,13 @@ export default function UDashboard() {
       try {
         const alertsRes = await api.get("/alerts?read=false").catch(() => null);
         if (alertsRes?.data?.data?.alerts) setAlerts(alertsRes.data.data.alerts.slice(0, 3));
+        const countRes = await api.get("/alerts/unread-count").catch(() => null);
+        if (countRes?.data?.data?.count !== undefined) setUnreadCount(countRes.data.data.count);
       } catch {}
     };
     fetchExtras();
+    const interval = setInterval(fetchExtras, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const getStatusPill = (status) => {
@@ -179,6 +185,18 @@ export default function UDashboard() {
             <p className="text-dark-muted text-sm mt-1">{project.name || "Your Project"} — {project.address || ""}</p>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/alerts")}
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+              title="Alerts"
+            >
+              <FaBell className="text-lg text-gray-500" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+            </button>
             <span className={`text-xs px-3 py-1 rounded-full font-medium ${statusPill.style}`}>
               {statusPill.label}
             </span>
@@ -226,7 +244,7 @@ export default function UDashboard() {
             </div>
             <div className="flex items-center justify-between md:flex-col md:items-start">
               <span className="text-sm text-dark-muted">Unread Alerts</span>
-              <span className="text-sm font-medium text-gold-600">{alerts.length}</span>
+              <span className="text-sm font-medium text-gold-600">{unreadCount}</span>
             </div>
           </div>
           <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">

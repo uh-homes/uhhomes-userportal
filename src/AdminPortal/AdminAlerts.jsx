@@ -3,7 +3,7 @@ import api from "../Api/api";
 import { HiOutlineTrash, HiOutlinePaperAirplane, HiOutlineX } from "react-icons/hi";
 import { toast } from "react-toastify";
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   { key: "ALL", label: "All", color: "text-gray-700", bg: "bg-gray-100", dot: "bg-gray-500" },
   { key: "GENERAL", label: "General", color: "text-blue-700", bg: "bg-blue-50", dot: "bg-blue-500" },
   { key: "FOUNDATION", label: "Foundation", color: "text-amber-700", bg: "bg-amber-50", dot: "bg-amber-500" },
@@ -23,6 +23,9 @@ export default function AdminAlerts() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [showCreate, setShowCreate] = useState(false);
+  const [customCategories, setCustomCategories] = useState([]);
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customCategoryName, setCustomCategoryName] = useState("");
   const [form, setForm] = useState({
     title: "",
     message: "",
@@ -30,6 +33,11 @@ export default function AdminAlerts() {
     channel: "IN_APP",
     userId: "",
   });
+
+  const CATEGORIES = [
+    ...DEFAULT_CATEGORIES,
+    ...customCategories.map((c) => ({ key: c, label: c.charAt(0) + c.slice(1).toLowerCase(), color: "text-teal-700", bg: "bg-teal-50", dot: "bg-teal-500" })),
+  ];
 
   // Send-to-user modal state
   const [sendModal, setSendModal] = useState(null); // holds alert object or null
@@ -60,6 +68,14 @@ export default function AdminAlerts() {
     fetchAlerts();
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    const defaultKeys = DEFAULT_CATEGORIES.map((c) => c.key);
+    const extras = [...new Set(alerts.map((a) => a.type).filter((t) => t && !defaultKeys.includes(t) && !customCategories.includes(t)))];
+    if (extras.length > 0) {
+      setCustomCategories((prev) => [...new Set([...prev, ...extras])]);
+    }
+  }, [alerts]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -173,22 +189,66 @@ export default function AdminAlerts() {
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Type</label>
-              <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-                value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}
-              >
-                <option value="GENERAL">General</option>
-                <option value="FOUNDATION">Foundation</option>
-                <option value="FRAMING">Framing</option>
-                <option value="PLUMBING">Plumbing</option>
-                <option value="ELECTRICAL">Electrical</option>
-                <option value="ROOFING">Roofing</option>
-                <option value="INTERIOR">Interior</option>
-                <option value="EXTERIOR">Exterior</option>
-                <option value="INSPECTION">Inspection</option>
-                <option value="HANDOVER">Handover</option>
-              </select>
+              {!showCustomInput ? (
+                <select
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  value={form.type}
+                  onChange={(e) => {
+                    if (e.target.value === "__custom__") {
+                      setShowCustomInput(true);
+                    } else {
+                      setForm({ ...form, type: e.target.value });
+                    }
+                  }}
+                >
+                  <option value="GENERAL">General</option>
+                  <option value="FOUNDATION">Foundation</option>
+                  <option value="FRAMING">Framing</option>
+                  <option value="PLUMBING">Plumbing</option>
+                  <option value="ELECTRICAL">Electrical</option>
+                  <option value="ROOFING">Roofing</option>
+                  <option value="INTERIOR">Interior</option>
+                  <option value="EXTERIOR">Exterior</option>
+                  <option value="INSPECTION">Inspection</option>
+                  <option value="HANDOVER">Handover</option>
+                  {customCategories.map((c) => (
+                    <option key={c} value={c}>{c.charAt(0) + c.slice(1).toLowerCase()}</option>
+                  ))}
+                  <option value="__custom__">+ Add New Category...</option>
+                </select>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                    placeholder="Enter new category name"
+                    value={customCategoryName}
+                    onChange={(e) => setCustomCategoryName(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customCategoryName.trim()) {
+                        const key = customCategoryName.trim().toUpperCase();
+                        setCustomCategories([...customCategories, key]);
+                        setForm({ ...form, type: key });
+                        setCustomCategoryName("");
+                        setShowCustomInput(false);
+                      }
+                    }}
+                    className="bg-[#C5A572] text-white px-3 py-2 rounded-lg text-sm hover:bg-[#b39362]"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowCustomInput(false); setCustomCategoryName(""); }}
+                    className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Channel</label>

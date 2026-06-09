@@ -22,7 +22,7 @@ const Alert = sequelize.define(
       allowNull: true,
     },
     type: {
-      type: DataTypes.ENUM("GENERAL", "FOUNDATION", "FRAMING", "PLUMBING", "ELECTRICAL", "ROOFING", "INTERIOR", "EXTERIOR", "INSPECTION", "HANDOVER"),
+      type: DataTypes.STRING,
       defaultValue: "GENERAL",
     },
     channel: {

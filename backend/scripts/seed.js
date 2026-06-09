@@ -196,7 +196,7 @@ const seed = async () => {
     const veloraProject = await Project.create({
       userId: raviUser.id,
       name: "Velora at Park Place",
-      address: "Lot 12, Park Place, Prosper, TX 75078",
+      address: "901 Paris Dr, Prosper, TX 75078",
       status: "IN_PROGRESS",
       completionPercentage: 68,
       startDate: new Date("2024-06-01"),
@@ -251,7 +251,7 @@ const seed = async () => {
     const vistaProject = await Project.create({
       userId: chinnaUser.id,
       name: "Vista at Park Place",
-      address: "Lot 8, Park Place, Prosper, TX 75078",
+      address: "931 Loyola Dr, Prosper, TX 75078",
       status: "IN_PROGRESS",
       completionPercentage: 45,
       startDate: new Date("2024-09-01"),
@@ -303,7 +303,7 @@ const seed = async () => {
     const nirvaanProject = await Project.create({
       userId: sindhuraUser.id,
       name: "Nirvaan at Park Place",
-      address: "Lot 15, Park Place, Prosper, TX 75078",
+      address: "830 Notre Dame, Prosper, TX 75078",
       status: "IN_PROGRESS",
       completionPercentage: 25,
       startDate: new Date("2025-01-10"),

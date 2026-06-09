@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import logoUhhomes from "../../assets/new uhhomes 2.webp";
 import faviconLogo from "../../assets/favicon_uhhomes.webp";
 import { FaChevronDown } from "react-icons/fa";
@@ -15,10 +15,27 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import api from "../../Api/api";
 
 const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const res = await api.get("/alerts/unread-count");
+      setUnreadCount(res.data?.data?.count || 0);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user, fetchUnreadCount]);
 
   // Sidebar Menu Config
   const menuItems = [
@@ -168,12 +185,26 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
                     onClick={handleLinkClick}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-xl"> {item.icon}</span>
+                      <span className="text-xl relative">
+                        {item.icon}
+                        {item.title === "Alerts" && unreadCount > 0 && !open && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        )}
+                      </span>
                       {open &&
                         (item.subLinks ? (
                           <span>{item.title}</span>
                         ) : (
-                          <> {item.title}</>
+                          <span className="flex items-center gap-2">
+                            {item.title}
+                            {item.title === "Alerts" && unreadCount > 0 && (
+                              <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                                {unreadCount}
+                              </span>
+                            )}
+                          </span>
                         ))}
                     </div>
                   </Link>
