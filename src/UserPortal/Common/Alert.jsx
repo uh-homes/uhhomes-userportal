@@ -137,16 +137,27 @@ const Alert = () => {
   // Get alert icon based on type
   const getAlertIcon = (type) => {
     switch (type) {
-      case "ERROR":
-        return <FaExclamationTriangle className="text-red-500" />;
-      case "WARNING":
+      case "FOUNDATION":
+        return <FaInfoCircle className="text-amber-500" />;
+      case "FRAMING":
+        return <FaInfoCircle className="text-orange-500" />;
+      case "PLUMBING":
+        return <FaInfoCircle className="text-cyan-500" />;
+      case "ELECTRICAL":
         return <FaExclamationTriangle className="text-yellow-500" />;
-      case "SUCCESS":
-        return <FaCheck className="text-green-500" />;
-      case "INFO":
-        return <FaInfoCircle className="text-blue-500" />;
+      case "ROOFING":
+        return <FaInfoCircle className="text-indigo-500" />;
+      case "INTERIOR":
+        return <FaInfoCircle className="text-pink-500" />;
+      case "EXTERIOR":
+        return <FaInfoCircle className="text-green-500" />;
+      case "INSPECTION":
+        return <FaExclamationTriangle className="text-purple-500" />;
+      case "HANDOVER":
+        return <FaCheck className="text-emerald-500" />;
+      case "GENERAL":
       default:
-        return <FaEnvelope className="text-gray-500" />;
+        return <FaBell className="text-blue-500" />;
     }
   };
 
@@ -234,10 +245,16 @@ const Alert = () => {
             onChange={(e) => setTypeFilter(e.target.value)}
           >
             <option value="ALL">All Types</option>
-            <option value="INFO">Info</option>
-            <option value="WARNING">Warning</option>
-            <option value="SUCCESS">Success</option>
-            <option value="ERROR">Error</option>
+            <option value="GENERAL">General</option>
+            <option value="FOUNDATION">Foundation</option>
+            <option value="FRAMING">Framing</option>
+            <option value="PLUMBING">Plumbing</option>
+            <option value="ELECTRICAL">Electrical</option>
+            <option value="ROOFING">Roofing</option>
+            <option value="INTERIOR">Interior</option>
+            <option value="EXTERIOR">Exterior</option>
+            <option value="INSPECTION">Inspection</option>
+            <option value="HANDOVER">Handover</option>
           </select>
 
 

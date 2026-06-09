@@ -226,9 +226,12 @@ const seed = async () => {
     ]);
 
     await Alert.bulkCreate([
-      { userId: raviUser.id, title: "Electrical rough-in inspection passed", message: "Your Velora home electrical rough-in passed City of Prosper inspection. Moving to insulation phase.", type: "SUCCESS", channel: "IN_APP", read: false },
-      { userId: raviUser.id, title: "Plumbing fixtures selected", message: "Your selections for Kohler fixtures have been confirmed. Delivery scheduled for next week.", type: "INFO", channel: "IN_APP", read: false },
-      { userId: raviUser.id, title: "Bi-weekly update available", message: "New construction photos and progress update for Velora at Park Place are now available.", type: "INFO", channel: "EMAIL", read: false },
+      { userId: raviUser.id, title: "Foundation curing complete", message: "Your Velora post-tension slab has fully cured and passed structural testing. Ready for framing.", type: "FOUNDATION", channel: "IN_APP", read: true },
+      { userId: raviUser.id, title: "Framing inspection passed", message: "2-story structural framing for Velora has passed City of Prosper inspection. Roof trusses going up next.", type: "FRAMING", channel: "IN_APP", read: true },
+      { userId: raviUser.id, title: "Roofing shingles installed", message: "Architectural shingle roof installation is complete on your Velora home. No leaks detected in water test.", type: "ROOFING", channel: "IN_APP", read: true },
+      { userId: raviUser.id, title: "Electrical rough-in 80% done", message: "Wiring run to all 5 bedrooms, kitchen island, outdoor kitchen, and study room. Panel upgrade to 200A complete.", type: "ELECTRICAL", channel: "IN_APP", read: false },
+      { userId: raviUser.id, title: "Plumbing fixtures confirmed", message: "Your Kohler fixture selections have been confirmed. Delivery scheduled for next week. Rough-in plumbing almost complete.", type: "PLUMBING", channel: "IN_APP", read: false },
+      { userId: raviUser.id, title: "Bi-weekly progress photos available", message: "New construction photos and progress update for Velora at Park Place are now available in your gallery.", type: "GENERAL", channel: "EMAIL", read: false },
     ]);
 
     // ===========================
@@ -276,8 +279,11 @@ const seed = async () => {
     ]);
 
     await Alert.bulkCreate([
-      { userId: chinnaUser.id, title: "Framing inspection scheduled", message: "City of Prosper structural framing inspection set for next Tuesday. Please review submitted engineering docs.", type: "INFO", channel: "IN_APP", read: false },
-      { userId: chinnaUser.id, title: "Foundation inspection passed", message: "Your Vista home foundation passed all city inspections. Framing crew is mobilizing.", type: "SUCCESS", channel: "IN_APP", read: false },
+      { userId: chinnaUser.id, title: "Foundation inspection passed", message: "Your Vista home foundation passed all city inspections. Post-tension cables stressed and verified.", type: "FOUNDATION", channel: "IN_APP", read: true },
+      { userId: chinnaUser.id, title: "Second floor framing started", message: "First floor walls complete. Second floor framing for game room and media room started this week.", type: "FRAMING", channel: "IN_APP", read: false },
+      { userId: chinnaUser.id, title: "Roof decking in progress", message: "OSB roof decking 50% installed. Shingle work expected to start next week, weather permitting.", type: "ROOFING", channel: "IN_APP", read: false },
+      { userId: chinnaUser.id, title: "Plumbing layout review needed", message: "Please review the plumbing layout for your 5 bathrooms. We need your approval before rough-in begins.", type: "PLUMBING", channel: "IN_APP", read: false },
+      { userId: chinnaUser.id, title: "Exterior stone samples ready", message: "Three stone veneer samples are ready for your review at the design center. Please schedule a visit.", type: "EXTERIOR", channel: "IN_APP", read: false },
     ]);
 
     // ===========================
@@ -320,8 +326,11 @@ const seed = async () => {
     ]);
 
     await Alert.bulkCreate([
-      { userId: sindhuraUser.id, title: "Foundation pour this Friday", message: "Your Nirvaan home foundation concrete pour is confirmed for Friday 8AM. Weather looks clear.", type: "INFO", channel: "IN_APP", read: false },
-      { userId: sindhuraUser.id, title: "Welcome to UH Homes!", message: "Your Nirvaan at Park Place project has officially started. Track every milestone here.", type: "SUCCESS", channel: "IN_APP", read: false },
+      { userId: sindhuraUser.id, title: "Welcome to UH Homes!", message: "Your Nirvaan at Park Place project has officially started. Track every milestone here in your portal.", type: "GENERAL", channel: "IN_APP", read: true },
+      { userId: sindhuraUser.id, title: "Foundation pour scheduled Friday", message: "Your Nirvaan home foundation concrete pour is confirmed for Friday 8AM. Weather forecast is clear.", type: "FOUNDATION", channel: "IN_APP", read: false },
+      { userId: sindhuraUser.id, title: "Foundation rebar and cables set", message: "Rebar grid and post-tension cables have been laid out. Form boards are installed and ready for concrete.", type: "FOUNDATION", channel: "IN_APP", read: false },
+      { userId: sindhuraUser.id, title: "Electrical plan finalized", message: "Electrical plan for your 5-bedroom layout has been finalized. Includes pre-wire for media room surround sound.", type: "ELECTRICAL", channel: "EMAIL", read: false },
+      { userId: sindhuraUser.id, title: "Interior design consultation", message: "Your interior design consultation is scheduled for next Thursday. Please bring your flooring and paint preferences.", type: "INTERIOR", channel: "IN_APP", read: false },
     ]);
 
     // ===========================
@@ -371,9 +380,16 @@ const seed = async () => {
     ]);
 
     await Alert.bulkCreate([
-      { userId: sowjanyaUser.id, title: "Interior finishing on track", message: "Your Zyra home interior finishing is 65% complete. Kitchen cabinetry is in, flooring underway.", type: "SUCCESS", channel: "IN_APP", read: false },
-      { userId: sowjanyaUser.id, title: "Countertop templating next week", message: "Granite countertop templating for kitchen island and master bath is scheduled for Monday.", type: "INFO", channel: "IN_APP", read: false },
-      { userId: sowjanyaUser.id, title: "Bi-weekly update available", message: "New construction photos for Zyra at Park Place are available in your gallery.", type: "INFO", channel: "EMAIL", read: false },
+      { userId: sowjanyaUser.id, title: "Foundation fully cured", message: "Your Zyra post-tension slab foundation has been cured and cleared. Structural integrity confirmed.", type: "FOUNDATION", channel: "IN_APP", read: true },
+      { userId: sowjanyaUser.id, title: "Framing and roof complete", message: "2-story structural framing and architectural shingle roof for Zyra are 100% complete.", type: "FRAMING", channel: "IN_APP", read: true },
+      { userId: sowjanyaUser.id, title: "All plumbing rough-in done", message: "Plumbing rough-in for all 5 bathrooms, kitchen, and outdoor kitchen is complete and inspected.", type: "PLUMBING", channel: "IN_APP", read: true },
+      { userId: sowjanyaUser.id, title: "Electrical final walkthrough passed", message: "All electrical wiring including prayer room, courtyard, and game room has passed final inspection.", type: "ELECTRICAL", channel: "IN_APP", read: true },
+      { userId: sowjanyaUser.id, title: "Roofing warranty registered", message: "Your 30-year architectural shingle roof warranty has been registered with the manufacturer.", type: "ROOFING", channel: "IN_APP", read: true },
+      { userId: sowjanyaUser.id, title: "Interior finishing 65% complete", message: "Kitchen cabinetry installed, hardwood flooring in master suite and living areas. Game room next.", type: "INTERIOR", channel: "IN_APP", read: false },
+      { userId: sowjanyaUser.id, title: "Countertop templating Monday", message: "Granite countertop templating for kitchen island and master bath is scheduled for Monday morning.", type: "INTERIOR", channel: "IN_APP", read: false },
+      { userId: sowjanyaUser.id, title: "Exterior stone veneer selection", message: "Please finalize your stone/brick veneer selection for exterior. Visit design center this week.", type: "EXTERIOR", channel: "IN_APP", read: false },
+      { userId: sowjanyaUser.id, title: "Pre-drywall inspection passed", message: "City of Prosper pre-drywall inspection passed. All framing, electrical, and plumbing behind walls verified.", type: "INSPECTION", channel: "IN_APP", read: false },
+      { userId: sowjanyaUser.id, title: "Handover timeline update", message: "Based on current progress, your Zyra home handover is on track for late June 2025. Final walkthrough TBD.", type: "HANDOVER", channel: "EMAIL", read: false },
     ]);
 
     // Favorites for Sowjanya

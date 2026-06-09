@@ -12,7 +12,7 @@ import {
   HiOutlineUsers,
   HiOutlinePhotograph,
   HiOutlineDocumentDownload,
-  HiOutlinePaperAirplane,
+
   HiOutlineSparkles,
   HiOutlineMail,
 } from "react-icons/hi";
@@ -33,7 +33,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     { title: "Photo Gallery", icon: <HiOutlinePhotograph />, path: "/admin/gallery" },
     { title: "PDF Reports", icon: <HiOutlineDocumentDownload />, path: "/admin/reports" },
     { title: "Inquiries", icon: <HiOutlineMail />, path: "/admin/inquiries" },
-    { title: "Notifications", icon: <HiOutlinePaperAirplane />, path: "/admin/notifications" },
+
     { title: "AI Summary", icon: <HiOutlineSparkles />, path: "/admin/ai-summary" },
     { title: "Properties", icon: <HiOutlineHome />, path: "/admin/properties" },
     { title: "Settings", icon: <HiOutlineCog />, path: "/admin/settings" },

@@ -59,8 +59,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("✅ Database connected successfully.");
 
-    // Sync models (creates tables if they don't exist)
-    await sequelize.sync();
+    // Sync models (alter: true to apply schema changes like ENUM updates)
+    await sequelize.sync({ alter: true });
     console.log("✅ Database synced.");
 
     app.listen(PORT, () => {

@@ -294,7 +294,7 @@ const createAlert = async (req, res) => {
         userId: id,
         title,
         message,
-        type: type || "INFO",
+        type: type || "GENERAL",
         channel: channel || "IN_APP",
         read: false,
       }))

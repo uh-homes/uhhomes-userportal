@@ -22,8 +22,8 @@ const Alert = sequelize.define(
       allowNull: true,
     },
     type: {
-      type: DataTypes.ENUM("INFO", "WARNING", "SUCCESS", "ERROR"),
-      defaultValue: "INFO",
+      type: DataTypes.ENUM("GENERAL", "FOUNDATION", "FRAMING", "PLUMBING", "ELECTRICAL", "ROOFING", "INTERIOR", "EXTERIOR", "INSPECTION", "HANDOVER"),
+      defaultValue: "GENERAL",
     },
     channel: {
       type: DataTypes.ENUM("EMAIL", "SMS", "PUSH", "IN_APP"),

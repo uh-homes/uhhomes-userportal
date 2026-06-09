@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlineSearch, HiOutlineTrash, HiOutlineEye, HiOutlineMail, HiOutlinePlus, HiOutlineX } from "react-icons/hi";
+import { HiOutlineSearch, HiOutlineTrash, HiOutlineEye, HiOutlineMail, HiOutlinePlus, HiOutlineX, HiOutlinePencil } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function AdminUsers() {
@@ -18,6 +18,11 @@ export default function AdminUsers() {
     password: "",
     role: "user",
   });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editUser, setEditUser] = useState({ id: null, fullName: "", email: "", phone: "", isVerified: false, floorPlan: "", projectId: null });
+  const [saving, setSaving] = useState(false);
+
+  const FLOOR_PLANS = ["Zyra", "Vista", "Velora", "Nexa", "Utopia", "Nirvaan"];
 
   const fetchUsers = async () => {
     try {
@@ -75,6 +80,49 @@ export default function AdminUsers() {
     }
   };
 
+  const handleEditOpen = (user) => {
+    const project = user.projects?.[0];
+    setEditUser({
+      id: user.id,
+      fullName: user.fullName || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      isVerified: user.isVerified ?? false,
+      floorPlan: project?.name?.split(" at ")[0] || "",
+      projectId: project?.id || null,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSave = async (e) => {
+    e.preventDefault();
+    if (!editUser.fullName || !editUser.email) {
+      toast.error("Full name and email are required");
+      return;
+    }
+    setSaving(true);
+    try {
+      await api.put(`/admin/users/${editUser.id}`, {
+        fullName: editUser.fullName,
+        email: editUser.email,
+        phone: editUser.phone,
+        isVerified: editUser.isVerified,
+      });
+      if (editUser.projectId && editUser.floorPlan) {
+        await api.put(`/admin/projects/${editUser.projectId}`, {
+          name: `${editUser.floorPlan} at Park Place`,
+        });
+      }
+      toast.success("User updated successfully!");
+      setShowEditModal(false);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update user");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const filteredUsers = users.filter(
     (u) =>
       u.fullName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -125,9 +173,8 @@ export default function AdminUsers() {
             <tr>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">User</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Projects</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Floor Plan</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Joined</th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
               <th className="text-right px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
@@ -144,29 +191,37 @@ export default function AdminUsers() {
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
                 <td className="px-6 py-4">
-                  <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full">
-                    {user.projects?.length || 0} project(s)
-                  </span>
+                  {user.projects?.length > 0 ? (
+                    <span className="bg-[#C5A572]/10 text-[#C5A572] text-xs font-medium px-2.5 py-1 rounded-full">
+                      {user.projects[0].name?.split(" at ")[0] || user.projects[0].name}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-400">No plan</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
                   {new Date(user.createdAt).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`text-xs px-2 py-1 rounded-full ${user.isVerified ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"}`}>
-                    {user.isVerified ? "Verified" : "Pending"}
-                  </span>
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2">
                     <button
                       onClick={() => handleViewUser(user.id)}
                       className="p-2 text-gray-500 hover:text-[#C5A572] hover:bg-gray-100 rounded-lg transition-colors"
+                      title="View"
                     >
                       <HiOutlineEye className="text-lg" />
                     </button>
                     <button
+                      onClick={() => handleEditOpen(user)}
+                      className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title="Modify"
+                    >
+                      <HiOutlinePencil className="text-lg" />
+                    </button>
+                    <button
                       onClick={() => handleDelete(user.id)}
                       className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete"
                     >
                       <HiOutlineTrash className="text-lg" />
                     </button>
@@ -228,6 +283,100 @@ export default function AdminUsers() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-bold text-[#1A1A1A]">Modify User</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              >
+                <HiOutlineX className="text-xl" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSave} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  value={editUser.fullName}
+                  onChange={(e) => setEditUser({ ...editUser, fullName: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input
+                  type="email"
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  value={editUser.email}
+                  onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                <input
+                  type="tel"
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  value={editUser.phone}
+                  onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Floor Plan</label>
+                <select
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  value={editUser.floorPlan}
+                  onChange={(e) => setEditUser({ ...editUser, floorPlan: e.target.value })}
+                >
+                  <option value="">No plan assigned</option>
+                  {FLOOR_PLANS.map((plan) => (
+                    <option key={plan} value={plan}>{plan}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={editUser.isVerified}
+                    onChange={(e) => setEditUser({ ...editUser, isVerified: e.target.checked })}
+                  />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-[#C5A572] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C5A572]"></div>
+                </label>
+                <span className="text-sm text-gray-700">Verified</span>
+              </div>
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 bg-[#C5A572] text-white py-2.5 rounded-lg hover:bg-[#b39362] font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {saving ? (
+                    <span className="block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  ) : (
+                    <HiOutlinePencil />
+                  )}
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg hover:bg-gray-200 font-medium text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

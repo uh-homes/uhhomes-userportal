@@ -11,6 +11,7 @@ import {
   FaExclamationTriangle,
   FaChevronLeft,
   FaChevronRight,
+  FaDownload,
 } from "react-icons/fa";
 
 export default function UDashboard() {
@@ -19,6 +20,27 @@ export default function UDashboard() {
   const user = useSelector((state) => state.user);
   const [alerts, setAlerts] = useState([]);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadReport = async () => {
+    setDownloading(true);
+    try {
+      const res = await api.get("/user-projects/report", { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `${(project?.name || "Project").replace(/\s+/g, "_")}_Report.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to download report:", err);
+      alert("Failed to download report. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchExtras = async () => {
@@ -206,6 +228,20 @@ export default function UDashboard() {
               <span className="text-sm text-dark-muted">Unread Alerts</span>
               <span className="text-sm font-medium text-gold-600">{alerts.length}</span>
             </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+            <button
+              onClick={handleDownloadReport}
+              disabled={downloading}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient text-white rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+            >
+              {downloading ? (
+                <span className="block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                <FaDownload className="text-xs" />
+              )}
+              {downloading ? "Generating..." : "Download Report"}
+            </button>
           </div>
         </div>
 
