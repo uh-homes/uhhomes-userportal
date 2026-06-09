@@ -121,8 +121,8 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ status: "error", message: "User not found." });
     }
 
-    const { fullName, email, phone, isVerified } = req.body;
-    await user.update({ fullName, email, phone, isVerified });
+    const { fullName, email, phone, address, isVerified } = req.body;
+    await user.update({ fullName, email, phone, address, isVerified });
 
     res.json({ status: "success", data: user });
   } catch (error) {

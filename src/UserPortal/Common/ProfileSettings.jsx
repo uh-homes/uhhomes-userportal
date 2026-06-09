@@ -204,6 +204,7 @@ const ProfileSettings = () => {
             </p>
             <p className="text-sm text-gray-800">{user?.email}</p>
             <p className="text-sm text-gray-800">{user?.phone}</p>
+            {user?.address && <p className="text-sm text-gray-500">{user?.address}</p>}
             <div className="flex items-center gap-1 text-[#C5A572] text-sm font-medium mt-1">
               <FaCheckCircle />
               Verified

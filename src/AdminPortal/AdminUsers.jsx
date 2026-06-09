@@ -87,6 +87,7 @@ export default function AdminUsers() {
       fullName: user.fullName || "",
       email: user.email || "",
       phone: user.phone || "",
+      address: user.address || "",
       isVerified: user.isVerified ?? false,
       floorPlan: project?.name?.split(" at ")[0] || "",
       projectId: project?.id || null,
@@ -106,6 +107,7 @@ export default function AdminUsers() {
         fullName: editUser.fullName,
         email: editUser.email,
         phone: editUser.phone,
+        address: editUser.address,
         isVerified: editUser.isVerified,
       });
       if (editUser.projectId && editUser.floorPlan) {
@@ -173,6 +175,7 @@ export default function AdminUsers() {
             <tr>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">User</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Address</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Floor Plan</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Joined</th>
               <th className="text-right px-6 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -190,6 +193,7 @@ export default function AdminUsers() {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                <td className="px-6 py-4 text-sm text-gray-500">{user.address || "—"}</td>
                 <td className="px-6 py-4">
                   {user.projects?.length > 0 ? (
                     <span className="bg-[#C5A572]/10 text-[#C5A572] text-xs font-medium px-2.5 py-1 rounded-full">
@@ -250,6 +254,7 @@ export default function AdminUsers() {
                 <span>{selectedUser.email}</span>
               </div>
               <p><strong>Phone:</strong> {selectedUser.phone || "N/A"}</p>
+              <p><strong>Address:</strong> {selectedUser.address || "N/A"}</p>
               <p><strong>Verified:</strong> {selectedUser.isVerified ? "Yes" : "No"}</p>
               <p><strong>Joined:</strong> {new Date(selectedUser.createdAt).toLocaleDateString()}</p>
 
@@ -328,6 +333,16 @@ export default function AdminUsers() {
                   className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
                   value={editUser.phone}
                   onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Home Address</label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  value={editUser.address}
+                  onChange={(e) => setEditUser({ ...editUser, address: e.target.value })}
+                  placeholder="e.g. 901 Paris Dr, Prosper, TX"
                 />
               </div>
               <div>
