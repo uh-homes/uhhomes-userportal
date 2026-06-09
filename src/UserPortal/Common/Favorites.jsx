@@ -374,12 +374,13 @@ const Favorites = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {favorites.map((favorite) => {
               const property = favorite.property;
-              const mainImage = property?.thumbnail;
+              const mainImage = property?.elevation || property?.thumbnail;
               return (
                 <div key={property.id} className="relative">
                   <PropertyCard
                     id={property.id}
-                    thumbnail={mainImage}
+                    thumbnail={property?.thumbnail}
+                    elevation={property?.elevation}
                     name={property?.name || "Unnamed Property"}
                     price={formatPrice(property?.price || 0)}
                     location={property?.location || "Address not available"}

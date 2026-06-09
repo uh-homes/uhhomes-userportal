@@ -55,6 +55,33 @@ const addPhotos = async (req, res) => {
   }
 };
 
+// POST /admin/gallery/:galleryId/upload - Upload photos from PC
+const uploadPhotos = async (req, res) => {
+  try {
+    const gallery = await Gallery.findByPk(req.params.galleryId);
+    if (!gallery) {
+      return res.status(404).json({ status: "error", message: "Gallery not found." });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ status: "error", message: "No files uploaded." });
+    }
+
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const media = await Media.bulkCreate(
+      req.files.map((file) => ({
+        galleryId: gallery.id,
+        url: `${baseUrl}/uploads/${file.filename}`,
+        type: "image",
+      }))
+    );
+
+    res.status(201).json({ status: "success", data: media });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 // DELETE /admin/gallery/photo/:mediaId - Delete a photo
 const deletePhoto = async (req, res) => {
   try {
@@ -84,4 +111,4 @@ const deleteGallery = async (req, res) => {
   }
 };
 
-module.exports = { getProjectGallery, createGallery, addPhotos, deletePhoto, deleteGallery };
+module.exports = { getProjectGallery, createGallery, addPhotos, uploadPhotos, deletePhoto, deleteGallery };

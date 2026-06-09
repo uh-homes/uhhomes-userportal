@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlineTrash, HiOutlinePhotograph } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlineTrash, HiOutlinePhotograph, HiOutlineUpload } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function AdminGallery() {
@@ -12,8 +12,9 @@ export default function AdminGallery() {
   const [showAddPhotos, setShowAddPhotos] = useState(null);
   const [newGallery, setNewGallery] = useState({ phase: "", caption: "" });
   const [photoUrls, setPhotoUrls] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  const phases = [
+  const defaultPhases = [
     "Site Preparation",
     "Foundation",
     "Framing & Roofing",
@@ -22,6 +23,10 @@ export default function AdminGallery() {
     "Exterior & Landscaping",
     "Final Inspection",
   ];
+  const [customPhases, setCustomPhases] = useState([]);
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customPhaseName, setCustomPhaseName] = useState("");
+  const phases = [...defaultPhases, ...customPhases];
 
   const fetchProjects = async () => {
     try {
@@ -57,6 +62,14 @@ export default function AdminGallery() {
     }
   }, [selectedProject]);
 
+  useEffect(() => {
+    const existingPhases = galleries.map((g) => g.phase).filter(Boolean);
+    const extras = existingPhases.filter((p) => !defaultPhases.includes(p) && !customPhases.includes(p));
+    if (extras.length > 0) {
+      setCustomPhases((prev) => [...new Set([...prev, ...extras])]);
+    }
+  }, [galleries]);
+
   const handleCreateGallery = async (e) => {
     e.preventDefault();
     try {
@@ -88,6 +101,24 @@ export default function AdminGallery() {
       fetchGalleries(selectedProject.id);
     } catch (err) {
       toast.error("Failed to add photos");
+    }
+  };
+
+  const handleFileUpload = async (galleryId, files) => {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      Array.from(files).forEach((file) => formData.append("photos", file));
+      await api.post(`/admin/gallery/${galleryId}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success(`${files.length} photo(s) uploaded!`);
+      fetchGalleries(selectedProject.id);
+    } catch (err) {
+      toast.error("Failed to upload photos");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -153,17 +184,61 @@ export default function AdminGallery() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm text-gray-600 mb-1">Phase</label>
-              <select
-                required
-                className="w-full border border-gray-200 rounded-lg px-3 py-2"
-                value={newGallery.phase}
-                onChange={(e) => setNewGallery({ ...newGallery, phase: e.target.value })}
-              >
-                <option value="">Select Phase</option>
-                {phases.map((p) => (
-                  <option key={p} value={p}>{p}</option>
-                ))}
-              </select>
+              {!showCustomInput ? (
+                <>
+                  <select
+                    required
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2"
+                    value={newGallery.phase}
+                    onChange={(e) => {
+                      if (e.target.value === "__custom__") {
+                        setShowCustomInput(true);
+                        setNewGallery({ ...newGallery, phase: "" });
+                      } else {
+                        setNewGallery({ ...newGallery, phase: e.target.value });
+                      }
+                    }}
+                  >
+                    <option value="">Select Phase</option>
+                    {phases.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                    <option value="__custom__">+ Add New Phase...</option>
+                  </select>
+                </>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    required
+                    className="flex-1 border border-gray-200 rounded-lg px-3 py-2"
+                    placeholder="Enter new phase name"
+                    value={customPhaseName}
+                    onChange={(e) => setCustomPhaseName(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customPhaseName.trim()) {
+                        setCustomPhases([...customPhases, customPhaseName.trim()]);
+                        setNewGallery({ ...newGallery, phase: customPhaseName.trim() });
+                        setCustomPhaseName("");
+                        setShowCustomInput(false);
+                      }
+                    }}
+                    className="bg-[#C5A572] text-white px-3 py-2 rounded-lg text-sm hover:bg-[#b39362]"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowCustomInput(false); setCustomPhaseName(""); }}
+                    className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Caption (optional)</label>
@@ -220,21 +295,47 @@ export default function AdminGallery() {
 
               {/* Add Photos Form */}
               {showAddPhotos === gallery.id && (
-                <div className="px-5 py-3 bg-gray-50 border-b border-gray-100">
-                  <label className="block text-sm text-gray-600 mb-1">Image URLs (one per line)</label>
-                  <textarea
-                    rows={3}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-2"
-                    placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg"
-                    value={photoUrls}
-                    onChange={(e) => setPhotoUrls(e.target.value)}
-                  />
-                  <button
-                    onClick={() => handleAddPhotos(gallery.id)}
-                    className="bg-[#C5A572] text-white px-3 py-1.5 rounded-lg text-sm"
-                  >
-                    Add Photos
-                  </button>
+                <div className="px-5 py-4 bg-gray-50 border-b border-gray-100">
+                  {/* File Upload from PC */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Upload from Computer</label>
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#C5A572] hover:bg-[#C5A572]/5 transition-colors">
+                        <HiOutlineUpload className="text-[#C5A572]" />
+                        <span className="text-sm text-gray-600">{uploading ? "Uploading..." : "Choose Files"}</span>
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          className="hidden"
+                          disabled={uploading}
+                          onChange={(e) => handleFileUpload(gallery.id, e.target.files)}
+                        />
+                      </label>
+                      {uploading && (
+                        <span className="block h-4 w-4 border-2 border-[#C5A572] border-t-transparent rounded-full animate-spin"></span>
+                      )}
+                      <span className="text-xs text-gray-400">JPG, PNG, GIF, WebP (max 10MB each)</span>
+                    </div>
+                  </div>
+
+                  {/* URL-based add */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Or add via URL (one per line)</label>
+                    <textarea
+                      rows={3}
+                      className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-2"
+                      placeholder="https://example.com/photo1.jpg&#10;https://example.com/photo2.jpg"
+                      value={photoUrls}
+                      onChange={(e) => setPhotoUrls(e.target.value)}
+                    />
+                    <button
+                      onClick={() => handleAddPhotos(gallery.id)}
+                      className="bg-[#C5A572] text-white px-3 py-1.5 rounded-lg text-sm"
+                    >
+                      Add from URL
+                    </button>
+                  </div>
                 </div>
               )}
 

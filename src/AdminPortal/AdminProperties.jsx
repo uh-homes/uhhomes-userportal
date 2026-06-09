@@ -12,6 +12,7 @@ export default function AdminProperties() {
     name: "",
     slug: "",
     thumbnail: "",
+    elevation: "",
     price: "",
     location: "",
     bedrooms: "",
@@ -75,6 +76,7 @@ export default function AdminProperties() {
       name: prop.name || "",
       slug: prop.slug || "",
       thumbnail: prop.thumbnail || "",
+      elevation: prop.elevation || "",
       price: prop.price || "",
       location: prop.location || "",
       bedrooms: prop.bedrooms || "",
@@ -89,7 +91,7 @@ export default function AdminProperties() {
   };
 
   const resetForm = () => {
-    setForm({ name: "", slug: "", thumbnail: "", price: "", location: "", bedrooms: "", bathrooms: "", halfBathCount: "", squareFeet: "", garageSpaces: "", storyCount: "", description: "" });
+    setForm({ name: "", slug: "", thumbnail: "", elevation: "", price: "", location: "", bedrooms: "", bathrooms: "", halfBathCount: "", squareFeet: "", garageSpaces: "", storyCount: "", description: "" });
   };
 
   if (loading) {
@@ -131,8 +133,12 @@ export default function AdminProperties() {
               <input type="number" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
             </div>
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Thumbnail URL</label>
+              <label className="block text-sm text-gray-600 mb-1">Floor Plan Image URL</label>
               <input type="text" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Elevation Image URL</label>
+              <input type="text" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" value={form.elevation} onChange={(e) => setForm({ ...form, elevation: e.target.value })} />
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Bedrooms</label>
@@ -174,8 +180,8 @@ export default function AdminProperties() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {properties.map((prop) => (
           <div key={prop.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            {prop.thumbnail && (
-              <img src={prop.thumbnail} alt={prop.name} className="w-full h-40 object-cover" />
+            {(prop.elevation || prop.thumbnail) && (
+              <img src={prop.elevation || prop.thumbnail} alt={prop.name} className="w-full h-40 object-cover" />
             )}
             <div className="p-4">
               <div className="flex items-start justify-between">

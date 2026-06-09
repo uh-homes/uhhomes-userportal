@@ -68,6 +68,7 @@ const seed = async () => {
       name: "Zyra",
       slug: "zyra",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-F1-2-scaled.jpg",
+      elevation: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
       price: 850000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -87,7 +88,8 @@ const seed = async () => {
     const property2 = await Property.create({
       name: "Vista",
       slug: "vista",
-      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-scaled.jpg",
+      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-scaled.webp",
+      elevation: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
       price: 920000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -99,14 +101,16 @@ const seed = async () => {
       description: "Vista at Park Place, Prosper TX — the largest floorplan offering over 5,000 sqft of luxurious living space with 5 bedrooms, 5 baths, and premium finishes throughout.",
       features: ["Kitchen Island", "Walk-in Pantry", "Master Suite Downstairs", "Guest Suite", "Outdoor Kitchen", "Study Room", "Game Room", "Covered Patio", "Media Room", "3-Car Garage"],
       floorPlans: [
-        { name: "Floor 1", url: "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-scaled.jpg" },
+        { name: "Floor 1", url: "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-scaled.webp" },
+        { name: "Floor Plan PDF", url: "https://www.uhhomes.com/wp-content/uploads/2026/04/Vista.pdf" },
       ],
     });
 
     const property3 = await Property.create({
       name: "Velora",
       slug: "velora",
-      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Velora-F1-scaled.jpg",
+      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/05/Velora-4.pdf",
+      elevation: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
       price: 880000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -116,16 +120,17 @@ const seed = async () => {
       garageSpaces: 3,
       storyCount: 2,
       description: "Velora at Park Place, Prosper TX — 5,054+ sqft of elegant living with 5 bedrooms and 5 bathrooms. Crafted to fit every stage of your life with modern functionality.",
-      features: ["Kitchen Island", "Walk-in Pantry", "Master Suite Downstairs", "Guest Suite", "Outdoor Kitchen", "Study Room", "Game Room", "Covered Patio", "3-Car Garage"],
+      features: ["Kitchen Island", "Walk-in Pantry", "Master Suite Downstairs", "His & Her Closet", "Guest Suite", "Grand Staircase", "Prep Kitchen", "Prayer Room", "Office Room", "Game Room", "Media Room", "Butler's Pantry", "Two Mud Rooms", "Elevator Provision", "3-Car Split Garage"],
       floorPlans: [
-        { name: "Floor 1", url: "https://www.uhhomes.com/wp-content/uploads/2026/03/Velora-F1-scaled.jpg" },
+        { name: "Floor Plan PDF", url: "https://www.uhhomes.com/wp-content/uploads/2026/05/Velora-4.pdf" },
       ],
     });
 
     const property4 = await Property.create({
       name: "Nexa",
       slug: "nexa",
-      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Nexa-F1-scaled.jpg",
+      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/04/Nexa.pdf",
+      elevation: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
       price: 780000,
       location: "Prosper, TX",
       bedrooms: 4,
@@ -135,16 +140,17 @@ const seed = async () => {
       garageSpaces: 3,
       storyCount: 1,
       description: "Nexa at Park Place, Prosper TX — a single-story masterpiece with 4,396+ sqft. 4 bedrooms, 4 bathrooms, and all the space you need on one level.",
-      features: ["Single Story", "Kitchen Island", "Walk-in Pantry", "Master Suite", "Outdoor Kitchen", "Study Room", "Covered Patio", "3-Car Garage"],
+      features: ["Single Story", "Kitchen Island", "Walk-in Pantry", "Master Suite", "Guest Suite", "Outdoor Kitchen", "Outdoor Living", "Prayer Room", "Study Room", "Game Room", "Butler's Pantry", "Covered Patio", "3-Car Split Garage"],
       floorPlans: [
-        { name: "Floor 1", url: "https://www.uhhomes.com/wp-content/uploads/2026/03/Nexa-F1-scaled.jpg" },
+        { name: "Floor Plan PDF", url: "https://www.uhhomes.com/wp-content/uploads/2026/04/Nexa.pdf" },
       ],
     });
 
     const property5 = await Property.create({
       name: "Utopia",
       slug: "utopia",
-      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Utopia-F1-scaled.jpg",
+      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-F1-1-scaled.jpg",
+      elevation: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800",
       price: 860000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -154,16 +160,18 @@ const seed = async () => {
       garageSpaces: 3,
       storyCount: 2,
       description: "Utopia at Park Place, Prosper TX — 4,580+ sqft of refined living. 5 bedrooms, 5 bathrooms with premium finishes and modern architecture.",
-      features: ["Kitchen Island", "Walk-in Pantry", "Master Suite Downstairs", "Guest Suite", "Outdoor Kitchen", "Study Room", "Game Room", "Covered Patio", "3-Car Garage"],
+      features: ["Kitchen Island", "Master Suite Downstairs", "Over-Sized Master Closet", "Guest Suite", "Second Kitchen", "Second Study", "Prayer Room", "Office Room", "Butler's Pantry", "Game Room", "Media Room", "Secondary Laundry Upstairs", "3-Car Split Garage"],
       floorPlans: [
-        { name: "Floor 1", url: "https://www.uhhomes.com/wp-content/uploads/2026/03/Utopia-F1-scaled.jpg" },
+        { name: "Floor 1", url: "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-F1-1-scaled.jpg" },
+        { name: "Floor Plan PDF", url: "https://www.uhhomes.com/wp-content/uploads/2026/04/Utopia.pdf" },
       ],
     });
 
     const property6 = await Property.create({
       name: "Nirvaan",
       slug: "nirvaan",
-      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F1-scaled.jpg",
+      thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F1-2-scaled.jpg",
+      elevation: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
       price: 870000,
       location: "Prosper, TX",
       bedrooms: 5,

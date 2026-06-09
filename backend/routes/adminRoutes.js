@@ -22,7 +22,8 @@ const {
   updateProperty,
   deleteProperty,
 } = require("../controllers/adminController");
-const { getProjectGallery, createGallery, addPhotos, deletePhoto, deleteGallery } = require("../controllers/adminGalleryController");
+const { getProjectGallery, createGallery, addPhotos, uploadPhotos, deletePhoto, deleteGallery } = require("../controllers/adminGalleryController");
+const upload = require("../middleware/upload");
 const { generateProjectReport, generateSummaryReport } = require("../controllers/adminReportController");
 const { sendPushNotification, sendBulkNotifications, getNotificationHistory } = require("../controllers/adminNotificationController");
 const { generateWeeklySummary, sendWeeklySummary, sendAllWeeklySummaries } = require("../controllers/adminAISummaryController");
@@ -64,6 +65,7 @@ router.delete("/properties/:id", deleteProperty);
 router.get("/gallery/:projectId", getProjectGallery);
 router.post("/gallery", createGallery);
 router.post("/gallery/:galleryId/photos", addPhotos);
+router.post("/gallery/:galleryId/upload", upload.array("photos", 10), uploadPhotos);
 router.delete("/gallery/photo/:mediaId", deletePhoto);
 router.delete("/gallery/:galleryId", deleteGallery);
 

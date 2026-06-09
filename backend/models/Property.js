@@ -22,6 +22,10 @@ const Property = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    elevation: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     price: {
       type: DataTypes.DECIMAL(12, 2),
       allowNull: true,

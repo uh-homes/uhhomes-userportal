@@ -45,46 +45,61 @@ const generateMyProjectReport = async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename="${project.name.replace(/\s+/g, "_")}_Report.pdf"`);
     doc.pipe(res);
 
-    // Header
-    doc.fontSize(24).font("Helvetica-Bold").text("UH HOMES", { align: "center" });
-    doc.fontSize(10).font("Helvetica").text("Construction Progress Report", { align: "center" });
-    doc.moveDown(0.5);
-    doc.fontSize(8).fillColor("#666").text(`Generated: ${new Date().toLocaleDateString()}`, { align: "center" });
-    doc.moveDown(1);
+    // === BLACK HEADER STRIP WITH LOGO ===
+    const headerHeight = 70;
+    doc.rect(0, 0, 612, headerHeight).fill("#1A1A1A");
+    doc.fillColor("#FFFFFF").fontSize(22).font("Helvetica-Bold")
+      .text("UH HOMES", 0, 18, { align: "center", width: 612 });
+    doc.fillColor("#C5A572").fontSize(9).font("Helvetica")
+      .text("Construction Progress Report", 0, 44, { align: "center", width: 612 });
+    doc.fillColor("#999").fontSize(7)
+      .text(`Generated: ${new Date().toLocaleDateString()}`, 0, 57, { align: "center", width: 612 });
 
-    // Divider
-    doc.strokeColor("#C5A572").lineWidth(2).moveTo(50, doc.y).lineTo(545, doc.y).stroke();
-    doc.moveDown(1);
+    doc.y = headerHeight + 20;
 
-    // Project Info
-    doc.fillColor("#000").fontSize(16).font("Helvetica-Bold").text("Project Details");
-    doc.moveDown(0.5);
-    doc.fontSize(11).font("Helvetica");
-    doc.text(`Project: ${project.name}`);
-    doc.text(`Address: ${project.address || "N/A"}`);
-    doc.text(`Status: ${project.status}`);
-    doc.text(`Completion: ${project.completionPercentage}%`);
-    doc.text(`Start Date: ${project.startDate ? new Date(project.startDate).toLocaleDateString() : "N/A"}`);
-    doc.text(`Est. End Date: ${project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString() : "N/A"}`);
-    doc.moveDown(0.5);
+    // === PROJECT DETAILS & HOMEOWNER SIDE BY SIDE ===
+    const leftX = 50;
+    const rightX = 320;
+    const sectionY = doc.y;
+
+    // Left column — Project Details
+    doc.fillColor("#1A1A1A").fontSize(12).font("Helvetica-Bold")
+      .text("Project Details", leftX, sectionY);
+    doc.moveDown(0.4);
+    const projectInfoY = doc.y;
+    doc.fillColor("#444").fontSize(9).font("Helvetica");
+    doc.text(`Project:`, leftX, projectInfoY, { continued: true }).font("Helvetica-Bold").text(` ${project.name}`);
+    doc.font("Helvetica").text(`Address: ${project.address || "N/A"}`, leftX);
+    doc.text(`Status: ${project.status}`, leftX);
+    doc.text(`Completion: ${project.completionPercentage}%`, leftX);
+    doc.text(`Start Date: ${project.startDate ? new Date(project.startDate).toLocaleDateString() : "N/A"}`, leftX);
+    doc.text(`Est. End Date: ${project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString() : "N/A"}`, leftX);
+
+    // Right column — Homeowner
+    doc.fillColor("#1A1A1A").fontSize(12).font("Helvetica-Bold")
+      .text("Homeowner", rightX, sectionY);
+    const ownerInfoY = sectionY + 18;
+    doc.fillColor("#444").fontSize(9).font("Helvetica");
+    doc.text(`Name: ${project.user?.fullName || "N/A"}`, rightX, ownerInfoY);
+    doc.text(`Email: ${project.user?.email || "N/A"}`, rightX, ownerInfoY + 14);
+    doc.text(`Phone: ${project.user?.phone || "N/A"}`, rightX, ownerInfoY + 28);
+
+    // Move doc.y below both columns
+    doc.y = Math.max(doc.y, ownerInfoY + 50);
 
     // Progress Bar
     const barX = 50;
     const barY = doc.y;
-    const barWidth = 200;
-    const barHeight = 12;
+    const barWidth = 495;
+    const barHeight = 10;
     doc.rect(barX, barY, barWidth, barHeight).fillColor("#E5E7EB").fill();
     doc.rect(barX, barY, barWidth * (project.completionPercentage / 100), barHeight).fillColor("#C5A572").fill();
-    doc.fillColor("#000").fontSize(9).text(`${project.completionPercentage}%`, barX + barWidth + 10, barY + 2);
-    doc.moveDown(1.5);
+    doc.fillColor("#000").fontSize(8).font("Helvetica")
+      .text(`${project.completionPercentage}%`, barX + barWidth / 2 - 10, barY + 1);
+    doc.y = barY + barHeight + 20;
 
-    // Homeowner Info
-    doc.fillColor("#000").fontSize(16).font("Helvetica-Bold").text("Homeowner");
-    doc.moveDown(0.5);
-    doc.fontSize(11).font("Helvetica");
-    doc.text(`Name: ${project.user?.fullName || "N/A"}`);
-    doc.text(`Email: ${project.user?.email || "N/A"}`);
-    doc.text(`Phone: ${project.user?.phone || "N/A"}`);
+    // Divider
+    doc.strokeColor("#E5E7EB").lineWidth(1).moveTo(50, doc.y).lineTo(545, doc.y).stroke();
     doc.moveDown(1);
 
     // Milestones
