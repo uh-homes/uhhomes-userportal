@@ -6,7 +6,6 @@ import {
   HiOutlineBell,
   HiOutlineLocationMarker,
   HiOutlineClock,
-  HiOutlineHome,
   HiOutlineCog,
   HiOutlineX,
   HiOutlineUsers,
@@ -35,7 +34,6 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     { title: "Inquiries", icon: <HiOutlineMail />, path: "/admin/inquiries" },
 
     { title: "AI Summary", icon: <HiOutlineSparkles />, path: "/admin/ai-summary" },
-    { title: "Properties", icon: <HiOutlineHome />, path: "/admin/properties" },
     { title: "Settings", icon: <HiOutlineCog />, path: "/admin/settings" },
   ];
 

@@ -24,7 +24,6 @@ import AdminUsers from "./AdminPortal/AdminUsers";
 import AdminAlerts from "./AdminPortal/AdminAlerts";
 import AdminProjects from "./AdminPortal/AdminProjects";
 import AdminTimeline from "./AdminPortal/AdminTimeline";
-import AdminProperties from "./AdminPortal/AdminProperties";
 import AdminSettings from "./AdminPortal/AdminSettings";
 import AdminGallery from "./AdminPortal/AdminGallery";
 import AdminReports from "./AdminPortal/AdminReports";
@@ -71,7 +70,6 @@ function App() {
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/inquiries" element={<AdminInquiries />} />
             <Route path="/admin/ai-summary" element={<AdminAISummary />} />
-            <Route path="/admin/properties" element={<AdminProperties />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>
