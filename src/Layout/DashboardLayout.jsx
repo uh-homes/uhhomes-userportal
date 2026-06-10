@@ -59,7 +59,7 @@ export default function DashboardLayout() {
     <div className="flex min-h-screen">
       <aside
         ref={sidebarRef}
-        className="sticky top-0 left-0 h-screen bg-white shadow-md z-50 relative flex-shrink-0"
+        className="sticky top-0 left-0 h-screen bg-[#2C2C2C] shadow-md z-50 relative flex-shrink-0"
         style={{ width: `${currentWidth}px`, transition: isResizing ? "none" : "width 0.3s ease" }}
       >
         <Sidebar open={open} setOpen={setOpen} sidebarWidth={currentWidth} />
@@ -80,7 +80,7 @@ export default function DashboardLayout() {
       </aside>
 
       <main className="flex-1 bg-[#FAFAFA] z-40 min-w-0">
-        <div className="flex justify-between items-center px-5 py-3 bg-white shadow-sm sticky top-0 z-10">
+        <div className="flex justify-between items-center px-5 py-3 bg-[#2C2C2C] shadow-sm sticky top-0 z-10">
           <button
             onClick={() => setOpen(!open)}
             className="bg-[#C5A572] text-white p-2.5 rounded-full shadow-md hover:bg-[#D4AF37] transition-colors"
@@ -88,18 +88,18 @@ export default function DashboardLayout() {
             <FaBars size={16} />
           </button>
           <div className="flex items-center gap-4">
-            <h3 className="text-lg px-2 sm:px-6 text-[#1A1A1A]">Hello, {user?.fullName}</h3>
+            <h3 className="text-lg px-2 sm:px-6 text-[#C5A572]">Hello, {user?.fullName}</h3>
             <button
               onClick={handleLogout}
               disabled={loggingOut}
               title="Logout"
               aria-label="Logout"
-              className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="p-2 rounded-full hover:bg-white/10 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loggingOut ? (
                 <span className="block h-5 w-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
               ) : (
-                <FiLogOut size={20} className="text-[#1A1A1A]" />
+                <FiLogOut size={20} className="text-[#C5A572]" />
               )}
             </button>
           </div>

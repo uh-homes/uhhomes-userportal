@@ -32,9 +32,9 @@ const ConstructionProgress = ({ project }) => {
             {project?.name || "My Project"}
           </h2>
           {project?.address && (
-            <div className="flex items-center gap-1.5 text-sm text-gray-500 mt-1">
-              <HiOutlineLocationMarker className="text-gray-400" />
-              {project.address}
+            <div className="flex items-center gap-1.5 text-sm mt-1">
+              <HiOutlineLocationMarker className="text-[#C5A572]" />
+              <span className="font-semibold text-gray-800">{project.address}</span>
             </div>
           )}
         </div>

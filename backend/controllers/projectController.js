@@ -1,4 +1,5 @@
-const { Project, Milestone, Update, Media, Gallery, Document, Question } = require("../models");
+const { Project, Milestone, Update, Media, Gallery, Document, Question, User } = require("../models");
+const { sendInquiryNotificationToAdmin } = require("../utils/sendEmail");
 
 // GET /user-projects
 exports.getUserProject = async (req, res) => {
@@ -112,6 +113,23 @@ exports.createQuestion = async (req, res) => {
     subject,
     message,
   });
+
+  // Send email notification to all admins
+  try {
+    const user = await User.findByPk(req.user.id);
+    const project = projectId ? await Project.findByPk(projectId) : await Project.findOne({ where: { userId: req.user.id } });
+    await sendInquiryNotificationToAdmin("smalipeddi@uhhomes.com", {
+      userName: user.fullName,
+      userEmail: user.email,
+      homeAddress: project?.address || user.address || "N/A",
+      projectName: project?.name || "N/A",
+      subject,
+      message,
+      submittedAt: new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
+    });
+  } catch (emailErr) {
+    console.error("Failed to send inquiry notification email:", emailErr.message);
+  }
 
   res.status(201).json({
     status: "success",

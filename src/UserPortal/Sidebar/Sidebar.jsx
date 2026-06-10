@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import logoUhhomes from "../../assets/new uhhomes 2.webp";
+import logoUhhomes from "../../assets/logowhite.png";
 import faviconLogo from "../../assets/favicon_uhhomes.webp";
 import { FaChevronDown } from "react-icons/fa";
 import {
@@ -133,7 +133,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
 
   return (
     <motion.div
-      className={`bg-white w-full overflow-hidden
+      className={`bg-[#2C2C2C] w-full overflow-hidden
        h-screen p-4 md:flex flex-col justify-between fixed md:relative z-50 ${
          open ? "" : "hidden md:flex"
        }`}
@@ -161,7 +161,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
           </div>
           <button
             onClick={() => setOpen(!open)}
-            className="text-gray-800 focus:outline-none md:hidden"
+            className="text-[#C5A572] focus:outline-none md:hidden"
           >
             <HiOutlineX />
           </button>
@@ -175,12 +175,12 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
               item.path && location.pathname === item.path;
 
             return (
-              <li key={index} className="text-gray-800 font-medium">
+              <li key={index} className="text-[#C5A572] font-medium">
                 <div
-                  className={`flex items-center justify-between cursor-pointer p-2 rounded-md hover:bg-green-50 ${
+                  className={`flex items-center justify-between cursor-pointer p-2 rounded-md hover:bg-white/10 ${
                     isActiveParentItem || isDirectLinkActive
                       ? "bg-gradient text-white "
-                      : "text-gray-500"
+                      : "text-[#C5A572]"
                   }`}
                   onClick={() => (item.subLinks ? toggleDropdown(index) : null)}
                 >
@@ -287,7 +287,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
 
       {/* User Section */}
       <div className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-[#C5A572] flex items-center justify-center text-white font-semibold">
           {user?.fullName?.charAt(0).toUpperCase()}
         </div>
         <AnimatePresence>
@@ -296,7 +296,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
-              className="font-medium whitespace-nowrap overflow-hidden"
+              className="font-medium whitespace-nowrap overflow-hidden text-[#C5A572]"
             >
               {user?.fullName}
             </motion.span>

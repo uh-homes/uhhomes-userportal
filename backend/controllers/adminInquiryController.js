@@ -1,4 +1,5 @@
 const { Question, User, Project } = require("../models");
+const { sendInquiryResponseToUser } = require("../utils/sendEmail");
 
 // GET /admin/inquiries - Get all user inquiries
 const getAllInquiries = async (req, res) => {
@@ -32,16 +33,34 @@ const respondToInquiry = async (req, res) => {
       return res.status(400).json({ status: "error", message: "Response message is required." });
     }
 
-    const question = await Question.findByPk(req.params.id);
+    const question = await Question.findByPk(req.params.id, {
+      include: [{ model: User, as: "user", attributes: ["id", "fullName", "email"] }],
+    });
     if (!question) {
       return res.status(404).json({ status: "error", message: "Inquiry not found." });
     }
 
+    const respondedAt = new Date();
     await question.update({
       response: response.trim(),
       status: "RESPONDED",
-      respondedAt: new Date(),
+      respondedAt,
     });
+
+    // Send response email to user
+    try {
+      if (question.user?.email) {
+        await sendInquiryResponseToUser(question.user.email, {
+          userName: question.user.fullName,
+          subject: question.subject,
+          originalMessage: question.message,
+          responseMessage: response.trim(),
+          respondedAt: respondedAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send inquiry response email:", emailErr.message);
+    }
 
     res.json({ status: "success", data: question });
   } catch (error) {

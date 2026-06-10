@@ -134,7 +134,7 @@ export default function AdminAISummary() {
             <button
               onClick={handleGenerate}
               disabled={generating}
-              className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg hover:bg-[#333] flex items-center gap-2 disabled:opacity-50"
+              className="bg-[#2C2C2C] text-white px-4 py-2 rounded-lg hover:bg-[#3A3A3A] flex items-center gap-2 disabled:opacity-50"
             >
               {generating ? (
                 <span className="block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
