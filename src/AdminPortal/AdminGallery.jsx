@@ -262,6 +262,42 @@ export default function AdminGallery() {
         </form>
       )}
 
+      {/* Recent Uploads */}
+      {galleries.length > 0 && (() => {
+        const recentPhotos = galleries
+          .flatMap((g) => (g.media || []).map((m) => ({ ...m, phase: g.phase })))
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 10);
+        if (recentPhotos.length === 0) return null;
+        return (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div className="px-5 py-4 border-b border-gray-100">
+              <h3 className="font-semibold text-[#1A1A1A]">Recent Uploads</h3>
+              <p className="text-xs text-gray-400 mt-1">Latest photos added across all phases</p>
+            </div>
+            <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {recentPhotos.map((photo, idx) => (
+                <div key={photo.id} className="relative group rounded-lg overflow-hidden aspect-square cursor-pointer">
+                  <img
+                    src={photo.url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    onClick={() => {
+                      setLightboxImages(recentPhotos.map((m) => m.url));
+                      setLightboxIndex(idx);
+                      setLightboxOpen(true);
+                    }}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-xs text-white font-medium">{photo.phase}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Galleries */}
       {galleries.length === 0 ? (
         <div className="bg-white rounded-xl p-10 text-center text-gray-500 shadow-sm border border-gray-100">
