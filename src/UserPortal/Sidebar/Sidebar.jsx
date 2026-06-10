@@ -33,7 +33,12 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     if (user) {
       fetchUnreadCount();
       const interval = setInterval(fetchUnreadCount, 30000);
-      return () => clearInterval(interval);
+      const handleReadUpdate = (e) => setUnreadCount(e.detail?.count ?? 0);
+      window.addEventListener("alerts-read-update", handleReadUpdate);
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("alerts-read-update", handleReadUpdate);
+      };
     }
   }, [user, fetchUnreadCount]);
 

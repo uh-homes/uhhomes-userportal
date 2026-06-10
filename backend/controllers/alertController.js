@@ -70,3 +70,31 @@ exports.markAllAsRead = async (req, res) => {
     message: "All alerts marked as read.",
   });
 };
+
+// DELETE /alerts/:id
+exports.deleteAlert = async (req, res) => {
+  const alert = await Alert.findOne({
+    where: { id: req.params.id, userId: req.user.id },
+  });
+
+  if (!alert) {
+    return res.status(404).json({ message: "Alert not found." });
+  }
+
+  await alert.destroy();
+
+  res.json({
+    status: "success",
+    message: "Alert deleted.",
+  });
+};
+
+// DELETE /alerts
+exports.deleteAllAlerts = async (req, res) => {
+  await Alert.destroy({ where: { userId: req.user.id } });
+
+  res.json({
+    status: "success",
+    message: "All alerts deleted.",
+  });
+};

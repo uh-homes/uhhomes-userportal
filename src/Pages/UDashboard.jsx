@@ -55,7 +55,15 @@ export default function UDashboard() {
     };
     fetchExtras();
     const interval = setInterval(fetchExtras, 30000);
-    return () => clearInterval(interval);
+    const handleReadUpdate = (e) => {
+      setUnreadCount(e.detail?.count ?? 0);
+      fetchExtras();
+    };
+    window.addEventListener("alerts-read-update", handleReadUpdate);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("alerts-read-update", handleReadUpdate);
+    };
   }, []);
 
   const getStatusPill = (status) => {
@@ -181,8 +189,8 @@ export default function UDashboard() {
         {/* Welcome + Project Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl text-dark">Welcome back, {displayName}</h1>
-            <p className="text-dark-muted text-sm mt-1">{project.name || "Your Project"} — {project.address || ""}</p>
+            <h1 className="text-xl font-semibold text-gray-900">Welcome back, {displayName}</h1>
+            <p className="text-sm text-gray-500 mt-1">{project.name || "Your Project"} — {project.address || ""}</p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -222,28 +230,28 @@ export default function UDashboard() {
 
         {/* Project Info */}
         <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <h4 className="text-base font-bold text-dark mb-4">Project Info</h4>
+          <h4 className="text-sm font-semibold text-gray-900 mb-4">Project Info</h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-sm text-dark-muted">Start Date</span>
-              <span className="text-sm font-medium text-dark">
+              <span className="text-xs text-gray-500">Start Date</span>
+              <span className="text-sm font-medium text-gray-800">
                 {project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
               </span>
             </div>
             <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-sm text-dark-muted">Est. Completion</span>
-              <span className="text-sm font-medium text-dark">
+              <span className="text-xs text-gray-500">Est. Completion</span>
+              <span className="text-sm font-medium text-gray-800">
                 {project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
               </span>
             </div>
             <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-sm text-dark-muted">Milestones</span>
-              <span className="text-sm font-medium text-dark">
+              <span className="text-xs text-gray-500">Milestones</span>
+              <span className="text-sm font-medium text-gray-800">
                 {project.milestones?.filter((m) => m.status === "COMPLETE").length || 0}/{project.milestones?.length || 0} done
               </span>
             </div>
             <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-sm text-dark-muted">Unread Alerts</span>
+              <span className="text-xs text-gray-500">Unread Alerts</span>
               <span className="text-sm font-medium text-gold-600">{unreadCount}</span>
             </div>
           </div>
@@ -272,7 +280,7 @@ export default function UDashboard() {
             {/* 1. Alerts / Latest Updates */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-base font-bold text-dark">Latest Updates</h3>
+                <h3 className="text-sm font-semibold text-gray-900">Latest Updates</h3>
                 {alerts.length > 0 && (
                   <span className="text-xs bg-gold-50 text-gold-600 px-2 py-0.5 rounded-full font-medium">
                     {alerts.length} new
@@ -291,30 +299,30 @@ export default function UDashboard() {
                         alert.type === "ERROR" ? "bg-red-500" : "bg-gold-400"
                       }`}></div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-dark">{alert.title}</p>
-                        <p className="text-xs text-dark-muted mt-0.5 line-clamp-2">{alert.message}</p>
+                        <p className="text-sm font-medium text-gray-800">{alert.title}</p>
+                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{alert.message}</p>
                       </div>
-                      <span className="text-[10px] text-dark-muted whitespace-nowrap">
+                      <span className="text-[11px] text-gray-400 whitespace-nowrap">
                         {new Date(alert.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-dark-muted mb-4">No new alerts.</p>
+                <p className="text-sm text-gray-400 mb-4">No new alerts.</p>
               )}
 
               {/* Latest Update */}
               {project.updates && project.updates.length > 0 && (
                 <div className="border-t border-gray-100 pt-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-semibold text-gold-600 bg-gold-50 px-2 py-0.5 rounded">LATEST</span>
-                    <span className="text-xs text-dark-muted">
+                    <span className="text-[11px] font-semibold text-[#C5A572] bg-amber-50 px-2 py-0.5 rounded">LATEST</span>
+                    <span className="text-xs text-gray-400">
                       {new Date(project.updates[0].createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </span>
                   </div>
-                  <p className="text-sm font-medium text-dark">{project.updates[0].title}</p>
-                  <p className="text-sm text-dark-light mt-1 line-clamp-2">
+                  <p className="text-sm font-medium text-gray-800">{project.updates[0].title}</p>
+                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                     {project.updates[0].description || "No details available."}
                   </p>
                 </div>
@@ -323,13 +331,13 @@ export default function UDashboard() {
               <div className="flex gap-4 mt-4">
                 <button
                   onClick={() => navigate("/alerts")}
-                  className="text-sm text-gold-400 font-medium hover:text-gold-dark transition-colors"
+                  className="text-xs font-medium text-[#C5A572] hover:text-[#A8894D] transition-colors"
                 >
                   All alerts →
                 </button>
                 <button
                   onClick={() => navigate("/updates")}
-                  className="text-sm text-gold-400 font-medium hover:text-gold-dark transition-colors"
+                  className="text-xs font-medium text-[#C5A572] hover:text-[#A8894D] transition-colors"
                 >
                   All updates →
                 </button>
@@ -340,12 +348,12 @@ export default function UDashboard() {
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-base font-bold text-dark">Construction Tracker</h3>
-                  <p className="text-xs text-dark-muted">Bi-weekly progress overview</p>
+                  <h3 className="text-sm font-semibold text-gray-900">Construction Tracker</h3>
+                  <p className="text-xs text-gray-500">Bi-weekly progress overview</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-gold-600">{progressPercentage}%</p>
-                  <p className="text-[10px] text-dark-muted">
+                  <p className="text-lg font-semibold text-[#C5A572]">{progressPercentage}%</p>
+                  <p className="text-[11px] text-gray-400">
                     {project.estimatedEndDate
                       ? `Est. ${new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`
                       : "Timeline TBD"}
@@ -369,17 +377,17 @@ export default function UDashboard() {
                   <div className="bg-gold-50/50 rounded-xl p-4 mb-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs text-dark-muted">Current Phase</p>
-                        <p className="text-sm font-semibold text-dark">{currentPhase?.name || "—"}</p>
+                        <p className="text-xs text-gray-500">Current Phase</p>
+                        <p className="text-sm font-medium text-gray-800">{currentPhase?.name || "—"}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-dark-muted">Phases Completed</p>
-                        <p className="text-sm font-semibold text-dark">{completedCount} / {project.milestones.length}</p>
+                        <p className="text-xs text-gray-500">Phases Completed</p>
+                        <p className="text-sm font-medium text-gray-800">{completedCount} / {project.milestones.length}</p>
                       </div>
                       {currentPhase && (
                         <div className="text-right">
-                          <p className="text-xs text-dark-muted">Phase Progress</p>
-                          <p className="text-sm font-semibold text-gold-600">{currentPhase.progress || 0}%</p>
+                          <p className="text-xs text-gray-500">Phase Progress</p>
+                          <p className="text-sm font-medium text-[#C5A572]">{currentPhase.progress || 0}%</p>
                         </div>
                       )}
                     </div>
@@ -414,7 +422,7 @@ export default function UDashboard() {
 
             {/* 3. Construction Timeline */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-base font-bold text-dark mb-4">Construction Timeline</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">Construction Timeline</h3>
               {project.milestones && project.milestones.length > 0 ? (
                 <div className="relative ml-3">
                   {project.milestones.map((milestone, idx) => (
@@ -437,10 +445,10 @@ export default function UDashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className={`text-sm font-medium ${milestone.status === "COMPLETE" ? "text-dark" : milestone.status === "IN_PROGRESS" ? "text-dark" : "text-dark-muted"}`}>
+                          <p className={`text-sm font-medium ${milestone.status === "COMPLETE" ? "text-gray-800" : milestone.status === "IN_PROGRESS" ? "text-gray-800" : "text-gray-400"}`}>
                             {milestone.name}
                           </p>
-                          <p className="text-xs text-dark-muted">
+                          <p className="text-xs text-gray-400">
                             {milestone.date ? new Date(milestone.date).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : ""}
                             {milestone.status === "IN_PROGRESS" && ` • ${milestone.progress || 0}% complete`}
                           </p>
@@ -455,11 +463,11 @@ export default function UDashboard() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-dark-muted">No milestones scheduled.</p>
+                <p className="text-sm text-gray-400">No milestones scheduled.</p>
               )}
               <button
                 onClick={() => navigate("/construction-timeline")}
-                className="mt-5 text-sm text-gold-400 font-medium hover:text-gold-dark transition-colors"
+                className="mt-5 text-xs font-medium text-[#C5A572] hover:text-[#A8894D] transition-colors"
               >
                 View detailed timeline →
               </button>
@@ -481,14 +489,14 @@ export default function UDashboard() {
                 }}
               />
               <div className="p-4">
-                <p className="text-sm font-medium text-dark">{project.name}</p>
-                <p className="text-xs text-dark-muted">{project.address}</p>
+                <p className="text-sm font-medium text-gray-800">{project.name}</p>
+                <p className="text-xs text-gray-500">{project.address}</p>
               </div>
             </div>
 
             {/* Photo Gallery Slider */}
             <div className="bg-white rounded-2xl shadow-sm p-4">
-              <h4 className="text-sm font-bold text-dark mb-3">Construction Photos</h4>
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Construction Photos</h4>
               <div className="relative group">
                 <img
                   src={galleryImages[photoIndex]}
@@ -547,11 +555,11 @@ export default function UDashboard() {
         <footer className="border-t border-gray-200 pt-6 pb-4 mt-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-6">
-              <button onClick={() => {}} className="text-sm text-dark-muted hover:text-gold-400 transition-colors">Help</button>
-              <button onClick={() => {}} className="text-sm text-dark-muted hover:text-gold-400 transition-colors">Support</button>
-              <button onClick={() => {}} className="text-sm text-dark-muted hover:text-gold-400 transition-colors">FAQ</button>
+              <button onClick={() => {}} className="text-xs text-gray-400 hover:text-[#C5A572] transition-colors">Help</button>
+              <button onClick={() => {}} className="text-xs text-gray-400 hover:text-[#C5A572] transition-colors">Support</button>
+              <button onClick={() => {}} className="text-xs text-gray-400 hover:text-[#C5A572] transition-colors">FAQ</button>
             </div>
-            <p className="text-xs text-dark-muted">© {new Date().getFullYear()} UHHomes. All rights reserved.</p>
+            <p className="text-xs text-gray-400">© {new Date().getFullYear()} UHHomes. All rights reserved.</p>
           </div>
         </footer>
 

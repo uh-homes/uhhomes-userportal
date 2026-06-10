@@ -9,6 +9,8 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
   FaCalendarAlt,
+  FaTrash,
+  FaTrashAlt,
 } from "react-icons/fa";
 import api from "../../Api/api";
 
@@ -112,7 +114,9 @@ const Alert = () => {
       );
 
       // Update unread count
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+      const newCount = Math.max(0, unreadCount - 1);
+      setUnreadCount(newCount);
+      window.dispatchEvent(new CustomEvent("alerts-read-update", { detail: { count: newCount } }));
     } catch (err) {
       console.error("Error marking alert as read:", err);
     }
@@ -129,8 +133,39 @@ const Alert = () => {
 
       // Reset unread count
       setUnreadCount(0);
+      window.dispatchEvent(new CustomEvent("alerts-read-update", { detail: { count: 0 } }));
     } catch (err) {
       console.error("Error marking all alerts as read:", err);
+    }
+  };
+
+  // Delete single alert
+  const deleteAlert = async (alertId) => {
+    try {
+      await api.delete(`/alerts/${alertId}`);
+      const deleted = alerts.find((a) => a.id === alertId);
+      const updated = alerts.filter((a) => a.id !== alertId);
+      setAlerts(updated);
+      if (deleted && !deleted.read) {
+        const newCount = Math.max(0, unreadCount - 1);
+        setUnreadCount(newCount);
+        window.dispatchEvent(new CustomEvent("alerts-read-update", { detail: { count: newCount } }));
+      }
+    } catch (err) {
+      console.error("Error deleting alert:", err);
+    }
+  };
+
+  // Delete all alerts
+  const deleteAllAlerts = async () => {
+    if (!window.confirm("Are you sure you want to delete all alerts?")) return;
+    try {
+      await api.delete("/alerts/all");
+      setAlerts([]);
+      setUnreadCount(0);
+      window.dispatchEvent(new CustomEvent("alerts-read-update", { detail: { count: 0 } }));
+    } catch (err) {
+      console.error("Error deleting all alerts:", err);
     }
   };
 
@@ -199,48 +234,55 @@ const Alert = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center">
-            <FaBell className="text-2xl text-blue-600 mr-3" />
-            <h1 className="text-2xl  text-gray-800">Alerts</h1>
+      <div className="px-6 pt-6 pb-4">
+        <div className="flex justify-between items-center mb-5">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-semibold text-gray-900">Alerts</h1>
             {unreadCount > 0 && (
-              <span className="ml-3 bg-red-500 text-white text-sm px-2 py-1 rounded-full">
+              <span className="bg-[#C5A572] text-white text-xs font-medium px-2.5 py-0.5 rounded-full">
                 {unreadCount} unread
               </span>
             )}
           </div>
 
-          {unreadCount > 0 && (
-            <button
-              onClick={markAllAsRead}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <FaCheckDouble className="mr-2" />
-              Mark all as read
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <button
+                onClick={markAllAsRead}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#C5A572] border border-[#C5A572] rounded-lg hover:bg-[#C5A572] hover:text-white transition-colors"
+              >
+                <FaCheckDouble className="text-xs" />
+                Mark all read
+              </button>
+            )}
+            {alerts.length > 0 && (
+              <button
+                onClick={deleteAllAlerts}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-red-500 border border-red-300 rounded-lg hover:bg-red-500 hover:text-white transition-colors"
+              >
+                <FaTrash className="text-xs" />
+                Delete all
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-          {/* Search */}
+        <div className="flex flex-wrap gap-3">
           <div className="relative">
-            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs" />
             <input
               type="text"
               placeholder="Search alerts..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-[#C5A572] focus:border-[#C5A572] outline-none w-52"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-
-          {/* Type Filter */}
           <select
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-1 focus:ring-[#C5A572] focus:border-[#C5A572] outline-none text-gray-600"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
           >
@@ -256,11 +298,8 @@ const Alert = () => {
             <option value="INSPECTION">Inspection</option>
             <option value="HANDOVER">Handover</option>
           </select>
-
-
-          {/* Read Status Filter */}
           <select
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-1 focus:ring-[#C5A572] focus:border-[#C5A572] outline-none text-gray-600"
             value={readFilter}
             onChange={(e) => setReadFilter(e.target.value)}
           >
@@ -268,10 +307,8 @@ const Alert = () => {
             <option value="UNREAD">Unread</option>
             <option value="READ">Read</option>
           </select>
-
-          {/* Date Filter */}
           <select
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-1 focus:ring-[#C5A572] focus:border-[#C5A572] outline-none text-gray-600"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
           >
@@ -284,78 +321,74 @@ const Alert = () => {
       </div>
 
       {/* Alerts List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-6 pb-6">
         {filteredAlerts.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
-            <FaEnvelope className="text-4xl text-gray-300 mx-auto mb-4" />
-            <p className="text-lg">No alerts found</p>
-            <p className="text-sm mt-2">
+          <div className="py-16 text-center">
+            <FaEnvelope className="text-3xl text-gray-300 mx-auto mb-3" />
+            <p className="text-sm font-medium text-gray-500">No alerts found</p>
+            <p className="text-xs text-gray-400 mt-1">
               {searchTerm ||
               typeFilter !== "ALL" ||
               readFilter !== "ALL" ||
               dateFilter !== "ALL"
                 ? "Try adjusting your filters"
-                : "You're all caught up! No new alerts."}
+                : "You're all caught up!"}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
+          <div className="space-y-2 mt-2">
             {filteredAlerts.map((alert) => (
               <div
                 key={alert.id}
-                className={`p-6 hover:bg-gray-50 transition-colors ${
-                  !alert.read ? "bg-blue-50" : ""
+                className={`rounded-xl border p-4 transition-colors ${
+                  !alert.read
+                    ? "bg-amber-50/50 border-[#C5A572]/20"
+                    : "bg-white border-gray-100 hover:border-gray-200"
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <div className="mt-1">{getAlertIcon(alert.type)}</div>
-
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <h3
-                          className={`font-opensans ${
-                            !alert.read ? "text-blue-800" : "text-gray-800"
-                          }`}
-                        >
-                          {alert.title}
-                        </h3>
-                        <span className="text-xs text-gray-500 flex items-center">
-                          <FaCalendarAlt className="mr-1" />
-                          {formatDate(alert.createdAt)}
-                        </span>
-                      </div>
-
-                      <p className="text-gray-800 mt-2">{alert.message}</p>
-
-                      {/* Alert metadata */}
-                      <div className="flex items-center space-x-4 mt-3 text-xs text-gray-500">
-                        <span className="capitalize">
-                          {alert.type?.toLowerCase() || "alert"}
-                        </span>
-                        <span>•</span>
-                        <span className="capitalize">
-                          {alert.channel?.toLowerCase() || "in-app"}
-                        </span>
-                        {alert.read && (
-                          <>
-                            <span>•</span>
-                            <span className="text-green-600">Read</span>
-                          </>
-                        )}
-                      </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 text-sm">{getAlertIcon(alert.type)}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-4">
+                      <p className={`text-sm font-medium leading-snug ${
+                        !alert.read ? "text-gray-900" : "text-gray-700"
+                      }`}>
+                        {alert.title}
+                      </p>
+                      <span className="text-[11px] text-gray-400 whitespace-nowrap flex-shrink-0">
+                        {formatDate(alert.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1 leading-relaxed">
+                      {alert.message}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[11px] font-medium text-gray-400 bg-gray-100 px-2 py-0.5 rounded capitalize">
+                        {alert.type?.toLowerCase() || "alert"}
+                      </span>
+                      {alert.read && (
+                        <span className="text-[11px] font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">Read</span>
+                      )}
                     </div>
                   </div>
-
-                  {!alert.read && (
+                  <div className="flex items-center gap-0.5 flex-shrink-0">
+                    {!alert.read && (
+                      <button
+                        onClick={() => markAsRead(alert.id)}
+                        className="p-1.5 text-[#C5A572] hover:bg-[#C5A572]/10 rounded-lg transition-colors"
+                        title="Mark as read"
+                      >
+                        <FaCheck className="text-xs" />
+                      </button>
+                    )}
                     <button
-                      onClick={() => markAsRead(alert.id)}
-                      className="ml-4 p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors"
-                      title="Mark as read"
+                      onClick={() => deleteAlert(alert.id)}
+                      className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Delete"
                     >
-                      <FaCheck />
+                      <FaTrashAlt className="text-xs" />
                     </button>
-                  )}
+                  </div>
                 </div>
               </div>
             ))}

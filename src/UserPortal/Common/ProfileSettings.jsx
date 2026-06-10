@@ -261,43 +261,8 @@ const ProfileSettings = () => {
               </label>
             </div>
 
-            {/* Notification Topics */}
-            <div className="p-3">
-              <p className="font-medium mb-2">Notification Topics</p>
-              {notificationPrefs?.topics &&
-                Object.entries(notificationPrefs.topics).map(
-                  ([topic, enabled]) => (
-                    <div
-                      key={topic}
-                      className="flex justify-between items-center py-2"
-                    >
-                      <span className="capitalize">
-                        {topic.replace(/([A-Z])/g, " $1").toLowerCase()}
-                      </span>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          checked={enabled}
-                          onChange={(e) => {
-                            const updatedTopics = {
-                              ...notificationPrefs.topics,
-                              [topic]: e.target.checked,
-                            };
-                            updateNotificationPreference(
-                              "topics",
-                              updatedTopics
-                            );
-                          }}
-                          disabled={isLoading}
-                        />
-                        <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-[#C5A572] transition-colors"></div>
-                        <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
-                      </label>
-                    </div>
-                  )
-                )}
-            </div>
+
+
           </div>
         </div>
 
