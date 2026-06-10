@@ -237,8 +237,8 @@ export default function AdminProjects() {
           <div key={project.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <h3 className="font-semibold text-[#1A1A1A]">{project.name}</h3>
-                <p className="text-sm text-gray-500">{project.address}</p>
+                <h3 className="font-semibold text-gray-900">{project.address}</h3>
+                <p className="text-sm text-gray-500">{project.name}</p>
               </div>
               <button onClick={() => openEdit(project)} className="p-2 text-gray-400 hover:text-[#C5A572] hover:bg-gray-100 rounded-lg">
                 <HiOutlinePencil />

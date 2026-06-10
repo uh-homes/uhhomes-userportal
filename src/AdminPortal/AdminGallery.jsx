@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { HiOutlinePlus, HiOutlineTrash, HiOutlinePhotograph, HiOutlineUpload } from "react-icons/hi";
 import { toast } from "react-toastify";
+import Lightbox from "../Components/Lightbox";
 
 export default function AdminGallery() {
   const [projects, setProjects] = useState([]);
@@ -13,6 +14,9 @@ export default function AdminGallery() {
   const [newGallery, setNewGallery] = useState({ phase: "", caption: "" });
   const [photoUrls, setPhotoUrls] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const defaultPhases = [
     "Site Preparation",
@@ -342,17 +346,22 @@ export default function AdminGallery() {
               {/* Photo Grid */}
               {gallery.media?.length > 0 && (
                 <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                  {gallery.media.map((photo) => (
-                    <div key={photo.id} className="relative group rounded-lg overflow-hidden aspect-square">
+                  {gallery.media.map((photo, photoIdx) => (
+                    <div key={photo.id} className="relative group rounded-lg overflow-hidden aspect-square cursor-pointer">
                       <img
                         src={photo.url}
                         alt=""
                         className="w-full h-full object-cover"
+                        onClick={() => {
+                          setLightboxImages(gallery.media.map(m => m.url));
+                          setLightboxIndex(photoIdx);
+                          setLightboxOpen(true);
+                        }}
                       />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center pointer-events-none">
                         <button
-                          onClick={() => handleDeletePhoto(photo.id)}
-                          className="opacity-0 group-hover:opacity-100 bg-red-500 text-white p-2 rounded-full transition-opacity"
+                          onClick={(e) => { e.stopPropagation(); handleDeletePhoto(photo.id); }}
+                          className="opacity-0 group-hover:opacity-100 bg-red-500 text-white p-2 rounded-full transition-opacity pointer-events-auto"
                         >
                           <HiOutlineTrash className="text-sm" />
                         </button>
@@ -364,6 +373,14 @@ export default function AdminGallery() {
             </div>
           ))}
         </div>
+      )}
+      {lightboxOpen && (
+        <Lightbox
+          images={lightboxImages}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={(idx) => setLightboxIndex(idx)}
+        />
       )}
     </div>
   );

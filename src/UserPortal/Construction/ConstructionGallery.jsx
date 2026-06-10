@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
+import Lightbox from "../../Components/Lightbox";
 
 function useResponsivePerPage() {
   const getPerPage = () => {
@@ -23,6 +24,8 @@ function useResponsivePerPage() {
 
 export default function ConstructionGallery({ gallery = [] }) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const perPage = useResponsivePerPage();
 
   // Extract images from the gallery data structure
@@ -85,7 +88,8 @@ export default function ConstructionGallery({ gallery = [] }) {
             {pageItems.map((image, i) => (
               <div
                 key={image.id || i}
-                className="rounded-lg overflow-hidden border border-gray-200 transition-transform hover:shadow-md hover:-translate-y-1 group"
+                className="rounded-lg overflow-hidden border border-gray-200 transition-transform hover:shadow-md hover:-translate-y-1 group cursor-pointer"
+                onClick={() => { setLightboxIndex(startIndex + i); setLightboxOpen(true); }}
               >
                 <img
                   src={image.url}
@@ -139,6 +143,15 @@ export default function ConstructionGallery({ gallery = [] }) {
           )}
         </section>
       </div>
+
+      {lightboxOpen && (
+        <Lightbox
+          images={images}
+          currentIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={(idx) => setLightboxIndex(idx)}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import useProject from "../hooks/useProject";
 import DocumentsSection from "../UserPortal/Construction/DocumentsSection";
+import Lightbox from "../Components/Lightbox";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ export default function UDashboard() {
   const [alerts, setAlerts] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
 
   const handleDownloadReport = async () => {
@@ -190,7 +192,7 @@ export default function UDashboard() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-xl font-semibold text-gray-900">Welcome back, {displayName}</h1>
-            <p className="text-sm text-gray-500 mt-1">{project.name || "Your Project"} — {project.address || ""}</p>
+            <p className="text-sm text-gray-500 mt-1">{project.name || "Your Project"} — <span className="font-semibold text-gray-700">{project.address || ""}</span></p>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -497,7 +499,7 @@ export default function UDashboard() {
             {/* Photo Gallery Slider */}
             <div className="bg-white rounded-2xl shadow-sm p-4">
               <h4 className="text-sm font-semibold text-gray-900 mb-3">Construction Photos</h4>
-              <div className="relative group">
+              <div className="relative group cursor-pointer" onClick={() => setLightboxOpen(true)}>
                 <img
                   src={galleryImages[photoIndex]}
                   alt={`Site photo ${photoIndex + 1}`}
@@ -564,6 +566,15 @@ export default function UDashboard() {
         </footer>
 
       </div>
+
+      {lightboxOpen && (
+        <Lightbox
+          images={galleryImages}
+          currentIndex={photoIndex}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={(idx) => setPhotoIndex(idx)}
+        />
+      )}
     </div>
   );
 }
