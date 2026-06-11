@@ -44,8 +44,13 @@ exports.toggleFavorite = async (req, res) => {
     propertyId,
   });
 
+  // Reload with property association so frontend gets full data (elevation, thumbnail, etc.)
+  const favoriteWithProperty = await Favorite.findByPk(favorite.id, {
+    include: [{ model: Property, as: "property" }],
+  });
+
   res.json({
     status: "success",
-    data: favorite,
+    data: favoriteWithProperty,
   });
 };

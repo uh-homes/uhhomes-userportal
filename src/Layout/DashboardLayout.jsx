@@ -59,7 +59,7 @@ export default function DashboardLayout() {
     <div className="flex min-h-screen">
       <aside
         ref={sidebarRef}
-        className="sticky top-0 left-0 h-screen bg-[#2C2C2C] shadow-md z-50 relative flex-shrink-0"
+        className="sticky top-0 left-0 h-screen bg-black shadow-md z-50 relative flex-shrink-0"
         style={{ width: `${currentWidth}px`, transition: isResizing ? "none" : "width 0.3s ease" }}
       >
         <Sidebar open={open} setOpen={setOpen} sidebarWidth={currentWidth} />
@@ -80,7 +80,7 @@ export default function DashboardLayout() {
       </aside>
 
       <main className="flex-1 bg-[#FAFAFA] z-40 min-w-0">
-        <div className="flex justify-between items-center px-5 py-3 bg-[#2C2C2C] shadow-sm sticky top-0 z-10">
+        <div className="flex justify-between items-center px-5 py-3 bg-black shadow-sm sticky top-0 z-10">
           <button
             onClick={() => setOpen(!open)}
             className="bg-[#C5A572] text-white p-2.5 rounded-full shadow-md hover:bg-[#D4AF37] transition-colors"

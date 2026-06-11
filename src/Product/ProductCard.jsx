@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import { SlLocationPin } from "react-icons/sl";
+import { IoBedOutline } from "react-icons/io5";
+import { LuBath, LuRuler, LuBuilding2, LuCar, LuDroplets } from "react-icons/lu";
 import { Slide, toast } from "react-toastify";
 
 import { addWishlist, removeWishlist } from "../store/slice/wishlistSlice";
@@ -92,19 +94,19 @@ const PropertyCard = ({
   };
 
   const propertyHighlights = [
-    { icon: "/Floorplans/beds.svg", label: pluralize(bedrooms, "Bed") },
-    { icon: "/Floorplans/bath.svg", label: pluralize(bathrooms, "Bath") },
-    { icon: "/Floorplans/sqft.svg", label: squareFeet + " SqFt" },
+    { icon: <IoBedOutline className="h-5 w-5 text-[#C5A572]" />, label: pluralize(bedrooms, "Bed") },
+    { icon: <LuBath className="h-5 w-5 text-[#C5A572]" />, label: pluralize(bathrooms, "Bath") },
+    { icon: <LuRuler className="h-5 w-5 text-[#C5A572]" />, label: squareFeet + " SqFt" },
     {
-      icon: "/Floorplans/stories.svg",
+      icon: <LuBuilding2 className="h-5 w-5 text-[#C5A572]" />,
       label: pluralize(storyCount, "Stories"),
     },
     {
-      icon: "/Floorplans/garage.svg",
+      icon: <LuCar className="h-5 w-5 text-[#C5A572]" />,
       label: pluralize(garageSpaces, "Garage"),
     },
     {
-      icon: "/Floorplans/halfbath.svg",
+      icon: <LuDroplets className="h-5 w-5 text-[#C5A572]" />,
       label: pluralize(halfBathCount, "Half Bath", "Half Baths"),
     },
   ];
@@ -162,12 +164,12 @@ const PropertyCard = ({
           </p>
 
           <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-4 border-y-2 border-gray-300 py-4 text-sm text-gray-800">
-            {propertyHighlights.map(({ icon, label }) => (
+            {propertyHighlights.map(({ icon, label }, idx) => (
               <div
-                key={`${icon}-${label}`}
+                key={`${idx}-${label}`}
                 className="flex items-center gap-2"
               >
-                <img src={icon} alt={label} className="h-5 w-5" />
+                {icon}
                 <span>{label}</span>
               </div>
             ))}

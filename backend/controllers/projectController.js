@@ -136,3 +136,17 @@ exports.createQuestion = async (req, res) => {
     data: question,
   });
 };
+
+// DELETE /user-projects/question/:id
+exports.deleteQuestion = async (req, res) => {
+  const question = await Question.findOne({
+    where: { id: req.params.id, userId: req.user.id },
+  });
+
+  if (!question) {
+    return res.status(404).json({ message: "Question not found." });
+  }
+
+  await question.destroy();
+  res.json({ status: "success", message: "Question deleted." });
+};

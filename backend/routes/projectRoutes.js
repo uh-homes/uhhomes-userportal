@@ -9,5 +9,6 @@ router.get("/tracker", protect, projectController.getProjectTracker);
 router.get("/report", protect, generateMyProjectReport);
 router.get("/question", protect, projectController.getQuestions);
 router.post("/question", protect, projectController.createQuestion);
+router.delete("/question/:id", protect, projectController.deleteQuestion);
 
 module.exports = router;

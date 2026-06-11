@@ -46,7 +46,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const logoWidth = Math.max(sidebarWidth * 0.85, 60);
 
   return (
-    <motion.div className="h-full bg-[#2C2C2C] flex flex-col overflow-hidden w-full">
+    <motion.div className="h-full bg-black flex flex-col overflow-hidden w-full">
       {/* Logo and Close */}
       <div className="flex items-center justify-between p-4">
         <Link to="/admin/dashboard">
@@ -68,7 +68,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
         {open && (
           <button
             onClick={() => setOpen(false)}
-            className="text-[#C5A572] hover:text-[#D4AF37] md:hidden"
+            className="text-[#C5A572] hover:text-[#C5A572] md:hidden"
           >
             <HiOutlineX className="text-xl" />
           </button>

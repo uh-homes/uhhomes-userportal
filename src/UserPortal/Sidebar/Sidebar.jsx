@@ -133,7 +133,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
 
   return (
     <motion.div
-      className={`bg-[#2C2C2C] w-full overflow-hidden
+      className={`bg-black w-full overflow-hidden
        h-screen p-4 md:flex flex-col justify-between fixed md:relative z-50 ${
          open ? "" : "hidden md:flex"
        }`}
@@ -179,7 +179,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
                 <div
                   className={`flex items-center justify-between cursor-pointer p-2 rounded-md hover:bg-white/10 ${
                     isActiveParentItem || isDirectLinkActive
-                      ? "bg-gradient text-white "
+                      ? "bg-[#C5A572]/20 text-[#C5A572] font-semibold border-l-2 border-[#C5A572]"
                       : "text-[#C5A572]"
                   }`}
                   onClick={() => (item.subLinks ? toggleDropdown(index) : null)}
@@ -264,8 +264,8 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
           to="/inbox"
           className={`mt-4 p-3 rounded-lg flex items-center gap-2 ${
             location.pathname === "/inbox"
-              ? "bg-gradient text-white font-semibold"
-              : "bg-gradient text-white"
+              ? "bg-[#C5A572]/20 text-[#C5A572] font-semibold border-l-2 border-[#C5A572]"
+              : "bg-[#C5A572]/10 text-[#C5A572]"
           }`}
           onClick={handleLinkClick}
         >

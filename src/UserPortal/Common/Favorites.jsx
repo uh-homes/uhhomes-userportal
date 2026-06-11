@@ -391,17 +391,6 @@ const Favorites = () => {
                     garageSpaces={property?.garageSpaces || 0}
                     storyCount={property?.storyCount || 0}
                   />
-                  {/* Download PDF button for each property */}
-                  <button
-                    onClick={() => downloadFloorplanPDF(property.id)}
-                    className="absolute top-14 right-3 px-2 py-2 bg-gradient text-white rounded-full flex items-center gap-2 z-10 cursor-pointer"
-                  >
-                    {loadingById[property.id] ? (
-                      <FaSpinner className="animate-spin" />
-                    ) : (
-                      <FaDownload />
-                    )}
-                  </button>
                 </div>
               );
             })}

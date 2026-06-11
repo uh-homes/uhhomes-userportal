@@ -12,6 +12,7 @@ import {
   FaPen,
   FaChevronDown,
   FaTimes,
+  FaTrash,
 } from "react-icons/fa";
 import api from "../../Api/api";
 
@@ -106,6 +107,20 @@ const Inbox = () => {
       alert("Failed to submit your question. Please try again.");
     } finally {
       setComposeSending(false);
+    }
+  };
+
+  const handleDelete = async (questionId) => {
+    if (!window.confirm("Are you sure you want to delete this question?")) return;
+    try {
+      await api.delete(`/user-projects/question/${questionId}`);
+      setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+      if (selectedQuestion?.id === questionId) {
+        setSelectedQuestion(null);
+      }
+    } catch (err) {
+      console.error("Error deleting question:", err);
+      alert("Failed to delete question. Please try again.");
     }
   };
 
@@ -321,6 +336,13 @@ const Inbox = () => {
                   <span className="text-xs text-gray-500">
                     {formatDate(question.createdAt)}
                   </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(question.id); }}
+                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                    title="Delete"
+                  >
+                    <FaTrash className="text-xs" />
+                  </button>
                 </div>
 
                 {question.response && (
@@ -449,6 +471,13 @@ const Inbox = () => {
                   {selectedQuestion.subject}
                 </h2>
                 <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handleDelete(selectedQuestion.id)}
+                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Delete question"
+                  >
+                    <FaTrash />
+                  </button>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                       selectedQuestion.status === "RESPONDED"
