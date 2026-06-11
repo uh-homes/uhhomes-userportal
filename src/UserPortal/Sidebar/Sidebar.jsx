@@ -11,6 +11,7 @@ import {
   HiOutlineCog,
   HiOutlineX,
   HiOutlineInbox,
+  HiOutlinePhotograph,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -63,6 +64,11 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
       title: "Construction Timeline",
       icon: <HiOutlineClock />,
       path: "/construction-timeline",
+    },
+    {
+      title: "Gallery",
+      icon: <HiOutlinePhotograph />,
+      path: "/gallery",
     },
     {
       title: "Favorites",

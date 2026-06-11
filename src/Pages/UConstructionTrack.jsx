@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ConstructionProgress from "../UserPortal/Construction/ConstructionProgress";
 import UpdatesConstruct from "../UserPortal/Construction/UpdatesConstruct";
-import ConstructionGallery from "../UserPortal/Construction/ConstructionGallery";
 import api from "../Api/api";
 
 export default function UConstructionTrack() {
@@ -68,7 +67,6 @@ export default function UConstructionTrack() {
       <div>
         <ConstructionProgress project={project} />
         <UpdatesConstruct updates={project.updates} />
-        <ConstructionGallery gallery={project.gallery} />
       </div>
     </div>
   );

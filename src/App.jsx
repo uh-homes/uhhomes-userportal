@@ -9,6 +9,7 @@ import AdminLayout from "./Layout/AdminLayout";
 import UDashboard from "./Pages/UDashboard";
 import UConstructionTrack from "./Pages/UConstructionTrack";
 import UConstructionTimeline from "./Pages/UConstructionTimeline";
+import UGallery from "./Pages/UGallery";
 import Inbox from "./UserPortal/Common/Inbox";
 import ProfileSettings from "./UserPortal/Common/ProfileSettings";
 import Alert from "./UserPortal/Common/Alert";
@@ -52,6 +53,7 @@ function App() {
             <Route path="/construction-timeline" element={<UConstructionTimeline />} />
             <Route path="/inbox" element={<Inbox />} />
             <Route path="/profile" element={<ProfileSettings />} />
+            <Route path="/gallery" element={<UGallery />} />
             <Route path="/favorites" element={<Favorites />} />
             <Route path="/alerts" element={<Alert />} />
             <Route path="/updates" element={<UpdatesPage />} />

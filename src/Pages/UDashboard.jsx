@@ -231,42 +231,41 @@ export default function UDashboard() {
         </div>
 
         {/* Project Info */}
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-          <h4 className="text-sm font-semibold text-gray-900 mb-4">Project Info</h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-xs text-gray-500">Start Date</span>
-              <span className="text-sm font-medium text-gray-800">
-                {project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
-              </span>
+        <div className="bg-[#FAF7F2] rounded-2xl shadow-sm px-5 py-3 mb-6 border border-[#EDE6D8]">
+          <div className="flex items-center justify-between flex-wrap gap-x-6 gap-y-2">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-gray-400 font-bold">Start</span>
+                <span className="text-xs font-medium text-gray-800">
+                  {project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-gray-400 font-bold">Est. End</span>
+                <span className="text-xs font-medium text-gray-800">
+                  {project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-gray-400 font-bold">Milestones</span>
+                <span className="text-xs font-medium text-gray-800">
+                  {project.milestones?.filter((m) => m.status === "COMPLETE").length || 0}/{project.milestones?.length || 0}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] text-gray-400 font-bold">Alerts</span>
+                <span className="text-xs font-medium text-gold-600">{unreadCount}</span>
+              </div>
             </div>
-            <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-xs text-gray-500">Est. Completion</span>
-              <span className="text-sm font-medium text-gray-800">
-                {project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-xs text-gray-500">Milestones</span>
-              <span className="text-sm font-medium text-gray-800">
-                {project.milestones?.filter((m) => m.status === "COMPLETE").length || 0}/{project.milestones?.length || 0} done
-              </span>
-            </div>
-            <div className="flex items-center justify-between md:flex-col md:items-start">
-              <span className="text-xs text-gray-500">Unread Alerts</span>
-              <span className="text-sm font-medium text-gold-600">{unreadCount}</span>
-            </div>
-          </div>
-          <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
             <button
               onClick={handleDownloadReport}
               disabled={downloading}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient text-white rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient text-white rounded-lg text-xs font-medium hover:opacity-90 transition disabled:opacity-50"
             >
               {downloading ? (
-                <span className="block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span className="block h-3 w-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
               ) : (
-                <FaDownload className="text-xs" />
+                <FaDownload className="text-[10px]" />
               )}
               {downloading ? "Generating..." : "Download Report"}
             </button>
@@ -422,59 +421,6 @@ export default function UDashboard() {
               </button>
             </div>
 
-            {/* 3. Construction Timeline */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Construction Timeline</h3>
-              {project.milestones && project.milestones.length > 0 ? (
-                <div className="relative ml-3">
-                  {project.milestones.map((milestone, idx) => (
-                    <div key={milestone.id || idx} className="relative pl-8 pb-5 last:pb-0">
-                      {idx < project.milestones.length - 1 && (
-                        <div className={`absolute left-[7px] top-4 w-0.5 h-full ${
-                          milestone.status === "COMPLETE" ? "bg-gold-400" : "bg-gray-200"
-                        }`}></div>
-                      )}
-                      <div className={`absolute left-0 top-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                        milestone.status === "COMPLETE" ? "bg-gold-400 border-gold-400" :
-                        milestone.status === "IN_PROGRESS" ? "bg-white border-gold-400" :
-                        "bg-white border-gray-300"
-                      }`}>
-                        {milestone.status === "COMPLETE" && (
-                          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                          </svg>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className={`text-sm font-medium ${milestone.status === "COMPLETE" ? "text-gray-800" : milestone.status === "IN_PROGRESS" ? "text-gray-800" : "text-gray-400"}`}>
-                            {milestone.name}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {milestone.date ? new Date(milestone.date).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : ""}
-                            {milestone.status === "IN_PROGRESS" && ` • ${milestone.progress || 0}% complete`}
-                          </p>
-                        </div>
-                        {milestone.status === "IN_PROGRESS" && (
-                          <div className="w-20 h-1.5 bg-gold-50 rounded-full overflow-hidden">
-                            <div className="h-full bg-gold-400 rounded-full" style={{ width: `${milestone.progress || 0}%` }} />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-400">No milestones scheduled.</p>
-              )}
-              <button
-                onClick={() => navigate("/construction-timeline")}
-                className="mt-5 text-xs font-medium text-[#C5A572] hover:text-[#A8894D] transition-colors"
-              >
-                View detailed timeline →
-              </button>
-            </div>
-
           </div>
 
           {/* RIGHT COLUMN — Images & Quick Info (1/3 width) */}
@@ -494,6 +440,52 @@ export default function UDashboard() {
                 <p className="text-sm font-medium text-gray-800">{project.name}</p>
                 <p className="text-xs text-gray-500">{project.address}</p>
               </div>
+            </div>
+
+            {/* Construction Timeline */}
+            <div className="bg-white rounded-2xl shadow-sm p-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-3">Construction Timeline</h4>
+              {project.milestones && project.milestones.length > 0 ? (
+                <div className="relative ml-3">
+                  {project.milestones.map((milestone, idx) => (
+                    <div key={milestone.id || idx} className="relative pl-7 pb-4 last:pb-0">
+                      {idx < project.milestones.length - 1 && (
+                        <div className={`absolute left-[6px] top-4 w-0.5 h-full ${
+                          milestone.status === "COMPLETE" ? "bg-gold-400" : "bg-gray-200"
+                        }`}></div>
+                      )}
+                      <div className={`absolute left-0 top-1.5 w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
+                        milestone.status === "COMPLETE" ? "bg-gold-400 border-gold-400" :
+                        milestone.status === "IN_PROGRESS" ? "bg-white border-gold-400" :
+                        "bg-white border-gray-300"
+                      }`}>
+                        {milestone.status === "COMPLETE" && (
+                          <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <p className={`text-xs font-medium ${milestone.status === "COMPLETE" ? "text-gray-800" : milestone.status === "IN_PROGRESS" ? "text-gray-800" : "text-gray-400"}`}>
+                          {milestone.name}
+                        </p>
+                        <p className="text-[11px] text-gray-400">
+                          {milestone.date ? new Date(milestone.date).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : ""}
+                          {milestone.status === "IN_PROGRESS" && ` • ${milestone.progress || 0}%`}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400">No milestones scheduled.</p>
+              )}
+              <button
+                onClick={() => navigate("/construction-timeline")}
+                className="mt-3 text-xs font-medium text-[#C5A572] hover:text-[#A8894D] transition-colors"
+              >
+                View detailed timeline →
+              </button>
             </div>
 
             {/* Photo Gallery Slider */}
