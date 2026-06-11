@@ -1,4 +1,6 @@
 const PDFDocument = require("pdfkit");
+const path = require("path");
+const fs = require("fs");
 const https = require("https");
 const http = require("http");
 const { Project, Milestone, Update, User, Gallery, Media, Document } = require("../models");
@@ -22,6 +24,51 @@ const fetchImageBuffer = (url) => {
   });
 };
 
+// Colors
+const GOLD = "#C5A572";
+const DARK = "#1A1A1A";
+const GRAY_700 = "#374151";
+const GRAY_500 = "#6B7280";
+const GRAY_400 = "#9CA3AF";
+const GRAY_200 = "#E5E7EB";
+const GREEN = "#16A34A";
+const BLUE = "#2563EB";
+const WHITE = "#FFFFFF";
+
+// Page dimensions
+const PAGE_W = 612;
+const MARGIN = 50;
+const CONTENT_W = PAGE_W - MARGIN * 2;
+
+// Helper: draw page footer
+const drawFooter = (doc) => {
+  const footerY = 760;
+  doc.strokeColor(GRAY_200).lineWidth(0.5).moveTo(MARGIN, footerY).lineTo(PAGE_W - MARGIN, footerY).stroke();
+  doc.fillColor(GRAY_400).fontSize(7).font("Helvetica")
+    .text("UH Homes  |  8580 Belleview Dr, Suite #100, Plano, TX 75024  |  214-619-9929  |  www.uhhomes.com", MARGIN, footerY + 8, { align: "center", width: CONTENT_W });
+  doc.fillColor(GRAY_400).fontSize(6)
+    .text("This report is confidential and intended for the homeowner only.", MARGIN, footerY + 20, { align: "center", width: CONTENT_W });
+};
+
+// Helper: draw section header with gold accent line
+const drawSectionHeader = (doc, title, y) => {
+  const startY = y || doc.y;
+  doc.fillColor(DARK).fontSize(14).font("Helvetica-Bold").text(title, MARGIN, startY);
+  doc.strokeColor(GOLD).lineWidth(2).moveTo(MARGIN, startY + 18).lineTo(MARGIN + 50, startY + 18).stroke();
+  doc.y = startY + 28;
+};
+
+// Helper: check page space, add page if needed
+const ensureSpace = (doc, needed) => {
+  if (doc.y + needed > 740) {
+    doc.addPage();
+    drawFooter(doc);
+    doc.y = 50;
+    return true;
+  }
+  return false;
+};
+
 // GET /user-projects/report - Generate PDF report for user's own project
 const generateMyProjectReport = async (req, res) => {
   try {
@@ -39,96 +86,164 @@ const generateMyProjectReport = async (req, res) => {
       return res.status(404).json({ status: "error", message: "No project found." });
     }
 
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ margin: MARGIN, size: "letter" });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${project.name.replace(/\s+/g, "_")}_Report.pdf"`);
     doc.pipe(res);
 
-    // === BLACK HEADER STRIP WITH LOGO ===
-    const headerHeight = 70;
-    doc.rect(0, 0, 612, headerHeight).fill("#1A1A1A");
-    doc.fillColor("#FFFFFF").fontSize(22).font("Helvetica-Bold")
-      .text("UH HOMES", 0, 18, { align: "center", width: 612 });
-    doc.fillColor("#C5A572").fontSize(9).font("Helvetica")
-      .text("Construction Progress Report", 0, 44, { align: "center", width: 612 });
-    doc.fillColor("#999").fontSize(7)
-      .text(`Generated: ${new Date().toLocaleDateString()}`, 0, 57, { align: "center", width: 612 });
+    // ============================================================
+    // PAGE 1: HEADER + PROJECT OVERVIEW
+    // ============================================================
 
-    doc.y = headerHeight + 20;
+    // Black header band
+    const headerH = 80;
+    doc.rect(0, 0, PAGE_W, headerH).fill(DARK);
 
-    // === PROJECT DETAILS & HOMEOWNER SIDE BY SIDE ===
-    const leftX = 50;
-    const rightX = 320;
-    const sectionY = doc.y;
-
-    // Left column — Project Details
-    doc.fillColor("#1A1A1A").fontSize(12).font("Helvetica-Bold")
-      .text("Project Details", leftX, sectionY);
-    doc.moveDown(0.4);
-    const projectInfoY = doc.y;
-    doc.fillColor("#444").fontSize(9).font("Helvetica");
-    doc.text(`Project:`, leftX, projectInfoY, { continued: true }).font("Helvetica-Bold").text(` ${project.name}`);
-    doc.font("Helvetica").text(`Address: ${project.address || "N/A"}`, leftX);
-    doc.text(`Status: ${project.status}`, leftX);
-    doc.text(`Completion: ${project.completionPercentage}%`, leftX);
-    doc.text(`Start Date: ${project.startDate ? new Date(project.startDate).toLocaleDateString() : "N/A"}`, leftX);
-    doc.text(`Est. End Date: ${project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString() : "N/A"}`, leftX);
-
-    // Right column — Homeowner
-    doc.fillColor("#1A1A1A").fontSize(12).font("Helvetica-Bold")
-      .text("Homeowner", rightX, sectionY);
-    const ownerInfoY = sectionY + 18;
-    doc.fillColor("#444").fontSize(9).font("Helvetica");
-    doc.text(`Name: ${project.user?.fullName || "N/A"}`, rightX, ownerInfoY);
-    doc.text(`Email: ${project.user?.email || "N/A"}`, rightX, ownerInfoY + 14);
-    doc.text(`Phone: ${project.user?.phone || "N/A"}`, rightX, ownerInfoY + 28);
-
-    // Move doc.y below both columns
-    doc.y = Math.max(doc.y, ownerInfoY + 50);
-
-    // Progress Bar
-    const barX = 50;
-    const barY = doc.y;
-    const barWidth = 495;
-    const barHeight = 10;
-    doc.rect(barX, barY, barWidth, barHeight).fillColor("#E5E7EB").fill();
-    doc.rect(barX, barY, barWidth * (project.completionPercentage / 100), barHeight).fillColor("#C5A572").fill();
-    doc.fillColor("#000").fontSize(8).font("Helvetica")
-      .text(`${project.completionPercentage}%`, barX + barWidth / 2 - 10, barY + 1);
-    doc.y = barY + barHeight + 20;
-
-    // Divider
-    doc.strokeColor("#E5E7EB").lineWidth(1).moveTo(50, doc.y).lineTo(545, doc.y).stroke();
-    doc.moveDown(1);
-
-    // Milestones
-    if (project.milestones?.length > 0) {
-      doc.fontSize(16).font("Helvetica-Bold").text("Construction Milestones");
-      doc.moveDown(0.5);
-
-      project.milestones.forEach((m) => {
-        const statusColor = m.status === "COMPLETE" ? "#16A34A" : m.status === "IN_PROGRESS" ? "#2563EB" : "#9CA3AF";
-        const statusLabel = m.status === "COMPLETE" ? "COMPLETE" : m.status === "IN_PROGRESS" ? "IN PROGRESS" : "PLANNED";
-        const bullet = m.status === "COMPLETE" ? "[DONE]" : m.status === "IN_PROGRESS" ? "[WIP]" : "[---]";
-
-        doc.fillColor(statusColor).fontSize(11).font("Helvetica-Bold")
-          .text(`${bullet}  ${m.name}`, 50, undefined, { continued: true });
-        doc.fillColor("#444").font("Helvetica")
-          .text(` -- ${statusLabel} (${m.progress}%)`, { continued: false });
-
-        if (m.description) {
-          doc.fillColor("#666").fontSize(9).text(`    ${m.description}`, 65);
-        }
-        if (m.date) {
-          doc.fillColor("#999").fontSize(8).text(`    Date: ${new Date(m.date).toLocaleDateString()}`, 65);
-        }
-        doc.moveDown(0.4);
-      });
-      doc.moveDown(0.5);
+    // Company logo
+    const logoPath = path.join(__dirname, "../../src/assets/logowhite.png");
+    if (fs.existsSync(logoPath)) {
+      doc.image(logoPath, MARGIN, 16, { height: 48 });
+    } else {
+      doc.fillColor(WHITE).fontSize(24).font("Helvetica-Bold")
+        .text("UH HOMES", MARGIN, 24);
     }
 
-    // Project Photos
+    // Report title (right-aligned)
+    doc.fillColor(GOLD).fontSize(11).font("Helvetica-Bold")
+      .text("Construction Progress Report", 0, 28, { align: "right", width: PAGE_W - MARGIN });
+    doc.fillColor(GRAY_400).fontSize(8).font("Helvetica")
+      .text(`Generated: ${new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}`, 0, 44, { align: "right", width: PAGE_W - MARGIN });
+
+    // Gold accent line below header
+    doc.rect(0, headerH, PAGE_W, 3).fill(GOLD);
+
+    doc.y = headerH + 24;
+
+    // --- Project Details & Homeowner — Two column card ---
+    const cardY = doc.y;
+    const cardH = 110;
+    doc.save();
+    doc.roundedRect(MARGIN, cardY, CONTENT_W, cardH, 6).fillAndStroke("#F9F7F4", GRAY_200);
+    doc.restore();
+
+    const colLeft = MARGIN + 20;
+    const colRight = PAGE_W / 2 + 20;
+    let infoY = cardY + 16;
+
+    // Left: Project Details
+    doc.fillColor(DARK).fontSize(10).font("Helvetica-Bold").text("Project Details", colLeft, infoY);
+    infoY += 18;
+    doc.fillColor(GRAY_700).fontSize(9).font("Helvetica");
+
+    const projectFields = [
+      ["Project", project.name],
+      ["Address", project.address || "N/A"],
+      ["Status", project.status.replace(/_/g, " ")],
+      ["Start Date", project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"],
+      ["Est. Completion", project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"],
+    ];
+    projectFields.forEach(([label, value]) => {
+      doc.font("Helvetica").fillColor(GRAY_500).text(label + ":", colLeft, infoY, { continued: true, width: 250 });
+      doc.font("Helvetica-Bold").fillColor(GRAY_700).text("  " + value);
+      infoY += 14;
+    });
+
+    // Right: Homeowner
+    let ownerY = cardY + 16;
+    doc.fillColor(DARK).fontSize(10).font("Helvetica-Bold").text("Homeowner", colRight, ownerY);
+    ownerY += 18;
+    const ownerFields = [
+      ["Name", project.user?.fullName || "N/A"],
+      ["Email", project.user?.email || "N/A"],
+      ["Phone", project.user?.phone || "N/A"],
+    ];
+    ownerFields.forEach(([label, value]) => {
+      doc.font("Helvetica").fillColor(GRAY_500).text(label + ":", colRight, ownerY, { continued: true, width: 220 });
+      doc.font("Helvetica-Bold").fillColor(GRAY_700).text("  " + value);
+      ownerY += 14;
+    });
+
+    doc.y = cardY + cardH + 20;
+
+    // --- Overall Progress Bar ---
+    const pct = project.completionPercentage || 0;
+    doc.fillColor(DARK).fontSize(10).font("Helvetica-Bold").text("Overall Progress", MARGIN, doc.y);
+    doc.fillColor(GRAY_500).fontSize(10).font("Helvetica-Bold")
+      .text(`${pct}%`, 0, doc.y - 14, { align: "right", width: PAGE_W - MARGIN });
+    doc.y += 6;
+    const barY = doc.y;
+    const barH = 12;
+    doc.save();
+    doc.roundedRect(MARGIN, barY, CONTENT_W, barH, 6).fill(GRAY_200);
+    doc.roundedRect(MARGIN, barY, Math.max(CONTENT_W * (pct / 100), 12), barH, 6).fill(GOLD);
+    doc.restore();
+
+    doc.y = barY + barH + 28;
+
+    // --- Milestones Section ---
+    if (project.milestones?.length > 0) {
+      drawSectionHeader(doc, "Construction Milestones");
+      doc.y += 4;
+
+      project.milestones.forEach((m, idx) => {
+        ensureSpace(doc, 50);
+
+        const rowY = doc.y;
+        const isComplete = m.status === "COMPLETE";
+        const isWIP = m.status === "IN_PROGRESS";
+        const dotColor = isComplete ? GREEN : isWIP ? BLUE : GRAY_400;
+        const statusLabel = isComplete ? "Complete" : isWIP ? "In Progress" : "Planned";
+
+        // Status dot
+        doc.save();
+        doc.circle(MARGIN + 6, rowY + 6, 5).fill(dotColor);
+        if (isComplete) {
+          doc.fillColor(WHITE).fontSize(7).font("Helvetica-Bold")
+            .text("✓", MARGIN + 2.5, rowY + 2);
+        }
+        doc.restore();
+
+        // Milestone name
+        doc.fillColor(DARK).fontSize(10).font("Helvetica-Bold")
+          .text(m.name, MARGIN + 20, rowY, { width: 280 });
+
+        // Status badge (right-aligned)
+        const badgeBg = isComplete ? "#DCFCE7" : isWIP ? "#DBEAFE" : "#F3F4F6";
+        const badgeText = isComplete ? GREEN : isWIP ? BLUE : GRAY_500;
+        const badgeW = 75;
+        const badgeX = PAGE_W - MARGIN - badgeW;
+        doc.save();
+        doc.roundedRect(badgeX, rowY - 1, badgeW, 16, 8).fill(badgeBg);
+        doc.fillColor(badgeText).fontSize(7).font("Helvetica-Bold")
+          .text(statusLabel + (m.progress > 0 && !isComplete ? ` ${m.progress}%` : ""), badgeX, rowY + 2, { width: badgeW, align: "center" });
+        doc.restore();
+
+        // Description
+        if (m.description) {
+          doc.fillColor(GRAY_500).fontSize(8).font("Helvetica")
+            .text(m.description, MARGIN + 20, rowY + 16, { width: 380 });
+        }
+
+        // Date
+        if (m.date) {
+          const dateStr = new Date(m.date).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+          doc.fillColor(GRAY_400).fontSize(7).font("Helvetica")
+            .text(dateStr, MARGIN + 20, doc.y + 2);
+        }
+
+        doc.y += 12;
+
+        // Separator line between milestones
+        if (idx < project.milestones.length - 1) {
+          doc.strokeColor(GRAY_200).lineWidth(0.5)
+            .moveTo(MARGIN + 20, doc.y).lineTo(PAGE_W - MARGIN, doc.y).stroke();
+          doc.y += 8;
+        }
+      });
+    }
+
+    // --- Project Photos ---
     const galleryImages = [];
     if (project.gallery?.length > 0) {
       project.gallery.forEach((g) => {
@@ -147,48 +262,84 @@ const generateMyProjectReport = async (req, res) => {
 
     if (galleryImages.length > 0) {
       doc.addPage();
-      doc.fillColor("#000").fontSize(16).font("Helvetica-Bold").text("Project Photos");
-      doc.moveDown(0.5);
+      drawFooter(doc);
+      drawSectionHeader(doc, "Project Photos");
+      doc.y += 8;
 
-      const imagesToEmbed = galleryImages.slice(0, 6);
-      for (let i = 0; i < imagesToEmbed.length; i++) {
-        try {
-          const imgBuffer = await fetchImageBuffer(imagesToEmbed[i].url);
-          if (doc.y > 550) doc.addPage();
+      const imagesToEmbed = galleryImages.slice(0, 8);
+      const imgW = (CONTENT_W - 20) / 2;
+      const imgH = 160;
 
-          doc.image(imgBuffer, { fit: [240, 180], align: "center" });
-          if (imagesToEmbed[i].caption) {
-            doc.moveDown(0.2);
-            doc.fillColor("#666").fontSize(8).font("Helvetica").text(imagesToEmbed[i].caption);
+      for (let i = 0; i < imagesToEmbed.length; i += 2) {
+        ensureSpace(doc, imgH + 30);
+        const rowY = doc.y;
+
+        for (let j = 0; j < 2 && (i + j) < imagesToEmbed.length; j++) {
+          const xPos = MARGIN + j * (imgW + 20);
+          try {
+            const imgBuffer = await fetchImageBuffer(imagesToEmbed[i + j].url);
+            doc.save();
+            doc.roundedRect(xPos, rowY, imgW, imgH, 6).clip();
+            doc.image(imgBuffer, xPos, rowY, { width: imgW, height: imgH });
+            doc.restore();
+            // Caption below image
+            if (imagesToEmbed[i + j].caption) {
+              doc.fillColor(GRAY_500).fontSize(7).font("Helvetica")
+                .text(imagesToEmbed[i + j].caption, xPos, rowY + imgH + 4, { width: imgW, align: "center" });
+            }
+          } catch (imgErr) {
+            doc.save();
+            doc.roundedRect(xPos, rowY, imgW, imgH, 6).fillAndStroke("#F9FAFB", GRAY_200);
+            doc.restore();
+            doc.fillColor(GRAY_400).fontSize(8).font("Helvetica")
+              .text("Image unavailable", xPos, rowY + imgH / 2 - 5, { width: imgW, align: "center" });
           }
-          doc.moveDown(0.8);
-        } catch (imgErr) {
-          doc.fillColor("#999").fontSize(8).text(`[Image unavailable: ${imagesToEmbed[i].caption || imagesToEmbed[i].url}]`);
-          doc.moveDown(0.3);
         }
+        doc.y = rowY + imgH + 24;
       }
     }
 
-    // Recent Updates
+    // --- Recent Updates ---
     if (project.updates?.length > 0) {
       doc.addPage();
-      doc.fillColor("#000").fontSize(16).font("Helvetica-Bold").text("Recent Updates");
-      doc.moveDown(0.5);
+      drawFooter(doc);
+      drawSectionHeader(doc, "Recent Updates");
+      doc.y += 4;
 
-      project.updates.forEach((u) => {
-        doc.fillColor("#000").fontSize(11).font("Helvetica-Bold").text(u.title);
-        doc.fillColor("#666").fontSize(9).font("Helvetica").text(u.description || "");
-        doc.fillColor("#999").fontSize(8).text(`Date: ${new Date(u.createdAt).toLocaleDateString()}`);
-        doc.moveDown(0.5);
+      project.updates.forEach((u, idx) => {
+        ensureSpace(doc, 60);
+        const rowY = doc.y;
+
+        // Date badge
+        const dateStr = new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        doc.save();
+        doc.roundedRect(MARGIN, rowY, 70, 16, 8).fill("#F3F4F6");
+        doc.fillColor(GRAY_500).fontSize(7).font("Helvetica-Bold")
+          .text(dateStr, MARGIN, rowY + 3, { width: 70, align: "center" });
+        doc.restore();
+
+        // Title
+        doc.fillColor(DARK).fontSize(10).font("Helvetica-Bold")
+          .text(u.title, MARGIN + 80, rowY, { width: CONTENT_W - 80 });
+
+        // Description
+        if (u.description) {
+          doc.fillColor(GRAY_500).fontSize(8).font("Helvetica")
+            .text(u.description, MARGIN + 80, doc.y + 2, { width: CONTENT_W - 80 });
+        }
+
+        doc.y += 10;
+
+        if (idx < project.updates.length - 1) {
+          doc.strokeColor(GRAY_200).lineWidth(0.5)
+            .moveTo(MARGIN, doc.y).lineTo(PAGE_W - MARGIN, doc.y).stroke();
+          doc.y += 10;
+        }
       });
     }
 
-    // Footer
-    doc.moveDown(2);
-    doc.strokeColor("#C5A572").lineWidth(1).moveTo(50, doc.y).lineTo(545, doc.y).stroke();
-    doc.moveDown(0.5);
-    doc.fillColor("#999").fontSize(8).font("Helvetica")
-      .text("UH Homes -- Homes for today's lifestyle. | 8580 Belleview Dr, Suite #100, Plano, TX 75024 | 214-619-9929", { align: "center" });
+    // --- Final Footer on last page ---
+    drawFooter(doc);
 
     doc.end();
   } catch (error) {

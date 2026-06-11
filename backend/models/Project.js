@@ -37,6 +37,10 @@ const Project = sequelize.define(
       type: DataTypes.DATE,
       allowNull: true,
     },
+    propertyId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

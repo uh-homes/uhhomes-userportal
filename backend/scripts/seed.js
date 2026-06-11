@@ -71,7 +71,7 @@ const seed = async () => {
       name: "Zyra",
       slug: "zyra",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-F1-2-scaled.jpg",
-      elevation: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
+      elevation: "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-banner-2-1.webp",
       price: 850000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -92,7 +92,7 @@ const seed = async () => {
       name: "Vista",
       slug: "vista",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-scaled.webp",
-      elevation: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800",
+      elevation: "https://www.uhhomes.com/wp-content/uploads/2026/05/Chinna-3840-X-2175-1.webp",
       price: 920000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -113,7 +113,7 @@ const seed = async () => {
       name: "Velora",
       slug: "velora",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/05/Velora-4.pdf",
-      elevation: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
+      elevation: "https://www.uhhomes.com/wp-content/uploads/2026/05/PP-3840-X-2175-3.webp",
       price: 880000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -133,7 +133,7 @@ const seed = async () => {
       name: "Nexa",
       slug: "nexa",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/04/Nexa.pdf",
-      elevation: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800",
+      elevation: "https://www.uhhomes.com/wp-content/uploads/2026/04/Ranch-Elevation-2-1.webp",
       price: 780000,
       location: "Prosper, TX",
       bedrooms: 4,
@@ -153,7 +153,7 @@ const seed = async () => {
       name: "Utopia",
       slug: "utopia",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-F1-1-scaled.jpg",
-      elevation: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800",
+      elevation: "https://www.uhhomes.com/wp-content/uploads/2026/05/utopia-banner-2-1.webp",
       price: 860000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -174,7 +174,7 @@ const seed = async () => {
       name: "Nirvaan",
       slug: "nirvaan",
       thumbnail: "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F1-2-scaled.jpg",
-      elevation: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800",
+      elevation: "https://www.uhhomes.com/wp-content/uploads/2026/05/nirvaan-banner-1.webp",
       price: 870000,
       location: "Prosper, TX",
       bedrooms: 5,
@@ -195,6 +195,7 @@ const seed = async () => {
     // ===========================
     const veloraProject = await Project.create({
       userId: raviUser.id,
+      propertyId: property3.id,
       name: "Velora at Park Place",
       address: "901 Paris Dr, Prosper, TX 75078",
       status: "IN_PROGRESS",
@@ -250,6 +251,7 @@ const seed = async () => {
     // ===========================
     const vistaProject = await Project.create({
       userId: chinnaUser.id,
+      propertyId: property2.id,
       name: "Vista at Park Place",
       address: "931 Loyola Dr, Prosper, TX 75078",
       status: "IN_PROGRESS",
@@ -302,6 +304,7 @@ const seed = async () => {
     // ===========================
     const nirvaanProject = await Project.create({
       userId: sindhuraUser.id,
+      propertyId: property6.id,
       name: "Nirvaan at Park Place",
       address: "830 Notre Dame, Prosper, TX 75078",
       status: "IN_PROGRESS",
@@ -349,6 +352,7 @@ const seed = async () => {
     // ===========================
     const zyraProject = await Project.create({
       userId: sowjanyaUser.id,
+      propertyId: property1.id,
       name: "Zyra at Park Place",
       address: "Lot 5, Park Place, Prosper, TX 75078",
       status: "IN_PROGRESS",

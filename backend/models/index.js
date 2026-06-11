@@ -52,6 +52,10 @@ Question.belongsTo(User, { foreignKey: "userId", as: "user" });
 Project.hasMany(Question, { foreignKey: "projectId", as: "questions" });
 Question.belongsTo(Project, { foreignKey: "projectId", as: "project" });
 
+// Project -> Property
+Project.belongsTo(Property, { foreignKey: "propertyId", as: "property" });
+Property.hasMany(Project, { foreignKey: "propertyId", as: "projects" });
+
 // User -> Favorites
 User.hasMany(Favorite, { foreignKey: "userId", as: "favorites" });
 Favorite.belongsTo(User, { foreignKey: "userId", as: "user" });

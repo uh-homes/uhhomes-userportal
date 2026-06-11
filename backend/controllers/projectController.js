@@ -1,4 +1,4 @@
-const { Project, Milestone, Update, Media, Gallery, Document, Question, User } = require("../models");
+const { Project, Milestone, Update, Media, Gallery, Document, Question, User, Property } = require("../models");
 const { sendInquiryNotificationToAdmin } = require("../utils/sendEmail");
 
 // GET /user-projects
@@ -6,6 +6,10 @@ exports.getUserProject = async (req, res) => {
   const project = await Project.findOne({
     where: { userId: req.user.id },
     include: [
+      {
+        model: Property,
+        as: "property",
+      },
       {
         model: Milestone,
         as: "milestones",
@@ -43,6 +47,10 @@ exports.getProjectTracker = async (req, res) => {
   const project = await Project.findOne({
     where: { userId: req.user.id },
     include: [
+      {
+        model: Property,
+        as: "property",
+      },
       {
         model: Milestone,
         as: "milestones",

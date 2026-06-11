@@ -157,6 +157,7 @@ export default function UDashboard() {
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
   const projectImage =
+    project.property?.elevation ||
     project.property?.thumbnail ||
     (project.gallery?.length > 0 && project.gallery[0].media?.[0]?.url) ||
     "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
@@ -180,7 +181,12 @@ export default function UDashboard() {
       projectImage,
       "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=600",
       "https://images.unsplash.com/photo-1590274853856-f22d5ee3d228?w=600",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600"
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600",
+      "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600",
+      "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=600",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600",
+      "https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=600"
     );
   }
 
@@ -421,6 +427,56 @@ export default function UDashboard() {
               </button>
             </div>
 
+            {/* Construction Photos — Horizontal Slider */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold text-gray-900">Construction Photos</h3>
+                <span className="text-xs text-gray-400">{galleryImages.length} photos</span>
+              </div>
+              <div className="relative group">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('photos-slider');
+                    if (el) el.scrollBy({ left: -320, behavior: 'smooth' });
+                  }}
+                  className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg border border-gray-200 text-gray-600 hover:text-gray-900 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <FaChevronLeft className="w-3 h-3" />
+                </button>
+                <div
+                  id="photos-slider"
+                  className="flex gap-3 overflow-x-auto pb-2"
+                  style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+                >
+                  {galleryImages.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="flex-shrink-0 w-40 h-28 rounded-lg overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => { setPhotoIndex(idx); setLightboxOpen(true); }}
+                    >
+                      <img
+                        src={img}
+                        alt={`Site photo ${idx + 1}`}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('photos-slider');
+                    if (el) el.scrollBy({ left: 320, behavior: 'smooth' });
+                  }}
+                  className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg border border-gray-200 text-gray-600 hover:text-gray-900 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <FaChevronRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
           </div>
 
           {/* RIGHT COLUMN — Images & Quick Info (1/3 width) */}
@@ -487,55 +543,6 @@ export default function UDashboard() {
                 View detailed timeline →
               </button>
             </div>
-
-            {/* Photo Gallery Slider */}
-            <div className="bg-white rounded-2xl shadow-sm p-4">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3">Construction Photos</h4>
-              <div className="relative group cursor-pointer" onClick={() => setLightboxOpen(true)}>
-                <img
-                  src={galleryImages[photoIndex]}
-                  alt={`Site photo ${photoIndex + 1}`}
-                  className="w-full h-48 object-cover rounded-lg"
-                  onError={(e) => {
-                    e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
-                  }}
-                />
-                {galleryImages.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setPhotoIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1))}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <FaChevronLeft className="w-3 h-3" />
-                    </button>
-                    <button
-                      onClick={() => setPhotoIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1))}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-7 h-7 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
-                      <FaChevronRight className="w-3 h-3" />
-                    </button>
-                  </>
-                )}
-                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
-                  {photoIndex + 1} / {galleryImages.length}
-                </div>
-              </div>
-              {galleryImages.length > 1 && (
-                <div className="flex justify-center gap-1.5 mt-3">
-                  {galleryImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setPhotoIndex(idx)}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        idx === photoIndex ? "bg-gold-400" : "bg-gray-200 hover:bg-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
-
 
           </div>
         </div>
