@@ -30,6 +30,7 @@ import AdminGallery from "./AdminPortal/AdminGallery";
 import AdminReports from "./AdminPortal/AdminReports";
 import AdminAISummary from "./AdminPortal/AdminAISummary";
 import AdminInquiries from "./AdminPortal/AdminInquiries";
+import AdminUserManagement from "./AdminPortal/AdminUserManagement";
 
 function App() {
   const location = useLocation();
@@ -72,6 +73,7 @@ function App() {
             <Route path="/admin/reports" element={<AdminReports />} />
             <Route path="/admin/inquiries" element={<AdminInquiries />} />
             <Route path="/admin/ai-summary" element={<AdminAISummary />} />
+            <Route path="/admin/user-management" element={<AdminUserManagement />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>

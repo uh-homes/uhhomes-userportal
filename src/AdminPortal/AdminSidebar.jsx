@@ -14,6 +14,7 @@ import {
 
   HiOutlineSparkles,
   HiOutlineMail,
+  HiOutlineShieldCheck,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -34,6 +35,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     { title: "Inquiries", icon: <HiOutlineMail />, path: "/admin/inquiries" },
 
     { title: "AI Summary", icon: <HiOutlineSparkles />, path: "/admin/ai-summary" },
+    { title: "User Management", icon: <HiOutlineShieldCheck />, path: "/admin/user-management" },
     { title: "Settings", icon: <HiOutlineCog />, path: "/admin/settings" },
   ];
 

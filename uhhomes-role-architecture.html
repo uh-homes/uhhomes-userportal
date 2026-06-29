@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UHHomes — Role-Based Architecture</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      padding: 40px 20px;
+    }
+    h1 { text-align: center; font-size: 2.6rem; color: #C5A572; margin-bottom: 6px; }
+    .subtitle { text-align: center; color: #777; margin-bottom: 50px; font-size: 1.05rem; }
+    h2 {
+      text-align: center; font-size: 1.6rem; color: #C5A572;
+      margin: 70px auto 8px; max-width: 1200px;
+      border-bottom: 1px solid #262626; padding-bottom: 10px;
+    }
+    .section-desc { text-align: center; color: #888; margin-bottom: 24px; font-size: 0.95rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+    .diagram-container {
+      max-width: 1240px; margin: 0 auto 50px;
+      background: #141414; border: 1px solid #222; border-radius: 16px;
+      padding: 40px 24px; box-shadow: 0 0 50px rgba(197,165,114,0.06);
+      overflow-x: auto;
+    }
+    .mermaid { display: flex; justify-content: center; }
+    .mermaid svg { max-width: 100%; height: auto; }
+
+    /* Role cards grid */
+    .role-grid {
+      max-width: 1240px; margin: 0 auto 50px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;
+    }
+    .role-card {
+      background: #141414; border: 1px solid #222; border-radius: 14px;
+      padding: 24px; position: relative; overflow: hidden;
+    }
+    .role-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    }
+    .role-card.owner::before { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+    .role-card.admin::before { background: linear-gradient(90deg, #C5A572, #D4AF37); }
+    .role-card.pm::before { background: linear-gradient(90deg, #42A5F5, #1E88E5); }
+    .role-card.super::before { background: linear-gradient(90deg, #FF7043, #F4511E); }
+    .role-card.sales::before { background: linear-gradient(90deg, #AB47BC, #8E24AA); }
+    .role-card.arch::before { background: linear-gradient(90deg, #26C6DA, #00ACC1); }
+    .role-card.finance::before { background: linear-gradient(90deg, #FFA726, #FB8C00); }
+    .role-card.inspect::before { background: linear-gradient(90deg, #EF5350, #E53935); }
+
+    .role-card .icon { font-size: 2rem; margin-bottom: 10px; }
+    .role-card h3 { color: #fff; font-size: 1.15rem; margin-bottom: 4px; }
+    .role-card .tag { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .role-card p { color: #999; font-size: 0.88rem; line-height: 1.55; margin-bottom: 14px; }
+    .role-card ul { list-style: none; padding: 0; }
+    .role-card ul li {
+      font-size: 0.85rem; color: #bbb; padding: 5px 0; border-bottom: 1px solid #1e1e1e;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .role-card ul li:last-child { border-bottom: none; }
+    .role-card ul li::before { content: '→'; color: #C5A572; font-weight: bold; }
+
+    .flow-label {
+      text-align: center; color: #555; font-size: 0.8rem; text-transform: uppercase;
+      letter-spacing: 3px; margin: 30px 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>UHHomes</h1>
+<p class="subtitle">Role-Based Architecture — All User Accounts, Flows & Feature Assignments</p>
+
+<!-- ========================================= -->
+<!-- SECTION 1: ALL ROLES -->
+<!-- ========================================= -->
+<h2>1. All Possible User Roles in the Platform</h2>
+<p class="section-desc">Beyond just "Admin" and "User" — a mature home construction platform needs these 8 distinct roles, each with clear responsibilities.</p>
+
+<div class="role-grid">
+
+  <div class="role-card owner">
+    <div class="icon">🏠</div>
+    <h3>Homebuyer / Owner</h3>
+    <div class="tag">End Customer</div>
+    <p>The person who purchased the home. Tracks construction, views updates, asks questions, downloads documents.</p>
+    <ul>
+      <li>View project dashboard & progress</li>
+      <li>Browse construction timeline</li>
+      <li>View photo/video gallery</li>
+      <li>Submit inquiries to builder</li>
+      <li>Receive alerts & notifications</li>
+      <li>Download documents (contracts, permits)</li>
+      <li>Favorite properties for comparison</li>
+      <li>Receive AI weekly digest email</li>
+      <li>View & pay invoices (future)</li>
+    </ul>
+  </div>
+
+  <div class="role-card admin">
+    <div class="icon">👑</div>
+    <h3>Company Admin</h3>
+    <div class="tag">Super Administrator</div>
+    <p>The construction company owner or top-level manager. Has full access to everything — creates roles, manages the platform.</p>
+    <ul>
+      <li>Full CRUD on all entities</li>
+      <li>Create & manage user accounts</li>
+      <li>Assign roles (PM, Supervisor, etc.)</li>
+      <li>View company-wide analytics</li>
+      <li>Generate PDF reports</li>
+      <li>Manage properties catalog</li>
+      <li>Broadcast alerts to all buyers</li>
+      <li>Configure platform settings</li>
+      <li>Trigger AI summary generation</li>
+    </ul>
+  </div>
+
+  <div class="role-card pm">
+    <div class="icon">📋</div>
+    <h3>Project Manager</h3>
+    <div class="tag">Manages Projects</div>
+    <p>Assigned to one or more projects. Oversees milestones, coordinates between site supervisors and buyers, ensures timelines are met.</p>
+    <ul>
+      <li>View & update assigned projects only</li>
+      <li>Create & manage milestones</li>
+      <li>Approve site updates before publishing</li>
+      <li>Respond to buyer inquiries</li>
+      <li>Generate project-level reports</li>
+      <li>Manage project documents</li>
+      <li>Set milestone target dates</li>
+      <li>Escalate delays to Admin</li>
+    </ul>
+  </div>
+
+  <div class="role-card super">
+    <div class="icon">🔨</div>
+    <h3>Site Supervisor / Foreman</h3>
+    <div class="tag">On-Ground Updates</div>
+    <p>The person on the construction site. Takes daily photos, logs progress, reports issues. The primary source of real-time updates.</p>
+    <ul>
+      <li>Post daily/weekly site updates</li>
+      <li>Upload photos & videos from site</li>
+      <li>Update milestone progress %</li>
+      <li>Log issues & delays</li>
+      <li>Mark inspection checkpoints</li>
+      <li>Limited to assigned projects</li>
+    </ul>
+  </div>
+
+  <div class="role-card sales">
+    <div class="icon">🤝</div>
+    <h3>Sales Agent / Realtor</h3>
+    <div class="tag">Customer Acquisition</div>
+    <p>Handles property inquiries from prospects, onboards new buyers, manages the pre-sale relationship until project assignment.</p>
+    <ul>
+      <li>View property catalog</li>
+      <li>Manage prospect leads</li>
+      <li>Schedule property tours</li>
+      <li>Onboard new buyer accounts</li>
+      <li>Track inquiry-to-sale pipeline</li>
+      <li>View assigned buyer profiles</li>
+      <li>No access to construction data</li>
+    </ul>
+  </div>
+
+  <div class="role-card arch">
+    <div class="icon">📐</div>
+    <h3>Architect / Designer</h3>
+    <div class="tag">Design & Plans</div>
+    <p>Uploads floor plans, elevations, 3D renders. Handles design-related buyer requests like customizations or material selections.</p>
+    <ul>
+      <li>Upload & manage floor plans</li>
+      <li>Upload elevation renders</li>
+      <li>Handle design change requests</li>
+      <li>View assigned projects</li>
+      <li>Comment on milestone updates</li>
+      <li>No access to financial data</li>
+    </ul>
+  </div>
+
+  <div class="role-card finance">
+    <div class="icon">💰</div>
+    <h3>Finance / Accounts</h3>
+    <div class="tag">Payments & Billing</div>
+    <p>Manages payment milestones, generates invoices, tracks buyer payments, handles financial reporting.</p>
+    <ul>
+      <li>Create payment schedules</li>
+      <li>Generate & send invoices</li>
+      <li>Track payment status per buyer</li>
+      <li>Financial reports & summaries</li>
+      <li>Link payments to milestones</li>
+      <li>Send payment reminders</li>
+      <li>No access to construction updates</li>
+    </ul>
+  </div>
+
+  <div class="role-card inspect">
+    <div class="icon">🔍</div>
+    <h3>Inspector / QA</h3>
+    <div class="tag">Quality Assurance</div>
+    <p>Conducts inspections at key milestones (foundation, framing, final). Approves or flags issues before project moves forward.</p>
+    <ul>
+      <li>View milestone inspection checkpoints</li>
+      <li>Submit inspection reports</li>
+      <li>Approve / reject milestone completion</li>
+      <li>Upload inspection photos & notes</li>
+      <li>Flag violations or issues</li>
+      <li>Read-only access to project</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 2: ROLE HIERARCHY -->
+<!-- ========================================= -->
+<h2>2. Role Hierarchy & Access Control</h2>
+<p class="section-desc">Who reports to whom, and who can see what. The pyramid shows authority, the arrows show data flow.</p>
+
+<div class="diagram-container">
+  <div class="mermaid">
+    graph TB
+      ADMIN["👑 Company Admin<br/><i>Full Access</i>"]
+
+      PM["📋 Project Manager<br/><i>Project-Scoped</i>"]
+      SALES["🤝 Sales Agent<br/><i>Pre-Sale Only</i>"]
+      FINANCE["💰 Finance<br/><i>Payments Only</i>"]
+
+      SUPER["🔨 Site Supervisor<br/><i>Updates Only</i>"]
+      ARCH["📐 Architect<br/><i>Designs Only</i>"]
+      INSPECT["🔍 Inspector<br/><i>QA Only</i>"]
+
+      BUYER["🏠 Homebuyer<br/><i>Read + Inquire</i>"]
+
+      ADMIN -->|"Assigns projects"| PM
+      ADMIN -->|"Assigns leads"| SALES
+      ADMIN -->|"Assigns billing"| FINANCE
+      PM -->|"Assigns site work"| SUPER
+      PM -->|"Requests designs"| ARCH
+      PM -->|"Schedules inspections"| INSPECT
+      SALES -->|"Onboards"| BUYER
+      SUPER -->|"Posts updates visible to"| BUYER
+      FINANCE -->|"Sends invoices to"| BUYER
+      INSPECT -->|"Approves milestones for"| BUYER
+      PM -->|"Responds to inquiries from"| BUYER
+
+      style ADMIN fill:#2a2211,stroke:#C5A572,color:#fff,stroke-width:2px
+      style PM fill:#112233,stroke:#42A5F5,color:#fff
+      style SALES fill:#221133,stroke:#AB47BC,color:#fff
+      style FINANCE fill:#2a1a00,stroke:#FFA726,color:#fff
+      style SUPER fill:#2a1111,stroke:#FF7043,color:#fff
+      style ARCH fill:#0a2222,stroke:#26C6DA,color:#fff
+      style INSPECT fill:#220a0a,stroke:#EF5350,color:#fff
+      style BUYER fill:#112a11,stroke:#4CAF50,color:#fff,stroke-width:2px
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 3: FULL LIFECYCLE FLOW -->
+<!-- ========================================= -->
+<h2>3. Complete Lifecycle — From Land to Handover</h2>
+<p class="section-desc">Every step of a home construction project, mapped to which role acts and which role consumes.</p>
+
+<div class="diagram-container">
+  <div class="mermaid">
+    sequenceDiagram
+      participant SA as 🤝 Sales Agent
+      participant B as 🏠 Buyer
+      participant AD as 👑 Admin
+      participant PM as 📋 Project Manager
+      participant AR as 📐 Architect
+      participant SS as 🔨 Site Supervisor
+      participant IN as 🔍 Inspector
+      participant FN as 💰 Finance
+      participant SY as ⚙️ System
+
+      rect rgb(40,40,20)
+      Note over SA,SY: STAGE 1 — LEAD & SALE
+      SA->>B: Show property catalog & schedule tour
+      B->>SA: Express interest / inquire
+      SA->>AD: Convert lead → buyer account
+      AD->>B: Welcome email + portal access
+      FN->>B: Send booking payment invoice
+      B->>FN: Make booking payment ✓
+      end
+
+      rect rgb(20,30,40)
+      Note over SA,SY: STAGE 2 — PROJECT INITIATION
+      AD->>PM: Create project, assign PM
+      PM->>AR: Request floor plans & design
+      AR->>PM: Upload floor plans & elevations
+      PM->>PM: Define milestones & timeline
+      AD->>SS: Assign site supervisor to project
+      AD->>IN: Assign inspector to project
+      SY->>B: 🔔 "Your project has started!"
+      end
+
+      rect rgb(30,20,20)
+      Note over SA,SY: STAGE 3 — CONSTRUCTION (Repeats per Milestone)
+      SS->>SY: Post daily update + photos from site
+      PM->>SY: Review & approve update
+      SY->>B: 🔔 "Foundation work: 60% complete"
+      B->>SY: View timeline, gallery, updates
+      B->>PM: Submit question / concern
+      PM->>B: Respond to inquiry
+      SS->>SY: Mark milestone 100%
+      IN->>SY: Inspect & approve milestone ✓
+      FN->>B: Send milestone payment invoice
+      B->>FN: Make payment ✓
+      SY->>SY: Auto-calculate overall progress %
+      end
+
+      rect rgb(20,25,20)
+      Note over SA,SY: STAGE 4 — AUTOMATED SERVICES (Ongoing)
+      SY->>SY: CRON: Generate AI weekly summary
+      SY->>B: 📧 Weekly progress digest email
+      SY->>PM: 📧 Delayed milestone alert
+      SY->>AD: 📊 Monthly analytics report
+      end
+
+      rect rgb(25,30,15)
+      Note over SA,SY: STAGE 5 — HANDOVER & CLOSE
+      SS->>SY: Mark final milestone complete
+      IN->>SY: Final inspection approved ✓
+      PM->>SY: Upload completion certificate
+      PM->>SY: Upload warranty documents
+      FN->>B: Send final payment invoice
+      B->>FN: Make final payment ✓
+      AD->>SY: Mark project COMPLETED
+      SY->>B: 🎉 "Your home is ready! Download all documents."
+      B->>SY: Download report, documents, gallery archive
+      end
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 4: FEATURE MATRIX -->
+<!-- ========================================= -->
+<h2>4. Feature Access Matrix — Who Gets What</h2>
+<p class="section-desc">A clear mapping of every feature to every role. ● = Full Access, ◐ = Limited, ○ = No Access</p>
+
+<div class="diagram-container" style="overflow-x: auto;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 900px;">
+    <thead>
+      <tr style="border-bottom: 2px solid #C5A572;">
+        <th style="text-align: left; padding: 12px; color: #C5A572;">Feature</th>
+        <th style="padding: 12px; color: #4CAF50;">🏠 Buyer</th>
+        <th style="padding: 12px; color: #C5A572;">👑 Admin</th>
+        <th style="padding: 12px; color: #42A5F5;">📋 PM</th>
+        <th style="padding: 12px; color: #FF7043;">🔨 Supervisor</th>
+        <th style="padding: 12px; color: #AB47BC;">🤝 Sales</th>
+        <th style="padding: 12px; color: #26C6DA;">📐 Architect</th>
+        <th style="padding: 12px; color: #FFA726;">💰 Finance</th>
+        <th style="padding: 12px; color: #EF5350;">🔍 Inspector</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">View Dashboard</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Manage Users</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">Create Projects</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Update Milestones</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">Post Site Updates</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Upload Photos/Media</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">View Construction Progress</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Submit Inquiries</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">Respond to Inquiries</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Upload Floor Plans</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">Manage Properties</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Manage Leads / Prospects</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">Inspect & Approve Milestones</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Manage Invoices & Payments</td>
+        <td style="text-align: center;">◐</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">View/Download Documents</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">◐</td><td style="text-align: center;">◐</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">Generate Reports (PDF)</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e;">
+        <td style="padding: 10px; color: #ccc;">Broadcast Alerts</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
+        <td style="padding: 10px; color: #ccc;">AI Summary Generation</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; color: #ccc;">Favorite Properties</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+      </tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 16px; color: #666; font-size: 0.8rem; text-align: center;">● Full Access &nbsp;&nbsp; ◐ Limited / View Only &nbsp;&nbsp; ○ No Access</p>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 5: DATA FLOW BETWEEN ROLES -->
+<!-- ========================================= -->
+<h2>5. How Data Flows Between Roles</h2>
+<p class="section-desc">Every arrow represents a real interaction — who creates the data, who consumes it, and what triggers the flow.</p>
+
+<div class="diagram-container">
+  <div class="mermaid">
+    graph LR
+      subgraph PRE_SALE["🔵 PRE-SALE PHASE"]
+        direction TB
+        SALES["🤝 Sales Agent"]
+        PROSPECT["👤 Prospect"]
+        SALES -->|"Shows properties<br/>Schedules tours"| PROSPECT
+        PROSPECT -->|"Submits inquiry<br/>Makes booking"| SALES
+        SALES -->|"Converts to<br/>buyer account"| ADMIN2["👑 Admin"]
+      end
+
+      subgraph BUILD["🟠 CONSTRUCTION PHASE"]
+        direction TB
+        PM2["📋 Project Manager"]
+        SS2["🔨 Site Supervisor"]
+        AR2["📐 Architect"]
+        IN2["🔍 Inspector"]
+
+        SS2 -->|"Daily updates<br/>+ site photos"| PM2
+        AR2 -->|"Floor plans<br/>+ designs"| PM2
+        PM2 -->|"Approves &<br/>publishes"| SYSTEM2["⚙️ System"]
+        IN2 -->|"Inspection<br/>approval"| PM2
+        PM2 -->|"Assigns<br/>site work"| SS2
+        PM2 -->|"Requests<br/>inspection"| IN2
+      end
+
+      subgraph FINANCE_PHASE["🟡 FINANCE PHASE"]
+        direction TB
+        FN2["💰 Finance"]
+        FN2 -->|"Sends invoices<br/>Payment reminders"| BUYER2["🏠 Buyer"]
+        BUYER2 -->|"Makes payment"| FN2
+        FN2 -->|"Payment<br/>confirmation"| PM3["📋 PM"]
+      end
+
+      subgraph BUYER_EXP["🟢 BUYER EXPERIENCE"]
+        direction TB
+        BUYERX["🏠 Buyer"]
+        BUYERX -->|"Views dashboard<br/>timeline, gallery"| PORTAL["📱 Portal"]
+        BUYERX -->|"Asks questions"| INQUIRY["❓ Inquiries"]
+        PORTAL -->|"Real-time<br/>updates"| BUYERX
+        DIGEST["📧 AI Digest"] -->|"Weekly email"| BUYERX
+      end
+
+      PRE_SALE --> BUILD
+      BUILD --> BUYER_EXP
+      BUILD --> FINANCE_PHASE
+
+      style PRE_SALE fill:#0d1520,stroke:#42A5F5,color:#fff
+      style BUILD fill:#201510,stroke:#FF7043,color:#fff
+      style FINANCE_PHASE fill:#201d0a,stroke:#FFA726,color:#fff
+      style BUYER_EXP fill:#0d200d,stroke:#4CAF50,color:#fff
+  </div>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 6: ROLE INTRODUCTION ROADMAP -->
+<!-- ========================================= -->
+<h2>6. When to Introduce Each Role (Development Roadmap)</h2>
+<p class="section-desc">You don't build all 8 roles at once. Here's the phased approach — start simple, expand as the platform grows.</p>
+
+<style>
+  .roadmap { max-width: 1240px; margin: 0 auto 50px; position: relative; }
+  .roadmap-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, #4CAF50, #42A5F5, #FFA726, #EF5350); border-radius: 3px; transform: translateX(-50%); z-index: 0; }
+
+  .roadmap-phase { position: relative; z-index: 1; margin-bottom: 16px; }
+  .phase-header {
+    text-align: center; margin-bottom: 20px;
+  }
+  .phase-badge {
+    display: inline-block; padding: 8px 28px; border-radius: 30px; font-size: 0.85rem;
+    font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+  }
+  .phase-badge.mvp { background: #1b3a1b; color: #4CAF50; border: 1px solid #4CAF5055; }
+  .phase-badge.growth { background: #112233; color: #42A5F5; border: 1px solid #42A5F555; }
+  .phase-badge.scale { background: #2a1d0a; color: #FFA726; border: 1px solid #FFA72655; }
+  .phase-badge.enterprise { background: #2a0e0e; color: #EF5350; border: 1px solid #EF535055; }
+
+  .phase-subtitle { color: #666; font-size: 0.8rem; margin-top: 6px; }
+
+  .role-rows { display: flex; flex-direction: column; gap: 12px; margin-bottom: 40px; }
+  .role-row {
+    display: flex; align-items: center; gap: 16px;
+    background: #141414; border: 1px solid #222; border-radius: 12px;
+    padding: 16px 24px; transition: border-color 0.2s, transform 0.2s;
+  }
+  .role-row:hover { border-color: #C5A572; transform: translateY(-1px); }
+
+  .role-row .r-icon { font-size: 1.8rem; flex-shrink: 0; width: 44px; text-align: center; }
+  .role-row .r-info { flex: 1; min-width: 0; }
+  .role-row .r-name { color: #fff; font-size: 1rem; font-weight: 600; }
+  .role-row .r-desc { color: #888; font-size: 0.82rem; margin-top: 2px; }
+  .role-row .r-tag {
+    flex-shrink: 0; padding: 5px 14px; border-radius: 20px; font-size: 0.72rem;
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .role-row .r-bar-wrap { flex-shrink: 0; width: 140px; }
+  .role-row .r-bar { height: 6px; border-radius: 3px; }
+  .role-row .r-months { color: #555; font-size: 0.7rem; margin-top: 4px; text-align: center; }
+
+  /* Phase-specific colors */
+  .phase-mvp .role-row { border-left: 3px solid #4CAF50; }
+  .phase-mvp .r-tag { background: #1b3a1b; color: #4CAF50; }
+  .phase-mvp .r-bar { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
+
+  .phase-growth .role-row { border-left: 3px solid #42A5F5; }
+  .phase-growth .r-tag { background: #112233; color: #42A5F5; }
+  .phase-growth .r-bar { background: linear-gradient(90deg, #42A5F5, #64B5F6); }
+
+  .phase-scale .role-row { border-left: 3px solid #FFA726; }
+  .phase-scale .r-tag { background: #2a1d0a; color: #FFA726; }
+  .phase-scale .r-bar { background: linear-gradient(90deg, #FFA726, #FFB74D); }
+
+  .phase-enterprise .role-row { border-left: 3px solid #EF5350; }
+  .phase-enterprise .r-tag { background: #2a0e0e; color: #EF5350; }
+  .phase-enterprise .r-bar { background: linear-gradient(90deg, #EF5350, #E57373); }
+
+  @media (max-width: 700px) {
+    .role-row { flex-wrap: wrap; }
+    .role-row .r-bar-wrap { width: 100%; }
+  }
+</style>
+
+<div class="roadmap">
+
+  <!-- Phase 1 -->
+  <div class="roadmap-phase phase-mvp">
+    <div class="phase-header">
+      <span class="phase-badge mvp">Phase 1 — MVP</span>
+      <div class="phase-subtitle">Months 1–3 &nbsp;·&nbsp; Core platform with 2 roles</div>
+    </div>
+    <div class="role-rows">
+      <div class="role-row">
+        <div class="r-icon">👑</div>
+        <div class="r-info">
+          <div class="r-name">Company Admin</div>
+          <div class="r-desc">Full platform access — create properties, projects, manage users, push updates</div>
+        </div>
+        <span class="r-tag">Done</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 100%;"></div>
+          <div class="r-months">Jan – Mar 2025</div>
+        </div>
+      </div>
+      <div class="role-row">
+        <div class="r-icon">🏠</div>
+        <div class="r-info">
+          <div class="r-name">Homebuyer</div>
+          <div class="r-desc">Track construction, view timeline, gallery, submit inquiries, receive alerts</div>
+        </div>
+        <span class="r-tag">Done</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 100%;"></div>
+          <div class="r-months">Jan – Mar 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="roadmap-phase phase-growth">
+    <div class="phase-header">
+      <span class="phase-badge growth">Phase 2 — Growth</span>
+      <div class="phase-subtitle">Months 4–7 &nbsp;·&nbsp; Delegate work across 3 new roles</div>
+    </div>
+    <div class="role-rows">
+      <div class="role-row">
+        <div class="r-icon">📋</div>
+        <div class="r-info">
+          <div class="r-name">Project Manager</div>
+          <div class="r-desc">Manage assigned projects, milestones, approve site updates, respond to buyer inquiries</div>
+        </div>
+        <span class="r-tag">In Progress</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 65%;"></div>
+          <div class="r-months">Apr – Jun 2025</div>
+        </div>
+      </div>
+      <div class="role-row">
+        <div class="r-icon">🔨</div>
+        <div class="r-info">
+          <div class="r-name">Site Supervisor</div>
+          <div class="r-desc">Post daily site updates, upload photos/videos, update milestone progress from the field</div>
+        </div>
+        <span class="r-tag">In Progress</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 50%;"></div>
+          <div class="r-months">Apr – Jun 2025</div>
+        </div>
+      </div>
+      <div class="role-row">
+        <div class="r-icon">💰</div>
+        <div class="r-info">
+          <div class="r-name">Finance / Accounts</div>
+          <div class="r-desc">Create payment schedules, generate invoices, track buyer payments per milestone</div>
+        </div>
+        <span class="r-tag">Planned</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 20%;"></div>
+          <div class="r-months">May – Jul 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="roadmap-phase phase-scale">
+    <div class="phase-header">
+      <span class="phase-badge scale">Phase 3 — Scale</span>
+      <div class="phase-subtitle">Months 7–10 &nbsp;·&nbsp; Pre-sale pipeline & design workflows</div>
+    </div>
+    <div class="role-rows">
+      <div class="role-row">
+        <div class="r-icon">🤝</div>
+        <div class="r-info">
+          <div class="r-name">Sales Agent / Realtor</div>
+          <div class="r-desc">Manage prospect leads, schedule tours, onboard new buyers, track inquiry-to-sale funnel</div>
+        </div>
+        <span class="r-tag">Planned</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 0%; background: #333;"></div>
+          <div class="r-months">Jul – Sep 2025</div>
+        </div>
+      </div>
+      <div class="role-row">
+        <div class="r-icon">📐</div>
+        <div class="r-info">
+          <div class="r-name">Architect / Designer</div>
+          <div class="r-desc">Upload floor plans, elevations, 3D renders; handle buyer design change requests</div>
+        </div>
+        <span class="r-tag">Planned</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 0%; background: #333;"></div>
+          <div class="r-months">Aug – Oct 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="roadmap-phase phase-enterprise">
+    <div class="phase-header">
+      <span class="phase-badge enterprise">Phase 4 — Enterprise</span>
+      <div class="phase-subtitle">Months 10–14 &nbsp;·&nbsp; Quality assurance & multi-builder support</div>
+    </div>
+    <div class="role-rows">
+      <div class="role-row">
+        <div class="r-icon">🔍</div>
+        <div class="r-info">
+          <div class="r-name">Inspector / QA</div>
+          <div class="r-desc">Conduct milestone inspections, approve/reject phases, upload inspection reports & flag issues</div>
+        </div>
+        <span class="r-tag">Future</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 0%; background: #333;"></div>
+          <div class="r-months">Oct – Dec 2025</div>
+        </div>
+      </div>
+      <div class="role-row">
+        <div class="r-icon">🏢</div>
+        <div class="r-info">
+          <div class="r-name">Multi-Tenant (Multiple Builders)</div>
+          <div class="r-desc">Support multiple construction companies on one platform, each with isolated data & branding</div>
+        </div>
+        <span class="r-tag">Future</span>
+        <div class="r-bar-wrap">
+          <div class="r-bar" style="width: 0%; background: #333;"></div>
+          <div class="r-months">Nov 2025 – Feb 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 7: NOTIFICATION FLOW -->
+<!-- ========================================= -->
+<h2>7. Notification Flow — Who Notifies Whom</h2>
+<p class="section-desc">Every notification mapped: what triggers it, who sends it, who receives it.</p>
+
+<div class="diagram-container">
+  <div class="mermaid">
+    flowchart TB
+      subgraph TRIGGERS["🔔 Event Triggers"]
+        T1["Site update posted"]
+        T2["Milestone completed"]
+        T3["Inspection passed/failed"]
+        T4["Invoice sent"]
+        T5["Inquiry received"]
+        T6["Payment received"]
+        T7["Project assigned"]
+        T8["Weekly cron job"]
+        T9["Delay detected"]
+      end
+
+      subgraph NOTIFY["📨 Notification Engine"]
+        NE["System Router<br/>(decides who gets what)"]
+      end
+
+      subgraph RECIPIENTS["📬 Recipients"]
+        RB["🏠 Buyer<br/>Email + Push + In-App"]
+        RPM["📋 PM<br/>Email + In-App"]
+        RAD["👑 Admin<br/>Email + Dashboard"]
+        RFN["💰 Finance<br/>Email"]
+        RSS["🔨 Supervisor<br/>Push"]
+      end
+
+      T1 --> NE
+      T2 --> NE
+      T3 --> NE
+      T4 --> NE
+      T5 --> NE
+      T6 --> NE
+      T7 --> NE
+      T8 --> NE
+      T9 --> NE
+
+      NE -->|"Construction updates<br/>Invoices, Replies"| RB
+      NE -->|"Delays, Inspections<br/>Inquiries"| RPM
+      NE -->|"Weekly analytics<br/>Escalations"| RAD
+      NE -->|"Payment received<br/>confirmations"| RFN
+      NE -->|"New assignments<br/>PM instructions"| RSS
+
+      style TRIGGERS fill:#1a1a0a,stroke:#FFC107,color:#fff
+      style NOTIFY fill:#1a0a1a,stroke:#C5A572,color:#fff
+      style RECIPIENTS fill:#0a1a0a,stroke:#4CAF50,color:#fff
+  </div>
+</div>
+
+<div style="text-align: center; color: #444; margin: 60px 0 20px; font-size: 0.8rem;">
+  UHHomes Role-Based Architecture • Generated for development planning
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#C5A572',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#C5A572',
+      lineColor: '#666',
+      secondaryColor: '#2a2a2a',
+      tertiaryColor: '#1a1a1a',
+      background: '#141414',
+      mainBkg: '#1e1e1e',
+      nodeBorder: '#C5A572',
+      clusterBkg: '#0e0e0e',
+      clusterBorder: '#333',
+      titleColor: '#C5A572',
+      edgeLabelBackground: '#141414',
+      actorBkg: '#1e1e1e',
+      actorBorder: '#C5A572',
+      actorTextColor: '#fff',
+      signalColor: '#C5A572',
+      signalTextColor: '#fff',
+      noteBkgColor: '#2a2a11',
+      noteTextColor: '#fff',
+      noteBorderColor: '#C5A572',
+      activationBkgColor: '#333',
+      sequenceNumberColor: '#C5A572',
+      sectionBkgColor: '#1a1a1a',
+      sectionBkgColor2: '#111',
+      altSectionBkgColor: '#151515',
+      taskBkgColor: '#C5A572',
+      taskTextColor: '#000',
+      taskTextDarkColor: '#000',
+      activeTaskBkgColor: '#42A5F5',
+      activeTaskBorderColor: '#1E88E5',
+      doneTaskBkgColor: '#4CAF50',
+      doneTaskBorderColor: '#388E3C',
+      gridColor: '#222',
+      todayLineColor: '#FF7043'
+    },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+    sequence: { useMaxWidth: true, actorMargin: 50, messageMargin: 30 },
+    gantt: { useMaxWidth: true }
+  });
+</script>
+
+</body>
+</html>

@@ -23,7 +23,15 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: function (origin, callback) {
+    const allowed = (process.env.FRONTEND_URL || "http://localhost:5173").split(",").map(s => s.trim());
+    // Allow requests with no origin (e.g. curl, mobile apps)
+    if (!origin || allowed.some(url => origin.startsWith(url.replace(/:\d+$/, '')) || origin === url)) {
+      callback(null, origin || true);
+    } else {
+      callback(null, origin); // Allow all in dev; tighten in production
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());

@@ -56,6 +56,21 @@ const User = sequelize.define(
         promotions: false,
       },
     },
+    permissions: {
+      type: DataTypes.JSON,
+      defaultValue: {
+        dashboard: { read: true, write: false },
+        constructionTracker: { read: true, write: false },
+        timeline: { read: true, write: false },
+        gallery: { read: true, write: false },
+        documents: { read: true, write: false, upload: false },
+        inquiries: { read: true, write: true },
+        alerts: { read: true, write: false },
+        favorites: { read: true, write: true },
+        profile: { read: true, write: true },
+        reports: { read: true, download: true },
+      },
+    },
   },
   {
     timestamps: true,

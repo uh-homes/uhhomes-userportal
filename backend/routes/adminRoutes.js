@@ -28,6 +28,7 @@ const { generateProjectReport, generateSummaryReport } = require("../controllers
 const { sendPushNotification, sendBulkNotifications, getNotificationHistory } = require("../controllers/adminNotificationController");
 const { generateWeeklySummary, sendWeeklySummary, sendAllWeeklySummaries } = require("../controllers/adminAISummaryController");
 const { getAllInquiries, respondToInquiry, deleteInquiry } = require("../controllers/adminInquiryController");
+const { getAllUsersPermissions, getUserPermissions, updateUserPermissions, bulkUpdatePermissions, resetUserPermissions } = require("../controllers/adminPermissionsController");
 
 // All routes require auth + admin
 router.use(protect, adminOnly);
@@ -87,5 +88,12 @@ router.post("/ai-summary/send-all", sendAllWeeklySummaries);
 router.get("/inquiries", getAllInquiries);
 router.put("/inquiries/:id/respond", respondToInquiry);
 router.delete("/inquiries/:id", deleteInquiry);
+
+// User Permissions Management
+router.get("/permissions", getAllUsersPermissions);
+router.get("/permissions/:userId", getUserPermissions);
+router.put("/permissions/:userId", updateUserPermissions);
+router.put("/permissions/bulk/update", bulkUpdatePermissions);
+router.post("/permissions/reset/:userId", resetUserPermissions);
 
 module.exports = router;

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UHHomes - Architecture Diagram</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      padding: 40px 20px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: #C5A572;
+      margin-bottom: 10px;
+    }
+    h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #C5A572;
+      margin: 60px 0 20px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 50px;
+      font-size: 1.1rem;
+    }
+    .diagram-container {
+      max-width: 1200px;
+      margin: 0 auto 60px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 16px;
+      padding: 40px 20px;
+      box-shadow: 0 0 40px rgba(197,165,114,0.08);
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+    .legend {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .legend-card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .legend-card h3 {
+      color: #C5A572;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    .legend-card p {
+      color: #999;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .phase-label {
+      text-align: center;
+      color: #C5A572;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>UHHomes</h1>
+<p class="subtitle">Real Estate Construction Tracking Platform — Ideal Architecture</p>
+
+<!-- Actors & Roles -->
+<h2>1. Actors & Roles</h2>
+<div class="diagram-container">
+  <div class="mermaid">
+    graph LR
+      V["🌐 Visitor<br/>(Unauthenticated)"]
+      B["🏠 Buyer<br/>(Homeowner)"]
+      A["🏗️ Admin<br/>(Builder Staff)"]
+      S["⚙️ System<br/>(Automated)"]
+
+      V -->|"Sign Up"| B
+      A -->|"Assigns Project"| B
+      S -->|"Sends Notifications"| B
+      A -->|"Triggers"| S
+
+      style V fill:#2d2d2d,stroke:#C5A572,color:#fff
+      style B fill:#1a3a2a,stroke:#4CAF50,color:#fff
+      style A fill:#3a1a1a,stroke:#FF7043,color:#fff
+      style S fill:#1a2a3a,stroke:#42A5F5,color:#fff
+  </div>
+</div>
+
+<!-- High-Level System Architecture -->
+<h2>2. System Architecture (Full Stack)</h2>
+<div class="diagram-container">
+  <div class="mermaid">
+    graph TB
+      subgraph CLIENT["🖥️ CLIENT LAYER"]
+        direction LR
+        PUB["Public Pages<br/>(Property Catalog)"]
+        AUTH["Auth Module<br/>(Login/Signup/OAuth)"]
+        BUYER["Buyer Portal<br/>(Dashboard/Track)"]
+        ADMIN["Admin Portal<br/>(Manage/Reports)"]
+      end
+
+      subgraph PROXY["🔀 REVERSE PROXY"]
+        NGINX["Nginx<br/>app.uhhomes.com<br/>admin.uhhomes.com<br/>api.uhhomes.com"]
+      end
+
+      subgraph API["⚡ API LAYER (Express.js)"]
+        direction TB
+        MW["Middleware Pipeline<br/>CORS → Auth → Validate → Rate Limit"]
+        subgraph ROUTES["Routes"]
+          direction LR
+          R1["Auth"]
+          R2["User"]
+          R3["Project"]
+          R4["Admin"]
+          R5["Property"]
+        end
+        subgraph SERVICES["Service Layer"]
+          direction LR
+          S1["AuthService"]
+          S2["ProjectService"]
+          S3["NotificationService"]
+          S4["AIService"]
+          S5["ReportService"]
+        end
+        subgraph DAL["Data Access (Sequelize ORM)"]
+          direction LR
+          M1["User"]
+          M2["Project"]
+          M3["Milestone"]
+          M4["Property"]
+          M5["Media"]
+        end
+      end
+
+      subgraph DB["🗄️ DATABASE"]
+        MYSQL["MySQL"]
+        REDIS["Redis<br/>(Cache/Queue)"]
+      end
+
+      subgraph EXT["☁️ EXTERNAL SERVICES"]
+        direction LR
+        CLOUD["Cloudinary<br/>(Media CDN)"]
+        OPENAI["OpenAI<br/>(AI Summary)"]
+        GOOGLE["Google<br/>(OAuth)"]
+        SMTP["SMTP<br/>(Email)"]
+      end
+
+      CLIENT --> PROXY
+      PROXY --> API
+      MW --> ROUTES
+      ROUTES --> SERVICES
+      SERVICES --> DAL
+      DAL --> DB
+      SERVICES --> EXT
+
+      style CLIENT fill:#1a2a1a,stroke:#4CAF50,color:#fff
+      style PROXY fill:#2a2a1a,stroke:#FFC107,color:#fff
+      style API fill:#1a1a2a,stroke:#42A5F5,color:#fff
+      style DB fill:#2a1a2a,stroke:#AB47BC,color:#fff
+      style EXT fill:#1a2a2a,stroke:#26C6DA,color:#fff
+  </div>
+</div>
+
+<!-- User Journey Flow -->
+<h2>3. Complete User Journey</h2>
+<div class="diagram-container">
+  <div class="mermaid">
+    sequenceDiagram
+      participant V as 🌐 Visitor
+      participant S as ⚙️ System
+      participant B as 🏠 Buyer
+      participant A as 🏗️ Admin
+
+      Note over V,A: PHASE 1 — DISCOVERY & ONBOARDING
+      V->>S: Browse Property Catalog
+      S-->>V: Display Properties (Public)
+      V->>S: Sign Up (Email + OTP)
+      S->>V: Send OTP Email
+      V->>S: Verify OTP
+      S-->>V: Account Created ✓
+      Note over V,B: Visitor becomes Buyer
+
+      Note over V,A: PHASE 2 — ADMIN PROJECT SETUP
+      A->>S: Create Property (Blueprint)
+      A->>S: Create Project (Link Buyer ↔ Property)
+      A->>S: Define Milestones (Construction Phases)
+      S->>B: 🔔 "You've been assigned a project!"
+
+      Note over V,A: PHASE 3 — CONSTRUCTION TRACKING
+      B->>S: View Dashboard & Timeline
+      A->>S: Update Milestone Progress + Upload Photos
+      S->>B: 🔔 "Foundation complete! (25%)"
+      B->>S: View Gallery & Updates
+      B->>S: Submit Inquiry (Question)
+      A->>S: Respond to Inquiry
+      S->>B: 📩 "Builder replied to your question"
+
+      Note over V,A: PHASE 4 — AUTOMATED SERVICES
+      S->>S: CRON: Generate AI Weekly Summary
+      S->>B: 📧 Weekly Progress Digest Email
+      A->>S: Generate PDF Report
+      S-->>A: Download Report
+
+      Note over V,A: PHASE 5 — PROJECT COMPLETION
+      A->>S: Mark Project COMPLETED (100%)
+      S->>B: 🎉 "Your home is ready!"
+      B->>S: Download Final Report & Documents
+  </div>
+</div>
+
+<!-- Data Model (ERD) -->
+<h2>4. Data Model (Entity Relationships)</h2>
+<div class="diagram-container">
+  <div class="mermaid">
+    erDiagram
+      USER ||--o{ PROJECT : "owns (buyer)"
+      USER ||--o{ QUESTION : "asks"
+      USER ||--o{ FAVORITE : "saves"
+      USER ||--o{ ALERT : "receives"
+
+      PROPERTY ||--o{ PROJECT : "built as"
+      PROPERTY ||--o{ FAVORITE : "liked by"
+
+      PROJECT ||--o{ MILESTONE : "has phases"
+      PROJECT ||--o{ UPDATE : "has updates"
+      PROJECT ||--o{ GALLERY : "has albums"
+      PROJECT ||--o{ DOCUMENT : "has files"
+      PROJECT ||--o{ QUESTION : "has inquiries"
+
+      MILESTONE ||--o{ UPDATE : "triggers"
+      UPDATE ||--o{ MEDIA : "contains"
+      GALLERY ||--o{ MEDIA : "contains"
+
+      USER {
+        int id PK
+        string fullName
+        string email UK
+        string phone
+        string password
+        string googleId
+        enum role "user | admin"
+        boolean isVerified
+        json notificationPrefs
+      }
+
+      PROPERTY {
+        int id PK
+        string name
+        string slug UK
+        decimal price
+        string location
+        int bedrooms
+        int bathrooms
+        int squareFeet
+        json features
+        json floorPlans
+      }
+
+      PROJECT {
+        int id PK
+        int userId FK
+        int propertyId FK
+        string name
+        enum status "PLANNING | IN_PROGRESS | ON_HOLD | COMPLETED"
+        int completionPercentage
+        date startDate
+        date estimatedEndDate
+      }
+
+      MILESTONE {
+        int id PK
+        int projectId FK
+        string name
+        enum status "PLANNED | IN_PROGRESS | DELAYED | COMPLETE"
+        int progress
+        int order
+        date targetDate
+      }
+
+      UPDATE {
+        int id PK
+        int projectId FK
+        int milestoneId FK
+        string title
+        text description
+      }
+
+      MEDIA {
+        int id PK
+        int updateId FK
+        int galleryId FK
+        string url
+        string type
+      }
+
+      GALLERY {
+        int id PK
+        int projectId FK
+        string phaseName
+      }
+
+      DOCUMENT {
+        int id PK
+        int projectId FK
+        string name
+        string fileUrl
+        string type
+      }
+
+      QUESTION {
+        int id PK
+        int userId FK
+        int projectId FK
+        text question
+        text answer
+        enum status
+      }
+
+      FAVORITE {
+        int id PK
+        int userId FK
+        int propertyId FK
+      }
+
+      ALERT {
+        int id PK
+        int userId FK
+        string title
+        text message
+        boolean isRead
+      }
+  </div>
+</div>
+
+<!-- Deployment Architecture -->
+<h2>5. Deployment Architecture</h2>
+<div class="diagram-container">
+  <div class="mermaid">
+    graph TB
+      subgraph PROD["Production Environment"]
+        direction TB
+        DNS["DNS (Cloudflare)"]
+        subgraph LB["Load Balancer / Nginx"]
+          N1["SSL Termination"]
+          N2["Static File Serving"]
+          N3["Reverse Proxy"]
+        end
+        subgraph APP["Application Servers (PM2 Cluster)"]
+          A1["Node.js Instance 1"]
+          A2["Node.js Instance 2"]
+        end
+        subgraph DATA["Data Layer"]
+          DB1["MySQL (Primary)"]
+          DB2["Redis (Cache)"]
+        end
+        subgraph CRON["Background Workers"]
+          W1["AI Summary Job"]
+          W2["Email Queue"]
+          W3["Cleanup Job"]
+        end
+      end
+
+      subgraph CDN["CDN Layer"]
+        CL["Cloudinary (Images/Video)"]
+      end
+
+      DNS --> LB
+      LB --> APP
+      APP --> DATA
+      APP --> CDN
+      APP --> CRON
+      CRON --> DATA
+
+      style PROD fill:#111,stroke:#C5A572,color:#fff
+      style LB fill:#1a2a1a,stroke:#4CAF50,color:#fff
+      style APP fill:#1a1a2a,stroke:#42A5F5,color:#fff
+      style DATA fill:#2a1a2a,stroke:#AB47BC,color:#fff
+      style CRON fill:#2a2a1a,stroke:#FFC107,color:#fff
+      style CDN fill:#1a2a2a,stroke:#26C6DA,color:#fff
+  </div>
+</div>
+
+<!-- Improvement Roadmap -->
+<h2>6. Recommended Improvement Roadmap</h2>
+<div class="legend">
+  <div class="legend-card">
+    <h3>Phase 1: Foundation</h3>
+    <p>• Public property catalog<br/>• Service layer separation<br/>• Input validation (Zod)<br/>• Centralized error handling<br/>• Environment config management</p>
+  </div>
+  <div class="legend-card">
+    <h3>Phase 2: Performance</h3>
+    <p>• Redis caching layer<br/>• RTK Query (replace manual API calls)<br/>• Image optimization pipeline<br/>• Database indexing & query optimization</p>
+  </div>
+  <div class="legend-card">
+    <h3>Phase 3: Real-time</h3>
+    <p>• WebSocket (Socket.io) for live updates<br/>• Push notifications (FCM)<br/>• Real-time chat between buyer & admin<br/>• Live progress bar updates</p>
+  </div>
+  <div class="legend-card">
+    <h3>Phase 4: Scale</h3>
+    <p>• Docker containerization<br/>• CI/CD pipeline (GitHub Actions)<br/>• Automated testing (Jest + Playwright)<br/>• Multi-tenant support<br/>• Rate limiting & DDoS protection</p>
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#C5A572',
+      primaryTextColor: '#fff',
+      primaryBorderColor: '#C5A572',
+      lineColor: '#C5A572',
+      secondaryColor: '#2a2a2a',
+      tertiaryColor: '#1a1a1a',
+      background: '#1a1a1a',
+      mainBkg: '#2a2a2a',
+      nodeBorder: '#C5A572',
+      clusterBkg: '#111',
+      clusterBorder: '#333',
+      titleColor: '#C5A572',
+      edgeLabelBackground: '#1a1a1a',
+      actorBkg: '#2a2a2a',
+      actorBorder: '#C5A572',
+      actorTextColor: '#fff',
+      signalColor: '#C5A572',
+      signalTextColor: '#fff',
+      noteBkgColor: '#2a2a1a',
+      noteTextColor: '#fff',
+      noteBorderColor: '#C5A572',
+      activationBkgColor: '#333',
+      sequenceNumberColor: '#C5A572'
+    },
+    flowchart: {
+      useMaxWidth: true,
+      htmlLabels: true,
+      curve: 'basis'
+    },
+    sequence: {
+      useMaxWidth: true,
+      actorMargin: 80,
+      messageMargin: 40
+    },
+    er: {
+      useMaxWidth: true
+    }
+  });
+</script>
+
+</body>
+</html>
