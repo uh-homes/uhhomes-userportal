@@ -30,38 +30,6 @@
     .mermaid { display: flex; justify-content: center; }
     .mermaid svg { max-width: 100%; height: auto; }
 
-    /* Role cards grid */
-    .role-grid {
-      max-width: 1240px; margin: 0 auto 50px;
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;
-    }
-    .role-card {
-      background: #141414; border: 1px solid #222; border-radius: 14px;
-      padding: 24px; position: relative; overflow: hidden;
-    }
-    .role-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    }
-    .role-card.owner::before { background: linear-gradient(90deg, #4CAF50, #66BB6A); }
-    .role-card.admin::before { background: linear-gradient(90deg, #C5A572, #D4AF37); }
-    .role-card.pm::before { background: linear-gradient(90deg, #42A5F5, #1E88E5); }
-    .role-card.super::before { background: linear-gradient(90deg, #FF7043, #F4511E); }
-    .role-card.sales::before { background: linear-gradient(90deg, #AB47BC, #8E24AA); }
-    .role-card.arch::before { background: linear-gradient(90deg, #26C6DA, #00ACC1); }
-    .role-card.finance::before { background: linear-gradient(90deg, #FFA726, #FB8C00); }
-    .role-card.inspect::before { background: linear-gradient(90deg, #EF5350, #E53935); }
-
-    .role-card .icon { font-size: 2rem; margin-bottom: 10px; }
-    .role-card h3 { color: #fff; font-size: 1.15rem; margin-bottom: 4px; }
-    .role-card .tag { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
-    .role-card p { color: #999; font-size: 0.88rem; line-height: 1.55; margin-bottom: 14px; }
-    .role-card ul { list-style: none; padding: 0; }
-    .role-card ul li {
-      font-size: 0.85rem; color: #bbb; padding: 5px 0; border-bottom: 1px solid #1e1e1e;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .role-card ul li:last-child { border-bottom: none; }
-    .role-card ul li::before { content: '→'; color: #C5A572; font-weight: bold; }
 
     .flow-label {
       text-align: center; color: #555; font-size: 0.8rem; text-transform: uppercase;
@@ -78,140 +46,193 @@
 <!-- SECTION 1: ALL ROLES -->
 <!-- ========================================= -->
 <h2>1. All Possible User Roles in the Platform</h2>
-<p class="section-desc">Beyond just "Admin" and "User" — a mature home construction platform needs these 8 distinct roles, each with clear responsibilities.</p>
+<p class="section-desc">Beyond just "Admin" and "User" — a mature home construction platform needs these 5 distinct roles, each with clear responsibilities.</p>
 
-<div class="role-grid">
+<style>
+  .role-table-wrap {
+    max-width: 1240px; margin: 0 auto 50px;
+    background: #141414; border: 1px solid #222; border-radius: 16px;
+    padding: 0; overflow: hidden;
+  }
+  .role-table {
+    width: 100%; border-collapse: collapse; font-size: 0.85rem;
+  }
+  .role-table thead tr {
+    background: #1a1a1a; border-bottom: 2px solid #C5A572;
+  }
+  .role-table thead th {
+    padding: 16px 20px; text-align: left; color: #C5A572; font-size: 0.75rem;
+    letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600;
+  }
+  .role-table tbody tr {
+    border-bottom: 1px solid #1e1e1e; transition: background 0.15s;
+  }
+  .role-table tbody tr:last-child { border-bottom: none; }
+  .role-table tbody tr:hover { background: #1a1a1a; }
+  .role-table td { padding: 20px 20px; vertical-align: top; }
 
-  <div class="role-card owner">
-    <div class="icon">🏠</div>
-    <h3>Homebuyer / Owner</h3>
-    <div class="tag">End Customer</div>
-    <p>The person who purchased the home. Tracks construction, views updates, asks questions, downloads documents.</p>
-    <ul>
-      <li>View project dashboard & progress</li>
-      <li>Browse construction timeline</li>
-      <li>View photo/video gallery</li>
-      <li>Submit inquiries to builder</li>
-      <li>Receive alerts & notifications</li>
-      <li>Download documents (contracts, permits)</li>
-      <li>Favorite properties for comparison</li>
-      <li>Receive AI weekly digest email</li>
-      <li>View & pay invoices (future)</li>
-    </ul>
-  </div>
+  .role-table .rt-role {
+    display: flex; align-items: center; gap: 12px; min-width: 180px;
+  }
+  .role-table .rt-icon { font-size: 1.8rem; flex-shrink: 0; }
+  .role-table .rt-name { color: #fff; font-weight: 600; font-size: 0.95rem; }
+  .role-table .rt-tag {
+    display: inline-block; margin-top: 4px; padding: 3px 10px; border-radius: 20px;
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .rt-tag.tag-green { background: #1b3a1b; color: #4CAF50; }
+  .rt-tag.tag-gold { background: #2a2211; color: #C5A572; }
+  .rt-tag.tag-blue { background: #112233; color: #42A5F5; }
+  .rt-tag.tag-purple { background: #221133; color: #AB47BC; }
+  .rt-tag.tag-cyan { background: #0a2222; color: #26C6DA; }
 
-  <div class="role-card admin">
-    <div class="icon">👑</div>
-    <h3>Company Admin</h3>
-    <div class="tag">Super Administrator</div>
-    <p>The construction company owner or top-level manager. Has full access to everything — creates roles, manages the platform.</p>
-    <ul>
-      <li>Full CRUD on all entities</li>
-      <li>Create & manage user accounts</li>
-      <li>Assign roles (PM, Supervisor, etc.)</li>
-      <li>View company-wide analytics</li>
-      <li>Generate PDF reports</li>
-      <li>Manage properties catalog</li>
-      <li>Broadcast alerts to all buyers</li>
-      <li>Configure platform settings</li>
-      <li>Trigger AI summary generation</li>
-    </ul>
-  </div>
+  .role-table .rt-desc { color: #999; font-size: 0.84rem; line-height: 1.5; max-width: 280px; }
 
-  <div class="role-card pm">
-    <div class="icon">📋</div>
-    <h3>Project Manager</h3>
-    <div class="tag">Manages Projects</div>
-    <p>Assigned to one or more projects. Oversees milestones, coordinates between site supervisors and buyers, ensures timelines are met.</p>
-    <ul>
-      <li>View & update assigned projects only</li>
-      <li>Create & manage milestones</li>
-      <li>Approve site updates before publishing</li>
-      <li>Respond to buyer inquiries</li>
-      <li>Generate project-level reports</li>
-      <li>Manage project documents</li>
-      <li>Set milestone target dates</li>
-      <li>Escalate delays to Admin</li>
-    </ul>
-  </div>
+  .role-table .rt-responsibilities {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .role-table .rt-responsibilities li {
+    font-size: 0.8rem; color: #bbb; padding: 3px 0;
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .role-table .rt-responsibilities li::before {
+    content: '→'; color: #C5A572; font-weight: bold; font-size: 0.75rem; flex-shrink: 0;
+  }
+</style>
 
-  <div class="role-card super">
-    <div class="icon">🔨</div>
-    <h3>Site Supervisor / Foreman</h3>
-    <div class="tag">On-Ground Updates</div>
-    <p>The person on the construction site. Takes daily photos, logs progress, reports issues. The primary source of real-time updates.</p>
-    <ul>
-      <li>Post daily/weekly site updates</li>
-      <li>Upload photos & videos from site</li>
-      <li>Update milestone progress %</li>
-      <li>Log issues & delays</li>
-      <li>Mark inspection checkpoints</li>
-      <li>Limited to assigned projects</li>
-    </ul>
-  </div>
-
-  <div class="role-card sales">
-    <div class="icon">🤝</div>
-    <h3>Sales Agent / Realtor</h3>
-    <div class="tag">Customer Acquisition</div>
-    <p>Handles property inquiries from prospects, onboards new buyers, manages the pre-sale relationship until project assignment.</p>
-    <ul>
-      <li>View property catalog</li>
-      <li>Manage prospect leads</li>
-      <li>Schedule property tours</li>
-      <li>Onboard new buyer accounts</li>
-      <li>Track inquiry-to-sale pipeline</li>
-      <li>View assigned buyer profiles</li>
-      <li>No access to construction data</li>
-    </ul>
-  </div>
-
-  <div class="role-card arch">
-    <div class="icon">📐</div>
-    <h3>Architect / Designer</h3>
-    <div class="tag">Design & Plans</div>
-    <p>Uploads floor plans, elevations, 3D renders. Handles design-related buyer requests like customizations or material selections.</p>
-    <ul>
-      <li>Upload & manage floor plans</li>
-      <li>Upload elevation renders</li>
-      <li>Handle design change requests</li>
-      <li>View assigned projects</li>
-      <li>Comment on milestone updates</li>
-      <li>No access to financial data</li>
-    </ul>
-  </div>
-
-  <div class="role-card finance">
-    <div class="icon">💰</div>
-    <h3>Finance / Accounts</h3>
-    <div class="tag">Payments & Billing</div>
-    <p>Manages payment milestones, generates invoices, tracks buyer payments, handles financial reporting.</p>
-    <ul>
-      <li>Create payment schedules</li>
-      <li>Generate & send invoices</li>
-      <li>Track payment status per buyer</li>
-      <li>Financial reports & summaries</li>
-      <li>Link payments to milestones</li>
-      <li>Send payment reminders</li>
-      <li>No access to construction updates</li>
-    </ul>
-  </div>
-
-  <div class="role-card inspect">
-    <div class="icon">🔍</div>
-    <h3>Inspector / QA</h3>
-    <div class="tag">Quality Assurance</div>
-    <p>Conducts inspections at key milestones (foundation, framing, final). Approves or flags issues before project moves forward.</p>
-    <ul>
-      <li>View milestone inspection checkpoints</li>
-      <li>Submit inspection reports</li>
-      <li>Approve / reject milestone completion</li>
-      <li>Upload inspection photos & notes</li>
-      <li>Flag violations or issues</li>
-      <li>Read-only access to project</li>
-    </ul>
-  </div>
-
+<div class="role-table-wrap">
+  <table class="role-table">
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Description</th>
+        <th>Key Responsibilities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <div class="rt-role">
+            <span class="rt-icon">🏠</span>
+            <div>
+              <div class="rt-name">Homebuyer / Owner</div>
+              <span class="rt-tag tag-green">End Customer</span>
+            </div>
+          </div>
+        </td>
+        <td class="rt-desc">The person who purchased the home. Tracks construction, views updates, asks questions, downloads documents.</td>
+        <td>
+          <ul class="rt-responsibilities">
+            <li>View project dashboard & progress</li>
+            <li>Browse construction timeline</li>
+            <li>View photo/video gallery</li>
+            <li>Submit inquiries to builder</li>
+            <li>Receive alerts & notifications</li>
+            <li>Download documents (contracts, permits)</li>
+            <li>Favorite properties for comparison</li>
+            <li>Receive AI weekly digest email</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="rt-role">
+            <span class="rt-icon">👑</span>
+            <div>
+              <div class="rt-name">Company Admin</div>
+              <span class="rt-tag tag-gold">Super Administrator</span>
+            </div>
+          </div>
+        </td>
+        <td class="rt-desc">The construction company owner or top-level manager. Has full access to everything — creates roles, manages the platform.</td>
+        <td>
+          <ul class="rt-responsibilities">
+            <li>Full CRUD on all entities</li>
+            <li>Create & manage user accounts</li>
+            <li>Assign roles (PM, Sales, Architect)</li>
+            <li>View company-wide analytics</li>
+            <li>Generate PDF reports</li>
+            <li>Manage properties catalog</li>
+            <li>Broadcast alerts to all buyers</li>
+            <li>Configure platform settings</li>
+            <li>Trigger AI summary generation</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="rt-role">
+            <span class="rt-icon">📋</span>
+            <div>
+              <div class="rt-name">Project Manager</div>
+              <span class="rt-tag tag-blue">Projects & Site</span>
+            </div>
+          </div>
+        </td>
+        <td class="rt-desc">Assigned to one or more projects. Oversees milestones, coordinates with buyers, ensures timelines are met, and handles on-ground site supervision.</td>
+        <td>
+          <ul class="rt-responsibilities">
+            <li>View & update assigned projects</li>
+            <li>Create & manage milestones</li>
+            <li>Post daily/weekly site updates</li>
+            <li>Upload photos & videos from site</li>
+            <li>Update milestone progress %</li>
+            <li>Log issues & delays</li>
+            <li>Respond to buyer inquiries</li>
+            <li>Generate project-level reports</li>
+            <li>Manage project documents</li>
+            <li>Escalate delays to Admin</li>
+            <li>Inspect & approve milestones</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="rt-role">
+            <span class="rt-icon">🤝</span>
+            <div>
+              <div class="rt-name">Sales Agent / Realtor</div>
+              <span class="rt-tag tag-purple">Customer Acquisition</span>
+            </div>
+          </div>
+        </td>
+        <td class="rt-desc">Handles property inquiries from prospects, onboards new buyers, manages the pre-sale relationship until project assignment.</td>
+        <td>
+          <ul class="rt-responsibilities">
+            <li>View property catalog</li>
+            <li>Manage prospect leads</li>
+            <li>Schedule property tours</li>
+            <li>Onboard new buyer accounts</li>
+            <li>Track inquiry-to-sale pipeline</li>
+            <li>View assigned buyer profiles</li>
+            <li>No access to construction data</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="rt-role">
+            <span class="rt-icon">📐</span>
+            <div>
+              <div class="rt-name">Architect / Designer</div>
+              <span class="rt-tag tag-cyan">Design & Plans</span>
+            </div>
+          </div>
+        </td>
+        <td class="rt-desc">Uploads floor plans, elevations, 3D renders. Handles design-related buyer requests like customizations or material selections.</td>
+        <td>
+          <ul class="rt-responsibilities">
+            <li>Upload & manage floor plans</li>
+            <li>Upload elevation renders</li>
+            <li>Handle design change requests</li>
+            <li>View assigned projects</li>
+            <li>Comment on milestone updates</li>
+            <li>No access to financial data</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- ========================================= -->
@@ -225,35 +246,23 @@
     graph TB
       ADMIN["👑 Company Admin<br/><i>Full Access</i>"]
 
-      PM["📋 Project Manager<br/><i>Project-Scoped</i>"]
+      PM["📋 Project Manager<br/><i>Project-Scoped + Site</i>"]
       SALES["🤝 Sales Agent<br/><i>Pre-Sale Only</i>"]
-      FINANCE["💰 Finance<br/><i>Payments Only</i>"]
-
-      SUPER["🔨 Site Supervisor<br/><i>Updates Only</i>"]
       ARCH["📐 Architect<br/><i>Designs Only</i>"]
-      INSPECT["🔍 Inspector<br/><i>QA Only</i>"]
 
       BUYER["🏠 Homebuyer<br/><i>Read + Inquire</i>"]
 
       ADMIN -->|"Assigns projects"| PM
       ADMIN -->|"Assigns leads"| SALES
-      ADMIN -->|"Assigns billing"| FINANCE
-      PM -->|"Assigns site work"| SUPER
       PM -->|"Requests designs"| ARCH
-      PM -->|"Schedules inspections"| INSPECT
-      SALES -->|"Onboards"| BUYER
-      SUPER -->|"Posts updates visible to"| BUYER
-      FINANCE -->|"Sends invoices to"| BUYER
-      INSPECT -->|"Approves milestones for"| BUYER
+      PM -->|"Posts updates visible to"| BUYER
       PM -->|"Responds to inquiries from"| BUYER
+      SALES -->|"Onboards"| BUYER
 
       style ADMIN fill:#2a2211,stroke:#C5A572,color:#fff,stroke-width:2px
       style PM fill:#112233,stroke:#42A5F5,color:#fff
       style SALES fill:#221133,stroke:#AB47BC,color:#fff
-      style FINANCE fill:#2a1a00,stroke:#FFA726,color:#fff
-      style SUPER fill:#2a1111,stroke:#FF7043,color:#fff
       style ARCH fill:#0a2222,stroke:#26C6DA,color:#fff
-      style INSPECT fill:#220a0a,stroke:#EF5350,color:#fff
       style BUYER fill:#112a11,stroke:#4CAF50,color:#fff,stroke-width:2px
   </div>
 </div>
@@ -272,9 +281,6 @@
       participant AD as 👑 Admin
       participant PM as 📋 Project Manager
       participant AR as 📐 Architect
-      participant SS as 🔨 Site Supervisor
-      participant IN as 🔍 Inspector
-      participant FN as 💰 Finance
       participant SY as ⚙️ System
 
       rect rgb(40,40,20)
@@ -283,8 +289,8 @@
       B->>SA: Express interest / inquire
       SA->>AD: Convert lead → buyer account
       AD->>B: Welcome email + portal access
-      FN->>B: Send booking payment invoice
-      B->>FN: Make booking payment ✓
+      AD->>B: Send booking payment invoice
+      B->>AD: Make booking payment ✓
       end
 
       rect rgb(20,30,40)
@@ -293,23 +299,20 @@
       PM->>AR: Request floor plans & design
       AR->>PM: Upload floor plans & elevations
       PM->>PM: Define milestones & timeline
-      AD->>SS: Assign site supervisor to project
-      AD->>IN: Assign inspector to project
       SY->>B: 🔔 "Your project has started!"
       end
 
       rect rgb(30,20,20)
       Note over SA,SY: STAGE 3 — CONSTRUCTION (Repeats per Milestone)
-      SS->>SY: Post daily update + photos from site
-      PM->>SY: Review & approve update
+      PM->>SY: Post daily update + photos from site
       SY->>B: 🔔 "Foundation work: 60% complete"
       B->>SY: View timeline, gallery, updates
       B->>PM: Submit question / concern
       PM->>B: Respond to inquiry
-      SS->>SY: Mark milestone 100%
-      IN->>SY: Inspect & approve milestone ✓
-      FN->>B: Send milestone payment invoice
-      B->>FN: Make payment ✓
+      PM->>SY: Mark milestone 100%
+      PM->>SY: Inspect & approve milestone ✓
+      AD->>B: Send milestone payment invoice
+      B->>AD: Make payment ✓
       SY->>SY: Auto-calculate overall progress %
       end
 
@@ -323,12 +326,12 @@
 
       rect rgb(25,30,15)
       Note over SA,SY: STAGE 5 — HANDOVER & CLOSE
-      SS->>SY: Mark final milestone complete
-      IN->>SY: Final inspection approved ✓
+      PM->>SY: Mark final milestone complete
+      PM->>SY: Final inspection approved ✓
       PM->>SY: Upload completion certificate
       PM->>SY: Upload warranty documents
-      FN->>B: Send final payment invoice
-      B->>FN: Make final payment ✓
+      AD->>B: Send final payment invoice
+      B->>AD: Make final payment ✓
       AD->>SY: Mark project COMPLETED
       SY->>B: 🎉 "Your home is ready! Download all documents."
       B->>SY: Download report, documents, gallery archive
@@ -343,96 +346,93 @@
 <p class="section-desc">A clear mapping of every feature to every role. ● = Full Access, ◐ = Limited, ○ = No Access</p>
 
 <div class="diagram-container" style="overflow-x: auto;">
-  <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 900px;">
+  <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 700px;">
     <thead>
       <tr style="border-bottom: 2px solid #C5A572;">
         <th style="text-align: left; padding: 12px; color: #C5A572;">Feature</th>
         <th style="padding: 12px; color: #4CAF50;">🏠 Buyer</th>
         <th style="padding: 12px; color: #C5A572;">👑 Admin</th>
         <th style="padding: 12px; color: #42A5F5;">📋 PM</th>
-        <th style="padding: 12px; color: #FF7043;">🔨 Supervisor</th>
         <th style="padding: 12px; color: #AB47BC;">🤝 Sales</th>
         <th style="padding: 12px; color: #26C6DA;">📐 Architect</th>
-        <th style="padding: 12px; color: #FFA726;">💰 Finance</th>
-        <th style="padding: 12px; color: #EF5350;">🔍 Inspector</th>
       </tr>
     </thead>
     <tbody>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">View Dashboard</td>
-        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Manage Users</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">Create Projects</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Update Milestones</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">Post Site Updates</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Upload Photos/Media</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">View Construction Progress</td>
-        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Submit Inquiries</td>
-        <td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">Respond to Inquiries</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Upload Floor Plans</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">Manage Properties</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Manage Leads / Prospects</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">Inspect & Approve Milestones</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Manage Invoices & Payments</td>
-        <td style="text-align: center;">◐</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">◐</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">View/Download Documents</td>
-        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td><td style="text-align: center;">◐</td><td style="text-align: center;">◐</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">◐</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">Generate Reports (PDF)</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e;">
         <td style="padding: 10px; color: #ccc;">Broadcast Alerts</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">◐</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr style="border-bottom: 1px solid #1e1e1e; background: #111;">
         <td style="padding: 10px; color: #ccc;">AI Summary Generation</td>
-        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">○</td><td style="text-align: center;">●</td><td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
       <tr>
         <td style="padding: 10px; color: #ccc;">Favorite Properties</td>
-        <td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
+        <td style="text-align: center;">●</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td><td style="text-align: center;">○</td>
       </tr>
     </tbody>
   </table>
@@ -460,24 +460,11 @@
       subgraph BUILD["🟠 CONSTRUCTION PHASE"]
         direction TB
         PM2["📋 Project Manager"]
-        SS2["🔨 Site Supervisor"]
         AR2["📐 Architect"]
-        IN2["🔍 Inspector"]
 
-        SS2 -->|"Daily updates<br/>+ site photos"| PM2
         AR2 -->|"Floor plans<br/>+ designs"| PM2
-        PM2 -->|"Approves &<br/>publishes"| SYSTEM2["⚙️ System"]
-        IN2 -->|"Inspection<br/>approval"| PM2
-        PM2 -->|"Assigns<br/>site work"| SS2
-        PM2 -->|"Requests<br/>inspection"| IN2
-      end
-
-      subgraph FINANCE_PHASE["🟡 FINANCE PHASE"]
-        direction TB
-        FN2["💰 Finance"]
-        FN2 -->|"Sends invoices<br/>Payment reminders"| BUYER2["🏠 Buyer"]
-        BUYER2 -->|"Makes payment"| FN2
-        FN2 -->|"Payment<br/>confirmation"| PM3["📋 PM"]
+        PM2 -->|"Site updates, photos<br/>& milestones"| SYSTEM2["⚙️ System"]
+        PM2 -->|"Inspects &<br/>approves"| SYSTEM2
       end
 
       subgraph BUYER_EXP["🟢 BUYER EXPERIENCE"]
@@ -491,11 +478,9 @@
 
       PRE_SALE --> BUILD
       BUILD --> BUYER_EXP
-      BUILD --> FINANCE_PHASE
 
       style PRE_SALE fill:#0d1520,stroke:#42A5F5,color:#fff
       style BUILD fill:#201510,stroke:#FF7043,color:#fff
-      style FINANCE_PHASE fill:#201d0a,stroke:#FFA726,color:#fff
       style BUYER_EXP fill:#0d200d,stroke:#4CAF50,color:#fff
   </div>
 </div>
@@ -504,7 +489,7 @@
 <!-- SECTION 6: ROLE INTRODUCTION ROADMAP -->
 <!-- ========================================= -->
 <h2>6. When to Introduce Each Role (Development Roadmap)</h2>
-<p class="section-desc">You don't build all 8 roles at once. Here's the phased approach — start simple, expand as the platform grows.</p>
+<p class="section-desc">You don't build all 5 roles at once. Here's the phased approach — start simple, expand as the platform grows.</p>
 
 <style>
   .roadmap { max-width: 1240px; margin: 0 auto 50px; position: relative; }
@@ -608,43 +593,19 @@
   <div class="roadmap-phase phase-growth">
     <div class="phase-header">
       <span class="phase-badge growth">Phase 2 — Growth</span>
-      <div class="phase-subtitle">Months 4–7 &nbsp;·&nbsp; Delegate work across 3 new roles</div>
+      <div class="phase-subtitle">Months 4–7 &nbsp;·&nbsp; Delegate project & site work</div>
     </div>
     <div class="role-rows">
       <div class="role-row">
         <div class="r-icon">📋</div>
         <div class="r-info">
           <div class="r-name">Project Manager</div>
-          <div class="r-desc">Manage assigned projects, milestones, approve site updates, respond to buyer inquiries</div>
+          <div class="r-desc">Manage assigned projects, milestones, post site updates, upload photos, inspect & approve, respond to buyer inquiries</div>
         </div>
         <span class="r-tag">In Progress</span>
         <div class="r-bar-wrap">
           <div class="r-bar" style="width: 65%;"></div>
           <div class="r-months">Apr – Jun 2025</div>
-        </div>
-      </div>
-      <div class="role-row">
-        <div class="r-icon">🔨</div>
-        <div class="r-info">
-          <div class="r-name">Site Supervisor</div>
-          <div class="r-desc">Post daily site updates, upload photos/videos, update milestone progress from the field</div>
-        </div>
-        <span class="r-tag">In Progress</span>
-        <div class="r-bar-wrap">
-          <div class="r-bar" style="width: 50%;"></div>
-          <div class="r-months">Apr – Jun 2025</div>
-        </div>
-      </div>
-      <div class="role-row">
-        <div class="r-icon">💰</div>
-        <div class="r-info">
-          <div class="r-name">Finance / Accounts</div>
-          <div class="r-desc">Create payment schedules, generate invoices, track buyer payments per milestone</div>
-        </div>
-        <span class="r-tag">Planned</span>
-        <div class="r-bar-wrap">
-          <div class="r-bar" style="width: 20%;"></div>
-          <div class="r-months">May – Jul 2025</div>
         </div>
       </div>
     </div>
@@ -688,21 +649,9 @@
   <div class="roadmap-phase phase-enterprise">
     <div class="phase-header">
       <span class="phase-badge enterprise">Phase 4 — Enterprise</span>
-      <div class="phase-subtitle">Months 10–14 &nbsp;·&nbsp; Quality assurance & multi-builder support</div>
+      <div class="phase-subtitle">Months 10–14 &nbsp;·&nbsp; Multi-builder support</div>
     </div>
     <div class="role-rows">
-      <div class="role-row">
-        <div class="r-icon">🔍</div>
-        <div class="r-info">
-          <div class="r-name">Inspector / QA</div>
-          <div class="r-desc">Conduct milestone inspections, approve/reject phases, upload inspection reports & flag issues</div>
-        </div>
-        <span class="r-tag">Future</span>
-        <div class="r-bar-wrap">
-          <div class="r-bar" style="width: 0%; background: #333;"></div>
-          <div class="r-months">Oct – Dec 2025</div>
-        </div>
-      </div>
       <div class="role-row">
         <div class="r-icon">🏢</div>
         <div class="r-info">
@@ -726,53 +675,143 @@
 <h2>7. Notification Flow — Who Notifies Whom</h2>
 <p class="section-desc">Every notification mapped: what triggers it, who sends it, who receives it.</p>
 
-<div class="diagram-container">
-  <div class="mermaid">
-    flowchart TB
-      subgraph TRIGGERS["🔔 Event Triggers"]
-        T1["Site update posted"]
-        T2["Milestone completed"]
-        T3["Inspection passed/failed"]
-        T4["Invoice sent"]
-        T5["Inquiry received"]
-        T6["Payment received"]
-        T7["Project assigned"]
-        T8["Weekly cron job"]
-        T9["Delay detected"]
-      end
+<style>
+  .notif-flow { max-width: 1240px; margin: 0 auto 50px; display: flex; flex-direction: column; gap: 40px; }
 
-      subgraph NOTIFY["📨 Notification Engine"]
-        NE["System Router<br/>(decides who gets what)"]
-      end
+  .notif-section-label {
+    text-align: center; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase;
+    color: #555; margin-bottom: 8px; font-weight: 600;
+  }
 
-      subgraph RECIPIENTS["📬 Recipients"]
-        RB["🏠 Buyer<br/>Email + Push + In-App"]
-        RPM["📋 PM<br/>Email + In-App"]
-        RAD["👑 Admin<br/>Email + Dashboard"]
-        RFN["💰 Finance<br/>Email"]
-        RSS["🔨 Supervisor<br/>Push"]
-      end
+  .notif-triggers {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px;
+    background: #141414; border: 1px solid #2a2a11; border-radius: 16px; padding: 28px 24px;
+  }
+  .notif-triggers .trigger-item {
+    background: #1a1a0a; border: 1px solid #333300; border-radius: 10px;
+    padding: 14px 16px; text-align: center; font-size: 0.82rem; color: #e0d8a8;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .notif-triggers .trigger-item:hover { border-color: #FFC107; transform: translateY(-2px); }
+  .notif-triggers .trigger-item .t-icon { font-size: 1.3rem; margin-bottom: 6px; }
 
-      T1 --> NE
-      T2 --> NE
-      T3 --> NE
-      T4 --> NE
-      T5 --> NE
-      T6 --> NE
-      T7 --> NE
-      T8 --> NE
-      T9 --> NE
+  .notif-arrow-section {
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+  }
+  .notif-arrow-line {
+    width: 2px; height: 40px; background: linear-gradient(180deg, #FFC107, #C5A572);
+    border-radius: 2px;
+  }
+  .notif-engine {
+    background: #1a0a1a; border: 2px solid #C5A572; border-radius: 14px;
+    padding: 20px 40px; text-align: center;
+  }
+  .notif-engine .ne-icon { font-size: 1.6rem; margin-bottom: 6px; }
+  .notif-engine .ne-title { color: #C5A572; font-size: 1rem; font-weight: 700; }
+  .notif-engine .ne-desc { color: #888; font-size: 0.78rem; margin-top: 4px; }
 
-      NE -->|"Construction updates<br/>Invoices, Replies"| RB
-      NE -->|"Delays, Inspections<br/>Inquiries"| RPM
-      NE -->|"Weekly analytics<br/>Escalations"| RAD
-      NE -->|"Payment received<br/>confirmations"| RFN
-      NE -->|"New assignments<br/>PM instructions"| RSS
+  .notif-recipients {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    background: #141414; border: 1px solid #1a3a1a; border-radius: 16px; padding: 28px 24px;
+  }
+  .notif-recipient {
+    background: #0d200d; border: 1px solid #2a4a2a; border-radius: 12px;
+    padding: 24px 20px; text-align: center; transition: border-color 0.2s, transform 0.2s;
+  }
+  .notif-recipient:hover { border-color: #4CAF50; transform: translateY(-2px); }
+  .notif-recipient .r-icon { font-size: 2rem; margin-bottom: 10px; }
+  .notif-recipient .r-name { color: #fff; font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+  .notif-recipient .r-channels { color: #4CAF50; font-size: 0.75rem; font-weight: 500; margin-bottom: 12px; letter-spacing: 0.5px; }
+  .notif-recipient .r-receives { list-style: none; padding: 0; margin: 0; }
+  .notif-recipient .r-receives li {
+    font-size: 0.78rem; color: #aaa; padding: 5px 0; border-top: 1px solid #1a2a1a;
+  }
+  .notif-recipient .r-receives li:first-child { border-top: none; }
 
-      style TRIGGERS fill:#1a1a0a,stroke:#FFC107,color:#fff
-      style NOTIFY fill:#1a0a1a,stroke:#C5A572,color:#fff
-      style RECIPIENTS fill:#0a1a0a,stroke:#4CAF50,color:#fff
+  @media (max-width: 700px) {
+    .notif-recipients { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="notif-flow">
+
+  <!-- Triggers -->
+  <div>
+    <div class="notif-section-label">🔔 Event Triggers</div>
+    <div class="notif-triggers">
+      <div class="trigger-item"><div class="t-icon">📸</div>Site update posted</div>
+      <div class="trigger-item"><div class="t-icon">✅</div>Milestone completed</div>
+      <div class="trigger-item"><div class="t-icon">🧾</div>Invoice sent</div>
+      <div class="trigger-item"><div class="t-icon">❓</div>Inquiry received</div>
+      <div class="trigger-item"><div class="t-icon">💳</div>Payment received</div>
+      <div class="trigger-item"><div class="t-icon">📁</div>Project assigned</div>
+      <div class="trigger-item"><div class="t-icon">⏰</div>Weekly cron job</div>
+      <div class="trigger-item"><div class="t-icon">⚠️</div>Delay detected</div>
+    </div>
   </div>
+
+  <!-- Arrow down to engine -->
+  <div class="notif-arrow-section">
+    <div class="notif-arrow-line"></div>
+  </div>
+
+  <!-- Notification Engine -->
+  <div style="display: flex; justify-content: center;">
+    <div class="notif-engine">
+      <div class="ne-icon">📨</div>
+      <div class="ne-title">Notification Engine</div>
+      <div class="ne-desc">System Router — decides who gets what</div>
+    </div>
+  </div>
+
+  <!-- Arrow down to recipients -->
+  <div class="notif-arrow-section">
+    <div class="notif-arrow-line" style="background: linear-gradient(180deg, #C5A572, #4CAF50);"></div>
+  </div>
+
+  <!-- Recipients -->
+  <div>
+    <div class="notif-section-label">📬 Recipients</div>
+    <div class="notif-recipients">
+      <div class="notif-recipient">
+        <div class="r-icon">🏠</div>
+        <div class="r-name">Homebuyer</div>
+        <div class="r-channels">EMAIL · PUSH · IN-APP</div>
+        <ul class="r-receives">
+          <li>Construction updates</li>
+          <li>Invoice & payment receipts</li>
+          <li>Inquiry replies</li>
+          <li>Weekly AI digest</li>
+          <li>Project milestones</li>
+        </ul>
+      </div>
+      <div class="notif-recipient">
+        <div class="r-icon">📋</div>
+        <div class="r-name">Project Manager</div>
+        <div class="r-channels">EMAIL · IN-APP · PUSH</div>
+        <ul class="r-receives">
+          <li>Delayed milestone alerts</li>
+          <li>Buyer inquiries</li>
+          <li>New project assignments</li>
+          <li>Payment confirmations</li>
+          <li>Escalation requests</li>
+        </ul>
+      </div>
+      <div class="notif-recipient">
+        <div class="r-icon">👑</div>
+        <div class="r-name">Company Admin</div>
+        <div class="r-channels">EMAIL · DASHBOARD</div>
+        <ul class="r-receives">
+          <li>Weekly analytics report</li>
+          <li>Escalations from PM</li>
+          <li>Payment received alerts</li>
+          <li>New user registrations</li>
+          <li>System health warnings</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div style="text-align: center; color: #444; margin: 60px 0 20px; font-size: 0.8rem;">

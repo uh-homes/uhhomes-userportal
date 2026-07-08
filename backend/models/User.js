@@ -45,6 +45,10 @@ const User = sequelize.define(
       type: DataTypes.ENUM("user", "admin"),
       defaultValue: "user",
     },
+    category: {
+      type: DataTypes.ENUM("homebuyer", "project_manager", "sales_agent", "super_admin"),
+      defaultValue: "homebuyer",
+    },
     notificationPrefs: {
       type: DataTypes.JSON,
       defaultValue: {
