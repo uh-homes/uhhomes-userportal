@@ -1,6 +1,7 @@
 import React from "react";
 import ConstructionTimeline from "../UserPortal/Common/ConstructionTimeline";
 import useProject from "../hooks/useProject";
+import EmptyState from "../Components/EmptyState";
 
 export default function UConstructionTimeline() {
   const { project, loading, error } = useProject();
@@ -23,8 +24,12 @@ export default function UConstructionTimeline() {
 
   if (!project || !project.milestones?.length) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] text-gray-500">
-        <p>No construction timeline data available.</p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <EmptyState
+          icon="timeline"
+          title="Timeline Coming Soon"
+          message="Your construction timeline will appear here once milestones are scheduled by your project team."
+        />
       </div>
     );
   }

@@ -134,14 +134,19 @@ export default function UDashboard() {
     return (
       <div className="flex min-h-screen bg-[#FAFAFA]">
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center bg-white p-10 rounded-2xl shadow-sm max-w-sm">
-            <h2 className="text-xl text-dark">No Active Project</h2>
-            <p className="text-sm text-dark-muted mt-3">
-              You don't have any project assigned yet. Contact support if you believe this is an error.
+          <div className="text-center bg-white p-12 rounded-2xl shadow-sm max-w-md border border-gray-100">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#F5EFE3] to-[#EDE6D8] flex items-center justify-center mx-auto mb-6">
+              <svg className="w-9 h-9 text-[#C5A572]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-800">No Active Project</h2>
+            <p className="text-sm text-gray-500 mt-3 leading-relaxed">
+              Your project dashboard will come to life once a floor plan is assigned to your account. This is typically done by your sales agent or admin.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-6 px-6 py-2 bg-gradient text-white rounded-lg text-sm"
+              className="mt-6 px-6 py-2.5 bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Refresh
             </button>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { HiOutlinePhotograph } from "react-icons/hi";
 import Lightbox from "../../Components/Lightbox";
+import EmptyState from "../../Components/EmptyState";
 
 export default function ConstructionGallery({ gallery = [] }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -29,10 +30,11 @@ export default function ConstructionGallery({ gallery = [] }) {
           <header className="mb-2 mt-6">
             <h1 className="text-2xl text-gray-800 mb-2">Gallery</h1>
           </header>
-          <div className="text-center py-12">
-            <HiOutlinePhotograph className="text-4xl text-gray-300 mx-auto mb-3" />
-            <p className="text-gray-500">No images available in gallery</p>
-          </div>
+          <EmptyState
+            icon="gallery"
+            title="No Photos Yet"
+            message="Construction photos will be uploaded here as your project progresses. Your team will share updates at key milestones."
+          />
         </div>
       </div>
     );

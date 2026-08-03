@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ConstructionProgress from "../UserPortal/Construction/ConstructionProgress";
 import UpdatesConstruct from "../UserPortal/Construction/UpdatesConstruct";
 import api from "../Api/api";
+import EmptyState from "../Components/EmptyState";
 
 export default function UConstructionTrack() {
   const [project, setProject] = useState(null);
@@ -54,10 +55,12 @@ export default function UConstructionTrack() {
 
   if (!project) {
     return (
-      <div className="w-full max-w-7xl mx-auto p-4 rounded-lg bg-lightgreen min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-800">No project data found</p>
-        </div>
+      <div className="w-full max-w-7xl mx-auto p-4 rounded-lg min-h-[60vh] flex items-center justify-center">
+        <EmptyState
+          icon="project"
+          title="No Project Data Yet"
+          message="Your construction progress will appear here once your project is underway. Check back soon for updates."
+        />
       </div>
     );
   }
