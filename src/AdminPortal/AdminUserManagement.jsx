@@ -13,12 +13,15 @@ import {
   HiOutlineCurrencyDollar,
   HiOutlineStar,
   HiOutlineSwitchHorizontal,
+  HiOutlinePlus,
+  HiOutlineClipboardList,
 } from "react-icons/hi";
 
 const CATEGORIES = [
   { key: "homebuyer", label: "Homebuyers", icon: <HiOutlineHome />, color: "text-green-600", bg: "bg-green-50", border: "border-green-200", activeBg: "bg-green-600" },
   { key: "project_manager", label: "Project Managers", icon: <HiOutlineBriefcase />, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", activeBg: "bg-blue-600" },
   { key: "sales_agent", label: "Sales Agents", icon: <HiOutlineCurrencyDollar />, color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200", activeBg: "bg-purple-600" },
+  { key: "site_supervisor", label: "Site Supervisors", icon: <HiOutlineClipboardList />, color: "text-teal-600", bg: "bg-teal-50", border: "border-teal-200", activeBg: "bg-teal-600" },
   { key: "super_admin", label: "Super Admins", icon: <HiOutlineStar />, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", activeBg: "bg-amber-600" },
 ];
 
@@ -52,6 +55,9 @@ export default function AdminUserManagement() {
   const [permissions, setPermissions] = useState(null);
   const [saving, setSaving] = useState(false);
   const [movingUser, setMovingUser] = useState(null);
+  const [showAddUser, setShowAddUser] = useState(false);
+  const [newUser, setNewUser] = useState({ fullName: "", email: "", phone: "", password: "", category: "homebuyer" });
+  const [addingUser, setAddingUser] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -172,6 +178,42 @@ export default function AdminUserManagement() {
 
   const categoryCounts = getCategoryCounts();
 
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    if (!newUser.fullName || !newUser.email || !newUser.password) {
+      toast.error("Full name, email, and password are required.");
+      return;
+    }
+    setAddingUser(true);
+    try {
+      const payload = {
+        fullName: newUser.fullName,
+        email: newUser.email,
+        phone: newUser.phone || undefined,
+        password: newUser.password,
+        role: newUser.category === "super_admin" ? "admin" : "user",
+      };
+      // Use supervisor endpoint for site_supervisor, otherwise general createUser
+      if (newUser.category === "site_supervisor") {
+        await api.post("/admin/supervisors", payload);
+      } else {
+        const res = await api.post("/admin/users", payload);
+        // Update category if not homebuyer (default)
+        if (newUser.category !== "homebuyer" && newUser.category !== "super_admin") {
+          await api.put(`/admin/permissions/category/${res.data.data.id}`, { category: newUser.category });
+        }
+      }
+      toast.success(`User "${newUser.fullName}" created as ${CATEGORIES.find(c => c.key === newUser.category)?.label}`);
+      setShowAddUser(false);
+      setNewUser({ fullName: "", email: "", phone: "", password: "", category: "homebuyer" });
+      await fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create user");
+    } finally {
+      setAddingUser(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -193,10 +235,101 @@ export default function AdminUserManagement() {
             Manage users by category — control read, write, upload, and download access per module.
           </p>
         </div>
-        <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
-          {users.length} total users
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowAddUser(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#C5A572] text-white text-sm font-medium rounded-lg hover:bg-[#b39362] transition-colors shadow-sm"
+          >
+            <HiOutlinePlus className="text-base" /> Add User
+          </button>
+          <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
+            {users.length} total users
+          </span>
+        </div>
       </div>
+
+      {/* Add User Modal */}
+      {showAddUser && (
+        <div className="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4" onClick={() => setShowAddUser(false)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">Add New User</h2>
+            <form onSubmit={handleAddUser} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  value={newUser.fullName}
+                  onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Email *</label>
+                <input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  placeholder="user@example.com"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
+                <input
+                  type="text"
+                  value={newUser.phone}
+                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  placeholder="+1 234 567 8900"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Password *</label>
+                <input
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  required
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                  placeholder="Minimum 6 characters"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
+                <select
+                  value={newUser.category}
+                  onChange={(e) => setNewUser({ ...newUser, category: e.target.value })}
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat.key} value={cat.key}>{cat.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddUser(false)}
+                  className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={addingUser}
+                  className="px-4 py-2 text-sm text-white bg-[#C5A572] rounded-lg hover:bg-[#b39362] disabled:opacity-60 transition-colors flex items-center gap-1.5"
+                >
+                  {addingUser && <span className="h-3.5 w-3.5 border-2 border-white/60 border-t-transparent rounded-full animate-spin"></span>}
+                  {addingUser ? "Creating..." : "Create User"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Category Tabs */}
       <div className="flex flex-wrap gap-2 mb-6">

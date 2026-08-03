@@ -20,7 +20,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      navigate(user.role === "admin" ? "/admin/dashboard" : "/userportal");
+      if (user.category === "site_supervisor") {
+        navigate("/supervisor/dashboard");
+      } else {
+        navigate(user.role === "admin" ? "/admin/dashboard" : "/userportal");
+      }
     }
   }, [user, navigate]);
 

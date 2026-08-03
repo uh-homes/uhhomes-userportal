@@ -36,5 +36,23 @@ export function UserRoute() {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
+  if (user.category === "site_supervisor") {
+    return <Navigate to="/supervisor/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export function SupervisorRoute() {
+  const user = useSelector((state) => state?.user);
+
+  if (!user) {
+    return <Navigate to="/supervisor" replace />;
+  }
+
+  if (user.category !== "site_supervisor") {
+    return <Navigate to="/" replace />;
+  }
+
   return <Outlet />;
 }

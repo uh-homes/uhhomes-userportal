@@ -18,7 +18,7 @@ import UpdatesPage from "./UserPortal/Common/UpdatesPage";
 import useWishlist from "./hooks/useWishlist";
 import useCurrentUser from "./hooks/useCurrentUser";
 import LoginPage from "./Pages/LoginPage";
-import ProtectedRoute, { AdminRoute, UserRoute } from "./components/ProtectedRoute";
+import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute } from "./components/ProtectedRoute";
 
 import AdminDashboard from "./AdminPortal/AdminDashboard";
 import AdminUsers from "./AdminPortal/AdminUsers";
@@ -31,6 +31,16 @@ import AdminReports from "./AdminPortal/AdminReports";
 import AdminAISummary from "./AdminPortal/AdminAISummary";
 import AdminInquiries from "./AdminPortal/AdminInquiries";
 import AdminUserManagement from "./AdminPortal/AdminUserManagement";
+
+import SupervisorLoginPage from "./Pages/SupervisorLoginPage";
+import SupervisorLayout from "./Layout/SupervisorLayout";
+import SupervisorDashboard from "./SupervisorPortal/SupervisorDashboard";
+import SupervisorProjects from "./SupervisorPortal/SupervisorProjects";
+import SupervisorProjectDetail from "./SupervisorPortal/SupervisorProjectDetail";
+import SupervisorUpdates from "./SupervisorPortal/SupervisorUpdates";
+import SupervisorInquiries from "./SupervisorPortal/SupervisorInquiries";
+import SupervisorDocuments from "./SupervisorPortal/SupervisorDocuments";
+import SupervisorIssues from "./SupervisorPortal/SupervisorIssues";
 
 function App() {
   const location = useLocation();
@@ -75,6 +85,20 @@ function App() {
             <Route path="/admin/ai-summary" element={<AdminAISummary />} />
             <Route path="/admin/user-management" element={<AdminUserManagement />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
+          </Route>
+        </Route>
+
+        {/* Supervisor Portal Routes */}
+        <Route path="/supervisor" element={<SupervisorLoginPage />} />
+        <Route element={<SupervisorRoute />}>
+          <Route element={<SupervisorLayout />}>
+            <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
+            <Route path="/supervisor/projects" element={<SupervisorProjects />} />
+            <Route path="/supervisor/projects/:id" element={<SupervisorProjectDetail />} />
+            <Route path="/supervisor/updates" element={<SupervisorUpdates />} />
+            <Route path="/supervisor/inquiries" element={<SupervisorInquiries />} />
+            <Route path="/supervisor/documents" element={<SupervisorDocuments />} />
+            <Route path="/supervisor/issues" element={<SupervisorIssues />} />
           </Route>
         </Route>
 

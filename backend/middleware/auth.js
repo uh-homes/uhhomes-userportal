@@ -47,4 +47,14 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly };
+const supervisorOnly = (req, res, next) => {
+  if (req.user?.category !== "site_supervisor") {
+    return res.status(403).json({
+      status: "error",
+      message: "Site Supervisor access required.",
+    });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly, supervisorOnly };

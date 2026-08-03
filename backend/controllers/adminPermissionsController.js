@@ -37,6 +37,18 @@ const DEFAULT_PERMISSIONS = {
     profile: { read: true, write: true },
     reports: { read: true, download: false },
   },
+  site_supervisor: {
+    dashboard: { read: true, write: true },
+    constructionTracker: { read: true, write: true },
+    timeline: { read: true, write: true },
+    gallery: { read: true, write: true },
+    documents: { read: true, write: true, upload: true },
+    inquiries: { read: true, write: true },
+    alerts: { read: true, write: true },
+    favorites: { read: false, write: false },
+    profile: { read: true, write: true },
+    reports: { read: true, download: true },
+  },
   super_admin: {
     dashboard: { read: true, write: true },
     constructionTracker: { read: true, write: true },
@@ -89,7 +101,7 @@ const updateUserPermissions = async (req, res) => {
     if (permissions && typeof permissions === "object") {
       updateData.permissions = permissions;
     }
-    if (category && ["homebuyer", "project_manager", "sales_agent", "super_admin"].includes(category)) {
+    if (category && ["homebuyer", "project_manager", "sales_agent", "site_supervisor", "super_admin"].includes(category)) {
       updateData.category = category;
     }
 
@@ -201,7 +213,7 @@ const updateUserCategory = async (req, res) => {
 
     const { category } = req.body;
 
-    if (!category || !["homebuyer", "project_manager", "sales_agent", "super_admin"].includes(category)) {
+    if (!category || !["homebuyer", "project_manager", "sales_agent", "site_supervisor", "super_admin"].includes(category)) {
       return res.status(400).json({ status: "error", message: "Valid category is required." });
     }
 

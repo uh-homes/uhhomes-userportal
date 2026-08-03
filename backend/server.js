@@ -17,6 +17,7 @@ const alertRoutes = require("./routes/alertRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const supervisorRoutes = require("./routes/supervisorRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -54,6 +55,7 @@ app.use("/alerts", alertRoutes);
 app.use("/properties", propertyRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/admin", adminRoutes);
+app.use("/supervisor", supervisorRoutes);
 
 // 404 handler
 app.use((req, res) => {

@@ -29,6 +29,7 @@ const { sendPushNotification, sendBulkNotifications, getNotificationHistory } = 
 const { generateWeeklySummary, sendWeeklySummary, sendAllWeeklySummaries } = require("../controllers/adminAISummaryController");
 const { getAllInquiries, respondToInquiry, deleteInquiry } = require("../controllers/adminInquiryController");
 const { getAllUsersPermissions, getUserPermissions, updateUserPermissions, bulkUpdatePermissions, resetUserPermissions, updateUserCategory } = require("../controllers/adminPermissionsController");
+const { createSupervisor, getSupervisors, assignProjects, unassignProject, deleteSupervisor } = require("../controllers/adminSupervisorController");
 
 // All routes require auth + admin
 router.use(protect, adminOnly);
@@ -96,5 +97,12 @@ router.put("/permissions/:userId", updateUserPermissions);
 router.put("/permissions/bulk/update", bulkUpdatePermissions);
 router.post("/permissions/reset/:userId", resetUserPermissions);
 router.put("/permissions/category/:userId", updateUserCategory);
+
+// Supervisor Management
+router.get("/supervisors", getSupervisors);
+router.post("/supervisors", createSupervisor);
+router.post("/supervisors/:id/assign", assignProjects);
+router.delete("/supervisors/:id/unassign/:projectId", unassignProject);
+router.delete("/supervisors/:id", deleteSupervisor);
 
 module.exports = router;

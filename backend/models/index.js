@@ -11,6 +11,7 @@ const Question = require("./Question");
 const Favorite = require("./Favorite");
 const Alert = require("./Alert");
 const Property = require("./Property");
+const ProjectSupervisor = require("./ProjectSupervisor");
 
 // User -> Projects
 User.hasMany(Project, { foreignKey: "userId", as: "projects" });
@@ -68,6 +69,12 @@ Favorite.belongsTo(Property, { foreignKey: "propertyId", as: "property" });
 User.hasMany(Alert, { foreignKey: "userId", as: "alerts" });
 Alert.belongsTo(User, { foreignKey: "userId", as: "user" });
 
+// Supervisor <-> Projects (many-to-many)
+User.belongsToMany(Project, { through: ProjectSupervisor, foreignKey: "supervisorId", otherKey: "projectId", as: "supervisedProjects" });
+Project.belongsToMany(User, { through: ProjectSupervisor, foreignKey: "projectId", otherKey: "supervisorId", as: "supervisors" });
+ProjectSupervisor.belongsTo(User, { foreignKey: "supervisorId", as: "supervisor" });
+ProjectSupervisor.belongsTo(Project, { foreignKey: "projectId", as: "project" });
+
 module.exports = {
   sequelize,
   User,
@@ -82,4 +89,5 @@ module.exports = {
   Favorite,
   Alert,
   Property,
+  ProjectSupervisor,
 };
