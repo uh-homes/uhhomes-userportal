@@ -91,58 +91,56 @@ export default function SalesAgentPipeline() {
         </div>
       </div>
 
-      {/* Pipeline Kanban */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      {/* Pipeline Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {STAGES.map((stage) => (
-          <div key={stage.key} className="min-w-[280px] flex-shrink-0">
-            <div className={`rounded-xl border-t-4 ${stage.color} bg-white shadow-sm border border-gray-100`}>
-              <div className="p-4 border-b border-gray-100">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-[#1A1A1A] text-sm">{stage.label}</h3>
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${stage.bg} ${stage.dot.replace("bg-", "text-")}`}>
-                    {pipeline[stage.key]?.length || 0}
-                  </span>
-                </div>
+          <div key={stage.key} className={`rounded-xl border-t-4 ${stage.color} bg-white shadow-sm border border-gray-100 flex flex-col`}>
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-[#1A1A1A] text-sm">{stage.label}</h3>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${stage.bg} ${stage.dot.replace("bg-", "text-")}`}>
+                  {pipeline[stage.key]?.length || 0}
+                </span>
               </div>
+            </div>
 
-              <div className="p-3 space-y-3 max-h-[500px] overflow-y-auto">
-                {pipeline[stage.key]?.length > 0 ? (
-                  pipeline[stage.key].map((lead) => (
-                    <div key={lead.id} className={`rounded-lg border border-gray-100 p-3 ${stage.bg} hover:shadow-sm transition-all`}>
-                      <p className="text-sm font-medium text-[#1A1A1A]">{lead.name}</p>
-                      {lead.property && (
-                        <p className="text-xs text-gray-500 mt-1">{lead.property.name}</p>
-                      )}
-                      {lead.property?.price && (
-                        <p className="text-xs font-medium text-[#C5A572] mt-1">
-                          {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(lead.property.price)}
-                        </p>
-                      )}
-                      {lead.tours?.length > 0 && (
-                        <p className="text-xs text-gray-400 mt-1">
-                          {lead.tours.length} tour(s) • Next: {lead.tours.find((t) => t.status === "SCHEDULED")?.scheduledDate || "—"}
-                        </p>
-                      )}
+            <div className="p-3 space-y-2 flex-1 overflow-y-auto max-h-[400px]">
+              {pipeline[stage.key]?.length > 0 ? (
+                pipeline[stage.key].map((lead) => (
+                  <div key={lead.id} className={`rounded-lg border border-gray-100 p-3 ${stage.bg} hover:shadow-sm transition-all`}>
+                    <p className="text-sm font-medium text-[#1A1A1A]">{lead.name}</p>
+                    {lead.property && (
+                      <p className="text-xs text-gray-500 mt-1">{lead.property.name}</p>
+                    )}
+                    {lead.property?.price && (
+                      <p className="text-xs font-medium text-[#C5A572] mt-1">
+                        {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(lead.property.price)}
+                      </p>
+                    )}
+                    {lead.tours?.length > 0 && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        {lead.tours.length} tour(s) • Next: {lead.tours.find((t) => t.status === "SCHEDULED")?.scheduledDate || "—"}
+                      </p>
+                    )}
 
-                      {/* Move buttons */}
-                      <div className="flex gap-1 mt-2 flex-wrap">
-                        {STAGES.filter((s) => s.key !== stage.key).map((s) => (
-                          <button
-                            key={s.key}
-                            onClick={() => handleMoveStage(lead.id, s.key)}
-                            className="text-[10px] px-1.5 py-0.5 rounded border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors"
-                            title={`Move to ${s.label}`}
-                          >
-                            {s.label}
-                          </button>
-                        ))}
-                      </div>
+                    {/* Move buttons */}
+                    <div className="flex gap-1 mt-2 flex-wrap">
+                      {STAGES.filter((s) => s.key !== stage.key).map((s) => (
+                        <button
+                          key={s.key}
+                          onClick={() => handleMoveStage(lead.id, s.key)}
+                          className="text-[10px] px-1.5 py-0.5 rounded border border-gray-200 text-gray-500 hover:bg-gray-100 transition-colors"
+                          title={`Move to ${s.label}`}
+                        >
+                          {s.label}
+                        </button>
+                      ))}
                     </div>
-                  ))
-                ) : (
-                  <p className="text-xs text-gray-400 text-center py-4">No leads</p>
-                )}
-              </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-xs text-gray-400 text-center py-4">No leads</p>
+              )}
             </div>
           </div>
         ))}

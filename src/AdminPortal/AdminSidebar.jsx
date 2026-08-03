@@ -77,12 +77,6 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
         )}
       </div>
 
-      {/* Admin Badge */}
-      {open && (
-        <div className="mx-4 mb-2 px-3 py-1.5 bg-[#C5A572]/20 rounded-lg text-center">
-          <span className="text-xs font-semibold text-[#C5A572]">ADMIN PORTAL</span>
-        </div>
-      )}
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-2">
