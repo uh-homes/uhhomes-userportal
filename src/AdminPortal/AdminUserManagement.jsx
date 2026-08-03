@@ -58,6 +58,7 @@ export default function AdminUserManagement() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [newUser, setNewUser] = useState({ fullName: "", email: "", phone: "", password: "", category: "homebuyer" });
   const [addingUser, setAddingUser] = useState(false);
+  const [listCollapsed, setListCollapsed] = useState(false);
 
   const fetchUsers = async () => {
     try {
@@ -76,6 +77,7 @@ export default function AdminUserManagement() {
   const handleSelectUser = (user) => {
     setSelectedUser(user);
     setPermissions(JSON.parse(JSON.stringify(user.permissions)));
+    setListCollapsed(true);
   };
 
   const handleToggle = (moduleKey, action) => {
@@ -369,8 +371,9 @@ export default function AdminUserManagement() {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 ${listCollapsed ? 'lg:grid-cols-1' : 'lg:grid-cols-3'} gap-6`}>
         {/* User List (Left Panel) */}
+        {!listCollapsed && (
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
@@ -417,9 +420,10 @@ export default function AdminUserManagement() {
             </div>
           </div>
         </div>
+        )}
 
         {/* Permissions Panel (Right) */}
-        <div className="lg:col-span-2">
+        <div className={listCollapsed ? 'lg:col-span-1' : 'lg:col-span-2'}>
           {!selectedUser && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center min-h-[55vh]">
               <div className="text-center text-gray-400">
@@ -435,9 +439,22 @@ export default function AdminUserManagement() {
               {/* Panel Header */}
               <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h2 className="text-lg font-bold text-[#1A1A1A]">{selectedUser.fullName}</h2>
-                    <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setListCollapsed(!listCollapsed)}
+                      className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+                      title={listCollapsed ? "Show user list" : "Hide user list"}
+                    >
+                      {listCollapsed ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
+                      )}
+                    </button>
+                    <div>
+                      <h2 className="text-lg font-bold text-[#1A1A1A]">{selectedUser.fullName}</h2>
+                      <p className="text-sm text-gray-500">{selectedUser.email}</p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -462,68 +479,48 @@ export default function AdminUserManagement() {
                   </div>
                 </div>
 
-                {/* Move to category */}
-                <div className="mt-3 flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-gray-500 font-medium flex items-center gap-1">
-                    <HiOutlineSwitchHorizontal className="text-sm" /> Move to:
-                  </span>
-                  {CATEGORIES.filter((c) => c.key !== activeCategory).map((cat) => (
-                    <button
-                      key={cat.key}
-                      onClick={() => handleMoveUser(selectedUser.id, cat.key)}
-                      disabled={movingUser === selectedUser.id}
-                      className={`text-xs px-2.5 py-1 rounded-md border ${cat.border} ${cat.bg} ${cat.color} hover:shadow-sm disabled:opacity-50 font-medium`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Quick actions */}
-                <div className="flex items-center gap-2 mt-3">
-                  <button onClick={() => handleToggleAllRead(true)} className="text-xs px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md hover:bg-green-100">All Read On</button>
-                  <button onClick={() => handleToggleAllRead(false)} className="text-xs px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-md hover:bg-red-100">All Read Off</button>
-                  <button onClick={() => handleToggleAllWrite(true)} className="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md hover:bg-blue-100">All Write On</button>
-                  <button onClick={() => handleToggleAllWrite(false)} className="text-xs px-2.5 py-1 bg-red-50 text-red-600 border border-red-200 rounded-md hover:bg-red-100">All Write Off</button>
-                </div>
               </div>
 
-              {/* Permission Toggles */}
+              {/* Permission Toggles - Compact Grid */}
               <div className="p-5 max-h-[48vh] overflow-y-auto">
-                <div className="space-y-3">
-                  {PERMISSION_MODULES.map((mod) => (
-                    <div key={mod.key} className="border border-gray-100 rounded-xl p-4 hover:border-[#C5A572]/30 transition-colors">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-[#1A1A1A] text-sm">{mod.label}</h3>
-                          <p className="text-xs text-gray-500 mt-0.5">{mod.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-5 mt-3">
-                        {mod.actions.map((action) => {
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-100">
+                      <th className="text-left text-xs font-semibold text-gray-500 uppercase pb-2 pl-2">Module</th>
+                      {["read", "write", "upload", "download"].map((action) => (
+                        <th key={action} className="text-center text-xs font-semibold text-gray-500 uppercase pb-2 w-20">{action}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {PERMISSION_MODULES.map((mod) => (
+                      <tr key={mod.key} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-3 pl-2">
+                          <p className="font-medium text-sm text-[#1A1A1A]">{mod.label}</p>
+                          <p className="text-xs text-gray-400">{mod.description}</p>
+                        </td>
+                        {["read", "write", "upload", "download"].map((action) => {
+                          const hasAction = mod.actions.includes(action);
+                          if (!hasAction) return <td key={action} className="text-center py-3"><span className="text-gray-200">—</span></td>;
                           const isEnabled = permissions[mod.key]?.[action] ?? false;
                           const colorClass = ACTION_COLORS[action];
                           return (
-                            <div key={action} className="flex items-center gap-3">
+                            <td key={action} className="text-center py-3">
                               <button
                                 onClick={() => handleToggle(mod.key, action)}
-                                className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#C5A572] focus:ring-offset-1 ${
+                                className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none ${
                                   isEnabled ? colorClass.on : colorClass.off
                                 }`}
                               >
-                                <span className={`absolute h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${isEnabled ? "translate-x-[22px]" : "translate-x-[3px]"}`} />
+                                <span className={`absolute h-3.5 w-3.5 rounded-full bg-white shadow transition-transform duration-200 ${isEnabled ? "translate-x-[18px]" : "translate-x-[2px]"}`} />
                               </button>
-                              <span className={`text-xs font-medium ${isEnabled ? "text-gray-700" : "text-gray-400"}`}>
-                                {ACTION_LABELS[action]}
-                              </span>
-                              {isEnabled ? <HiOutlineCheck className="text-green-500 text-xs" /> : <HiOutlineX className="text-gray-300 text-xs" />}
-                            </div>
+                            </td>
                           );
                         })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
               {/* Summary footer */}
