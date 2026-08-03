@@ -33,6 +33,10 @@ const Alert = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

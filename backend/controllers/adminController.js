@@ -267,7 +267,10 @@ const updateMilestone = async (req, res) => {
 const getAllAlerts = async (req, res) => {
   try {
     const alerts = await Alert.findAll({
-      include: [{ model: User, as: "user", attributes: ["id", "fullName", "email"] }],
+      include: [
+        { model: User, as: "user", attributes: ["id", "fullName", "email"] },
+        { model: User, as: "creator", attributes: ["id", "fullName", "email", "category"] },
+      ],
       order: [["createdAt", "DESC"]],
     });
 

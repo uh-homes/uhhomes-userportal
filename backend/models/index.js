@@ -70,6 +70,7 @@ Favorite.belongsTo(Property, { foreignKey: "propertyId", as: "property" });
 // User -> Alerts
 User.hasMany(Alert, { foreignKey: "userId", as: "alerts" });
 Alert.belongsTo(User, { foreignKey: "userId", as: "user" });
+Alert.belongsTo(User, { foreignKey: "createdBy", as: "creator" });
 
 // Supervisor <-> Projects (many-to-many)
 User.belongsToMany(Project, { through: ProjectSupervisor, foreignKey: "supervisorId", otherKey: "projectId", as: "supervisedProjects" });

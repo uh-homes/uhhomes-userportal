@@ -291,22 +291,48 @@ export default function AdminAlerts() {
       )}
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-5">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat.key}
-            onClick={() => setActiveCategory(cat.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeCategory === cat.key
-                ? `${cat.bg} ${cat.color} ring-1 ring-current`
-                : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full ${cat.dot}`}></span>
-            {cat.label}
-            <span className="text-xs opacity-70">({getCategoryCount(cat.key)})</span>
-          </button>
-        ))}
+      <div className="mb-5 space-y-3">
+        {/* Supervisor Reports Group */}
+        <div className="flex flex-wrap items-center gap-2">
+          {CATEGORIES.filter((c) => ["ALL", "ESCALATION", "ISSUE", "DELAY"].includes(c.key)).map((cat) => (
+            <button
+              key={cat.key}
+              onClick={() => setActiveCategory(cat.key)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeCategory === cat.key
+                  ? `${cat.bg} ${cat.color} ring-1 ring-current`
+                  : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${cat.dot}`}></span>
+              {cat.label}
+              <span className="text-xs opacity-70">({getCategoryCount(cat.key)})</span>
+            </button>
+          ))}
+          <span className="text-xs text-gray-400 ml-1">— from Site Supervisors</span>
+        </div>
+
+        <div className="border-t border-gray-200"></div>
+
+        {/* Construction Categories Group */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-400 mr-1">Construction:</span>
+          {CATEGORIES.filter((c) => !["ALL", "ESCALATION", "ISSUE", "DELAY"].includes(c.key)).map((cat) => (
+            <button
+              key={cat.key}
+              onClick={() => setActiveCategory(cat.key)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeCategory === cat.key
+                  ? `${cat.bg} ${cat.color} ring-1 ring-current`
+                  : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"
+              }`}
+            >
+              <span className={`w-2 h-2 rounded-full ${cat.dot}`}></span>
+              {cat.label}
+              <span className="text-xs opacity-70">({getCategoryCount(cat.key)})</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Alerts List */}
@@ -337,6 +363,14 @@ export default function AdminAlerts() {
                     <span className="text-xs text-gray-400">{new Date(alert.createdAt).toLocaleDateString()}</span>
                     <span className="text-xs text-gray-400">•</span>
                     <span className="text-xs text-gray-400 capitalize">{alert.channel?.toLowerCase()}</span>
+                    {alert.creator && (
+                      <>
+                        <span className="text-xs text-gray-400">•</span>
+                        <span className="text-xs font-medium text-orange-600">
+                          Reported by: {alert.creator.fullName}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

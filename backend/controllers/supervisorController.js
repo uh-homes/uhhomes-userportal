@@ -213,6 +213,7 @@ const logIssue = async (req, res) => {
       type: severity === "high" ? "DELAY" : "ISSUE",
       channel: "IN_APP",
       read: false,
+      createdBy: req.user.id,
     });
 
     res.status(201).json({ status: "success", data: alert });
@@ -243,6 +244,7 @@ const escalateToAdmin = async (req, res) => {
         type: "ESCALATION",
         channel: "IN_APP",
         read: false,
+        createdBy: req.user.id,
       }))
     );
 
