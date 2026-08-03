@@ -18,11 +18,11 @@ import {
 } from "react-icons/hi";
 
 const CATEGORIES = [
-  { key: "homebuyer", label: "Homebuyers", icon: <HiOutlineHome />, color: "text-green-600", bg: "bg-green-50", border: "border-green-200", activeBg: "bg-green-600" },
-  { key: "project_manager", label: "Project Managers", icon: <HiOutlineBriefcase />, color: "text-blue-600", bg: "bg-blue-50", border: "border-blue-200", activeBg: "bg-blue-600" },
-  { key: "sales_agent", label: "Sales Agents", icon: <HiOutlineCurrencyDollar />, color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-200", activeBg: "bg-purple-600" },
-  { key: "site_supervisor", label: "Site Supervisors", icon: <HiOutlineClipboardList />, color: "text-teal-600", bg: "bg-teal-50", border: "border-teal-200", activeBg: "bg-teal-600" },
-  { key: "super_admin", label: "Super Admins", icon: <HiOutlineStar />, color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-200", activeBg: "bg-amber-600" },
+  { key: "homebuyer", label: "Homebuyers", icon: <HiOutlineHome />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
+  { key: "project_manager", label: "Project Managers", icon: <HiOutlineBriefcase />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
+  { key: "sales_agent", label: "Sales Agents", icon: <HiOutlineCurrencyDollar />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
+  { key: "site_supervisor", label: "Site Supervisors", icon: <HiOutlineClipboardList />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
+  { key: "super_admin", label: "Super Admins", icon: <HiOutlineStar />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
 ];
 
 const PERMISSION_MODULES = [

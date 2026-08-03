@@ -97,21 +97,6 @@ export default function AdminAISummary() {
         </button>
       </div>
 
-      {/* Info Card */}
-      <div className="bg-gradient-to-r from-[#C5A572]/10 to-[#D4AF37]/10 rounded-xl p-5 mb-6 border border-[#C5A572]/20">
-        <div className="flex items-start gap-3">
-          <HiOutlineSparkles className="text-xl text-[#C5A572] mt-0.5" />
-          <div>
-            <h3 className="font-semibold text-[#1A1A1A]">How it works</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              AI generates a professional weekly progress summary from your project's milestones and updates.
-              If an OpenAI API key is configured (<code className="bg-white px-1 rounded text-xs">OPENAI_API_KEY</code> in .env),
-              it uses GPT-4o-mini for natural language. Otherwise, a structured rule-based summary is generated.
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Project Selector + Generate */}
       <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-6">
         <h2 className="font-semibold text-[#1A1A1A] mb-4">Generate Summary for Project</h2>
