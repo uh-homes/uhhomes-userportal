@@ -49,6 +49,7 @@ import SalesAgentTours from "./SalesAgentPortal/SalesAgentTours";
 import SalesAgentBuyers from "./SalesAgentPortal/SalesAgentBuyers";
 import SalesAgentPipeline from "./SalesAgentPortal/SalesAgentPipeline";
 import SalesAgentProfile from "./SalesAgentPortal/SalesAgentProfile";
+import PermissionGuard from "./components/PermissionGuard";
 import SupervisorTimeline from "./SupervisorPortal/SupervisorTimeline";
 import SupervisorGallery from "./SupervisorPortal/SupervisorGallery";
 import SupervisorAlerts from "./SupervisorPortal/SupervisorAlerts";
@@ -105,17 +106,17 @@ function App() {
         <Route element={<SupervisorRoute />}>
           <Route element={<SupervisorLayout />}>
             <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
-            <Route path="/supervisor/projects" element={<SupervisorProjects />} />
-            <Route path="/supervisor/projects/:id" element={<SupervisorProjectDetail />} />
+            <Route path="/supervisor/projects" element={<PermissionGuard module="constructionTracker"><SupervisorProjects /></PermissionGuard>} />
+            <Route path="/supervisor/projects/:id" element={<PermissionGuard module="constructionTracker"><SupervisorProjectDetail /></PermissionGuard>} />
             <Route path="/supervisor/updates" element={<SupervisorUpdates />} />
-            <Route path="/supervisor/inquiries" element={<SupervisorInquiries />} />
-            <Route path="/supervisor/documents" element={<SupervisorDocuments />} />
+            <Route path="/supervisor/inquiries" element={<PermissionGuard module="inquiries"><SupervisorInquiries /></PermissionGuard>} />
+            <Route path="/supervisor/documents" element={<PermissionGuard module="documents"><SupervisorDocuments /></PermissionGuard>} />
             <Route path="/supervisor/issues" element={<SupervisorIssues />} />
-            <Route path="/supervisor/timeline" element={<SupervisorTimeline />} />
-            <Route path="/supervisor/gallery" element={<SupervisorGallery />} />
-            <Route path="/supervisor/alerts" element={<SupervisorAlerts />} />
-            <Route path="/supervisor/profile" element={<SupervisorProfile />} />
-            <Route path="/supervisor/reports" element={<SupervisorReports />} />
+            <Route path="/supervisor/timeline" element={<PermissionGuard module="timeline"><SupervisorTimeline /></PermissionGuard>} />
+            <Route path="/supervisor/gallery" element={<PermissionGuard module="gallery"><SupervisorGallery /></PermissionGuard>} />
+            <Route path="/supervisor/alerts" element={<PermissionGuard module="alerts"><SupervisorAlerts /></PermissionGuard>} />
+            <Route path="/supervisor/profile" element={<PermissionGuard module="profile"><SupervisorProfile /></PermissionGuard>} />
+            <Route path="/supervisor/reports" element={<PermissionGuard module="reports"><SupervisorReports /></PermissionGuard>} />
           </Route>
         </Route>
 
@@ -123,12 +124,12 @@ function App() {
         <Route element={<SalesAgentRoute />}>
           <Route element={<SalesAgentLayout />}>
             <Route path="/sales/dashboard" element={<SalesAgentDashboard />} />
-            <Route path="/sales/properties" element={<SalesAgentProperties />} />
-            <Route path="/sales/leads" element={<SalesAgentLeads />} />
-            <Route path="/sales/tours" element={<SalesAgentTours />} />
-            <Route path="/sales/buyers" element={<SalesAgentBuyers />} />
-            <Route path="/sales/pipeline" element={<SalesAgentPipeline />} />
-            <Route path="/sales/profile" element={<SalesAgentProfile />} />
+            <Route path="/sales/properties" element={<PermissionGuard module="constructionTracker"><SalesAgentProperties /></PermissionGuard>} />
+            <Route path="/sales/leads" element={<PermissionGuard module="inquiries"><SalesAgentLeads /></PermissionGuard>} />
+            <Route path="/sales/tours" element={<PermissionGuard module="timeline"><SalesAgentTours /></PermissionGuard>} />
+            <Route path="/sales/buyers" element={<PermissionGuard module="favorites"><SalesAgentBuyers /></PermissionGuard>} />
+            <Route path="/sales/pipeline" element={<PermissionGuard module="reports"><SalesAgentPipeline /></PermissionGuard>} />
+            <Route path="/sales/profile" element={<PermissionGuard module="profile"><SalesAgentProfile /></PermissionGuard>} />
           </Route>
         </Route>
 

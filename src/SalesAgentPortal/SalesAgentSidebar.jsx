@@ -14,20 +14,26 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { SALES_MENU_CONFIG, filterMenuByPermissions } from "../config/permissionRoutes";
+
+const ICON_MAP = {
+  "/sales/dashboard": <HiOutlineViewGrid />,
+  "/sales/properties": <HiOutlineHome />,
+  "/sales/leads": <HiOutlineUserAdd />,
+  "/sales/tours": <HiOutlineCalendar />,
+  "/sales/buyers": <HiOutlineUsers />,
+  "/sales/pipeline": <HiOutlineTrendingUp />,
+  "/sales/profile": <HiOutlineCog />,
+};
 
 const SalesAgentSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
 
-  const menuItems = [
-    { title: "Dashboard", icon: <HiOutlineViewGrid />, path: "/sales/dashboard" },
-    { title: "Property Catalog", icon: <HiOutlineHome />, path: "/sales/properties" },
-    { title: "Prospect Leads", icon: <HiOutlineUserAdd />, path: "/sales/leads" },
-    { title: "Property Tours", icon: <HiOutlineCalendar />, path: "/sales/tours" },
-    { title: "Buyer Accounts", icon: <HiOutlineUsers />, path: "/sales/buyers" },
-    { title: "Sales Pipeline", icon: <HiOutlineTrendingUp />, path: "/sales/pipeline" },
-    { title: "Profile", icon: <HiOutlineCog />, path: "/sales/profile" },
-  ];
+  const menuItems = filterMenuByPermissions(SALES_MENU_CONFIG, user?.permissions).map((item) => ({
+    ...item,
+    icon: ICON_MAP[item.path] || <HiOutlineViewGrid />,
+  }));
 
   const handleLinkClick = () => {
     if (window.innerWidth < 768) {

@@ -13,28 +13,36 @@ import {
   HiOutlineBell,
   HiOutlineDocumentDownload,
   HiOutlineCog,
+  HiOutlineHeart,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { SUPERVISOR_MENU_CONFIG, filterMenuByPermissions } from "../config/permissionRoutes";
+
+const ICON_MAP = {
+  "/supervisor/dashboard": <HiOutlineViewGrid />,
+  "/supervisor/projects": <HiOutlineClipboardList />,
+  "/supervisor/timeline": <HiOutlineClock />,
+  "/supervisor/gallery": <HiOutlinePhotograph />,
+  "/supervisor/documents": <HiOutlineDocumentText />,
+  "/supervisor/inquiries": <HiOutlineChatAlt2 />,
+  "/supervisor/alerts": <HiOutlineBell />,
+  "/supervisor/favorites": <HiOutlineHeart />,
+  "/supervisor/reports": <HiOutlineDocumentDownload />,
+  "/supervisor/updates": <HiOutlineExclamationCircle />,
+  "/supervisor/issues": <HiOutlineExclamationCircle />,
+  "/supervisor/profile": <HiOutlineCog />,
+};
 
 const SupervisorSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
 
-  const menuItems = [
-    { title: "Dashboard", icon: <HiOutlineViewGrid />, path: "/supervisor/dashboard" },
-    { title: "Projects", icon: <HiOutlineClipboardList />, path: "/supervisor/projects" },
-    { title: "Timeline", icon: <HiOutlineClock />, path: "/supervisor/timeline" },
-    { title: "Photo Gallery", icon: <HiOutlinePhotograph />, path: "/supervisor/gallery" },
-    { title: "Documents", icon: <HiOutlineDocumentText />, path: "/supervisor/documents" },
-    { title: "Inquiries", icon: <HiOutlineChatAlt2 />, path: "/supervisor/inquiries" },
-    { title: "Alerts", icon: <HiOutlineBell />, path: "/supervisor/alerts" },
-    { title: "Reports", icon: <HiOutlineDocumentDownload />, path: "/supervisor/reports" },
-    { title: "Site Updates", icon: <HiOutlineExclamationCircle />, path: "/supervisor/updates" },
-    { title: "Issues & Delays", icon: <HiOutlineExclamationCircle />, path: "/supervisor/issues" },
-    { title: "Profile", icon: <HiOutlineCog />, path: "/supervisor/profile" },
-  ];
+  const menuItems = filterMenuByPermissions(SUPERVISOR_MENU_CONFIG, user?.permissions).map((item) => ({
+    ...item,
+    icon: ICON_MAP[item.path] || <HiOutlineViewGrid />,
+  }));
 
   const handleLinkClick = () => {
     if (window.innerWidth < 768) {
