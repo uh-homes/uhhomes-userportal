@@ -24,7 +24,7 @@ export default function SupervisorLayout() {
       setLoggingOut(true);
       await logoutUser();
       dispatch(removeUser());
-      navigate("/supervisor");
+      navigate("/");
     } catch (e) {
       // handled
     } finally {

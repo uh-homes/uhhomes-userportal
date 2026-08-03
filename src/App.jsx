@@ -32,7 +32,6 @@ import AdminAISummary from "./AdminPortal/AdminAISummary";
 import AdminInquiries from "./AdminPortal/AdminInquiries";
 import AdminUserManagement from "./AdminPortal/AdminUserManagement";
 
-import SupervisorLoginPage from "./Pages/SupervisorLoginPage";
 import SupervisorLayout from "./Layout/SupervisorLayout";
 import SupervisorDashboard from "./SupervisorPortal/SupervisorDashboard";
 import SupervisorProjects from "./SupervisorPortal/SupervisorProjects";
@@ -42,7 +41,6 @@ import SupervisorInquiries from "./SupervisorPortal/SupervisorInquiries";
 import SupervisorDocuments from "./SupervisorPortal/SupervisorDocuments";
 import SupervisorIssues from "./SupervisorPortal/SupervisorIssues";
 
-import SalesAgentLoginPage from "./Pages/SalesAgentLoginPage";
 import SalesAgentLayout from "./Layout/SalesAgentLayout";
 import SalesAgentDashboard from "./SalesAgentPortal/SalesAgentDashboard";
 import SalesAgentProperties from "./SalesAgentPortal/SalesAgentProperties";
@@ -104,7 +102,6 @@ function App() {
         </Route>
 
         {/* Supervisor Portal Routes */}
-        <Route path="/supervisor" element={<SupervisorLoginPage />} />
         <Route element={<SupervisorRoute />}>
           <Route element={<SupervisorLayout />}>
             <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
@@ -123,7 +120,6 @@ function App() {
         </Route>
 
         {/* Sales Agent Portal Routes */}
-        <Route path="/sales-login" element={<SalesAgentLoginPage />} />
         <Route element={<SalesAgentRoute />}>
           <Route element={<SalesAgentLayout />}>
             <Route path="/sales/dashboard" element={<SalesAgentDashboard />} />

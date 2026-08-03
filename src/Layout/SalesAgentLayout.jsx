@@ -24,7 +24,7 @@ export default function SalesAgentLayout() {
       setLoggingOut(true);
       await logoutUser();
       dispatch(removeUser());
-      navigate("/sales-login");
+      navigate("/");
     } catch (e) {
       // handled
     } finally {

@@ -51,7 +51,7 @@ export function SalesAgentRoute() {
   const user = useSelector((state) => state?.user);
 
   if (!user) {
-    return <Navigate to="/sales-login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (user.category !== "sales_agent") {
@@ -65,7 +65,7 @@ export function SupervisorRoute() {
   const user = useSelector((state) => state?.user);
 
   if (!user) {
-    return <Navigate to="/supervisor" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (user.category !== "site_supervisor") {

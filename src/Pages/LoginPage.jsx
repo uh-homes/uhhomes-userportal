@@ -22,6 +22,8 @@ export default function LoginPage() {
     if (user) {
       if (user.category === "site_supervisor") {
         navigate("/supervisor/dashboard");
+      } else if (user.category === "sales_agent") {
+        navigate("/sales/dashboard");
       } else {
         navigate(user.role === "admin" ? "/admin/dashboard" : "/userportal");
       }
