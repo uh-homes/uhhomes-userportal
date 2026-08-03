@@ -12,6 +12,8 @@ const Favorite = require("./Favorite");
 const Alert = require("./Alert");
 const Property = require("./Property");
 const ProjectSupervisor = require("./ProjectSupervisor");
+const Lead = require("./Lead");
+const Tour = require("./Tour");
 
 // User -> Projects
 User.hasMany(Project, { foreignKey: "userId", as: "projects" });
@@ -75,6 +77,28 @@ Project.belongsToMany(User, { through: ProjectSupervisor, foreignKey: "projectId
 ProjectSupervisor.belongsTo(User, { foreignKey: "supervisorId", as: "supervisor" });
 ProjectSupervisor.belongsTo(Project, { foreignKey: "projectId", as: "project" });
 
+// Sales Agent -> Leads
+User.hasMany(Lead, { foreignKey: "salesAgentId", as: "leads" });
+Lead.belongsTo(User, { foreignKey: "salesAgentId", as: "salesAgent" });
+
+// Lead -> Converted User
+Lead.belongsTo(User, { foreignKey: "convertedUserId", as: "convertedUser" });
+
+// Lead -> Property
+Lead.belongsTo(Property, { foreignKey: "propertyId", as: "property" });
+Property.hasMany(Lead, { foreignKey: "propertyId", as: "leads" });
+
+// Lead -> Tours
+Lead.hasMany(Tour, { foreignKey: "leadId", as: "tours" });
+Tour.belongsTo(Lead, { foreignKey: "leadId", as: "lead" });
+
+// Tour -> Sales Agent
+Tour.belongsTo(User, { foreignKey: "salesAgentId", as: "salesAgent" });
+
+// Tour -> Property
+Tour.belongsTo(Property, { foreignKey: "propertyId", as: "property" });
+Property.hasMany(Tour, { foreignKey: "propertyId", as: "tours" });
+
 module.exports = {
   sequelize,
   User,
@@ -90,4 +114,6 @@ module.exports = {
   Alert,
   Property,
   ProjectSupervisor,
+  Lead,
+  Tour,
 };

@@ -18,7 +18,7 @@ import UpdatesPage from "./UserPortal/Common/UpdatesPage";
 import useWishlist from "./hooks/useWishlist";
 import useCurrentUser from "./hooks/useCurrentUser";
 import LoginPage from "./Pages/LoginPage";
-import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute } from "./components/ProtectedRoute";
+import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute, SalesAgentRoute } from "./components/ProtectedRoute";
 
 import AdminDashboard from "./AdminPortal/AdminDashboard";
 import AdminUsers from "./AdminPortal/AdminUsers";
@@ -41,6 +41,21 @@ import SupervisorUpdates from "./SupervisorPortal/SupervisorUpdates";
 import SupervisorInquiries from "./SupervisorPortal/SupervisorInquiries";
 import SupervisorDocuments from "./SupervisorPortal/SupervisorDocuments";
 import SupervisorIssues from "./SupervisorPortal/SupervisorIssues";
+
+import SalesAgentLoginPage from "./Pages/SalesAgentLoginPage";
+import SalesAgentLayout from "./Layout/SalesAgentLayout";
+import SalesAgentDashboard from "./SalesAgentPortal/SalesAgentDashboard";
+import SalesAgentProperties from "./SalesAgentPortal/SalesAgentProperties";
+import SalesAgentLeads from "./SalesAgentPortal/SalesAgentLeads";
+import SalesAgentTours from "./SalesAgentPortal/SalesAgentTours";
+import SalesAgentBuyers from "./SalesAgentPortal/SalesAgentBuyers";
+import SalesAgentPipeline from "./SalesAgentPortal/SalesAgentPipeline";
+import SalesAgentProfile from "./SalesAgentPortal/SalesAgentProfile";
+import SupervisorTimeline from "./SupervisorPortal/SupervisorTimeline";
+import SupervisorGallery from "./SupervisorPortal/SupervisorGallery";
+import SupervisorAlerts from "./SupervisorPortal/SupervisorAlerts";
+import SupervisorProfile from "./SupervisorPortal/SupervisorProfile";
+import SupervisorReports from "./SupervisorPortal/SupervisorReports";
 
 function App() {
   const location = useLocation();
@@ -99,6 +114,25 @@ function App() {
             <Route path="/supervisor/inquiries" element={<SupervisorInquiries />} />
             <Route path="/supervisor/documents" element={<SupervisorDocuments />} />
             <Route path="/supervisor/issues" element={<SupervisorIssues />} />
+            <Route path="/supervisor/timeline" element={<SupervisorTimeline />} />
+            <Route path="/supervisor/gallery" element={<SupervisorGallery />} />
+            <Route path="/supervisor/alerts" element={<SupervisorAlerts />} />
+            <Route path="/supervisor/profile" element={<SupervisorProfile />} />
+            <Route path="/supervisor/reports" element={<SupervisorReports />} />
+          </Route>
+        </Route>
+
+        {/* Sales Agent Portal Routes */}
+        <Route path="/sales-login" element={<SalesAgentLoginPage />} />
+        <Route element={<SalesAgentRoute />}>
+          <Route element={<SalesAgentLayout />}>
+            <Route path="/sales/dashboard" element={<SalesAgentDashboard />} />
+            <Route path="/sales/properties" element={<SalesAgentProperties />} />
+            <Route path="/sales/leads" element={<SalesAgentLeads />} />
+            <Route path="/sales/tours" element={<SalesAgentTours />} />
+            <Route path="/sales/buyers" element={<SalesAgentBuyers />} />
+            <Route path="/sales/pipeline" element={<SalesAgentPipeline />} />
+            <Route path="/sales/profile" element={<SalesAgentProfile />} />
           </Route>
         </Route>
 

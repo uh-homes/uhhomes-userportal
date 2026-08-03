@@ -76,15 +76,7 @@ export default function SupervisorDocuments() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-[#1A1A1A]">Project Documents</h1>
-        <button
-          onClick={() => setShowUpload(!showUpload)}
-          className="flex items-center gap-2 bg-[#C5A572] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#b39362] transition-colors shadow-sm"
-        >
-          <HiOutlineUpload className="w-4 h-4" /> Upload
-        </button>
-      </div>
+      <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">Project Documents</h1>
 
       <div className="mb-4">
         <select
@@ -97,32 +89,6 @@ export default function SupervisorDocuments() {
           ))}
         </select>
       </div>
-
-      {showUpload && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-4 max-w-lg">
-          <form onSubmit={handleUpload} className="space-y-3">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Document title (optional)"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-            />
-            <input
-              type="file"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="w-full text-gray-600 text-sm"
-            />
-            <button
-              type="submit"
-              disabled={uploading || !file}
-              className="bg-[#C5A572] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#b39362] disabled:opacity-60 transition-colors"
-            >
-              {uploading ? "Uploading..." : "Upload Document"}
-            </button>
-          </form>
-        </div>
-      )}
 
       {documents.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">

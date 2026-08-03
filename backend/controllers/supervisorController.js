@@ -347,6 +347,119 @@ const uploadDocument = async (req, res) => {
   }
 };
 
+// GET /supervisor/timeline/:projectId - Get timeline (milestones) for project
+const getTimeline = async (req, res) => {
+  try {
+    const assignment = await ProjectSupervisor.findOne({
+      where: { supervisorId: req.user.id, projectId: req.params.projectId },
+    });
+    if (!assignment) {
+      return res.status(403).json({ status: "error", message: "Not assigned to this project." });
+    }
+
+    const milestones = await Milestone.findAll({
+      where: { projectId: req.params.projectId },
+      order: [["order", "ASC"], ["createdAt", "ASC"]],
+    });
+
+    res.json({ status: "success", data: milestones });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// GET /supervisor/gallery/:projectId - Get gallery for project
+const getGallery = async (req, res) => {
+  try {
+    const assignment = await ProjectSupervisor.findOne({
+      where: { supervisorId: req.user.id, projectId: req.params.projectId },
+    });
+    if (!assignment) {
+      return res.status(403).json({ status: "error", message: "Not assigned to this project." });
+    }
+
+    const galleries = await Gallery.findAll({
+      where: { projectId: req.params.projectId },
+      include: [{ model: Media, as: "media" }],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.json({ status: "success", data: galleries });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// GET /supervisor/alerts - Get alerts for supervisor
+const getAlerts = async (req, res) => {
+  try {
+    const alerts = await Alert.findAll({
+      where: { userId: req.user.id },
+      order: [["createdAt", "DESC"]],
+    });
+    res.json({ status: "success", data: alerts });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// PUT /supervisor/alerts/:id/read - Mark alert as read
+const markAlertRead = async (req, res) => {
+  try {
+    const alert = await Alert.findOne({ where: { id: req.params.id, userId: req.user.id } });
+    if (!alert) return res.status(404).json({ status: "error", message: "Alert not found." });
+    await alert.update({ read: true });
+    res.json({ status: "success", data: alert });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// GET /supervisor/profile - Get supervisor profile
+const getProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id, {
+      attributes: ["id", "fullName", "email", "phone", "address", "category", "createdAt"],
+    });
+    res.json({ status: "success", data: user });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// PUT /supervisor/profile - Update supervisor profile
+const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    const { fullName, phone, address } = req.body;
+    await user.update({ fullName, phone, address });
+    res.json({ status: "success", data: user });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// GET /supervisor/reports - Get reports (project list for download)
+const getReports = async (req, res) => {
+  try {
+    const assignments = await ProjectSupervisor.findAll({
+      where: { supervisorId: req.user.id },
+      include: [{
+        model: Project,
+        as: "project",
+        include: [
+          { model: User, as: "user", attributes: ["id", "fullName", "email"] },
+          { model: Milestone, as: "milestones" },
+        ],
+      }],
+    });
+    const projects = assignments.map((a) => a.project);
+    res.json({ status: "success", data: projects });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 // GET /supervisor/dashboard - Dashboard stats for supervisor
 const getDashboard = async (req, res) => {
   try {
@@ -402,5 +515,12 @@ module.exports = {
   respondToInquiry,
   getDocuments,
   uploadDocument,
+  getTimeline,
+  getGallery,
+  getAlerts,
+  markAlertRead,
+  getProfile,
+  updateProfile,
+  getReports,
   getDashboard,
 };

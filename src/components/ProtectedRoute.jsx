@@ -40,6 +40,24 @@ export function UserRoute() {
     return <Navigate to="/supervisor/dashboard" replace />;
   }
 
+  if (user.category === "sales_agent") {
+    return <Navigate to="/sales/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export function SalesAgentRoute() {
+  const user = useSelector((state) => state?.user);
+
+  if (!user) {
+    return <Navigate to="/sales-login" replace />;
+  }
+
+  if (user.category !== "sales_agent") {
+    return <Navigate to="/" replace />;
+  }
+
   return <Outlet />;
 }
 

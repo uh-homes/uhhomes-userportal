@@ -3,37 +3,30 @@ import logoUhhomes from "../assets/logowhite.png";
 import faviconLogo from "../assets/favicon_uhhomes.webp";
 import {
   HiOutlineViewGrid,
-  HiOutlineClipboardList,
-  HiOutlinePhotograph,
-  HiOutlineDocumentText,
-  HiOutlineChatAlt2,
-  HiOutlineExclamationCircle,
-  HiOutlineX,
-  HiOutlineClock,
-  HiOutlineBell,
-  HiOutlineDocumentDownload,
+  HiOutlineHome,
+  HiOutlineUserAdd,
+  HiOutlineCalendar,
+  HiOutlineUsers,
+  HiOutlineTrendingUp,
   HiOutlineCog,
+  HiOutlineX,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const SupervisorSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
+const SalesAgentSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
 
   const menuItems = [
-    { title: "Dashboard", icon: <HiOutlineViewGrid />, path: "/supervisor/dashboard" },
-    { title: "Projects", icon: <HiOutlineClipboardList />, path: "/supervisor/projects" },
-    { title: "Timeline", icon: <HiOutlineClock />, path: "/supervisor/timeline" },
-    { title: "Photo Gallery", icon: <HiOutlinePhotograph />, path: "/supervisor/gallery" },
-    { title: "Documents", icon: <HiOutlineDocumentText />, path: "/supervisor/documents" },
-    { title: "Inquiries", icon: <HiOutlineChatAlt2 />, path: "/supervisor/inquiries" },
-    { title: "Alerts", icon: <HiOutlineBell />, path: "/supervisor/alerts" },
-    { title: "Reports", icon: <HiOutlineDocumentDownload />, path: "/supervisor/reports" },
-    { title: "Site Updates", icon: <HiOutlineExclamationCircle />, path: "/supervisor/updates" },
-    { title: "Issues & Delays", icon: <HiOutlineExclamationCircle />, path: "/supervisor/issues" },
-    { title: "Profile", icon: <HiOutlineCog />, path: "/supervisor/profile" },
+    { title: "Dashboard", icon: <HiOutlineViewGrid />, path: "/sales/dashboard" },
+    { title: "Property Catalog", icon: <HiOutlineHome />, path: "/sales/properties" },
+    { title: "Prospect Leads", icon: <HiOutlineUserAdd />, path: "/sales/leads" },
+    { title: "Property Tours", icon: <HiOutlineCalendar />, path: "/sales/tours" },
+    { title: "Buyer Accounts", icon: <HiOutlineUsers />, path: "/sales/buyers" },
+    { title: "Sales Pipeline", icon: <HiOutlineTrendingUp />, path: "/sales/pipeline" },
+    { title: "Profile", icon: <HiOutlineCog />, path: "/sales/profile" },
   ];
 
   const handleLinkClick = () => {
@@ -48,7 +41,7 @@ const SupervisorSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     <motion.div className="h-full bg-black flex flex-col overflow-hidden w-full">
       {/* Logo and Close */}
       <div className="flex items-center justify-between p-4">
-        <Link to="/supervisor/dashboard">
+        <Link to="/sales/dashboard">
           {open ? (
             <img
               src={logoUhhomes}
@@ -74,10 +67,10 @@ const SupervisorSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
         )}
       </div>
 
-      {/* Supervisor Badge */}
+      {/* Sales Agent Badge */}
       {open && (
         <div className="mx-4 mb-2 px-3 py-1.5 bg-[#C5A572]/20 rounded-lg text-center">
-          <span className="text-xs font-semibold text-[#C5A572]">SUPERVISOR PORTAL</span>
+          <span className="text-xs font-semibold text-[#C5A572]">SALES AGENT PORTAL</span>
         </div>
       )}
 
@@ -131,7 +124,7 @@ const SupervisorSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
                 exit={{ opacity: 0, width: 0 }}
                 className="overflow-hidden"
               >
-                <p className="text-sm font-medium text-[#C5A572] truncate">{user?.fullName || "Supervisor"}</p>
+                <p className="text-sm font-medium text-[#C5A572] truncate">{user?.fullName || "Sales Agent"}</p>
                 <p className="text-xs text-gray-400 truncate">{user?.email}</p>
               </motion.div>
             )}
@@ -142,4 +135,4 @@ const SupervisorSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   );
 };
 
-export default SupervisorSidebar;
+export default SalesAgentSidebar;

@@ -57,4 +57,14 @@ const supervisorOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly, supervisorOnly };
+const salesAgentOnly = (req, res, next) => {
+  if (req.user?.category !== "sales_agent") {
+    return res.status(403).json({
+      status: "error",
+      message: "Sales Agent access required.",
+    });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly, supervisorOnly, salesAgentOnly };

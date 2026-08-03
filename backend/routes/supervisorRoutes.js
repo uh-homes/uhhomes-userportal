@@ -43,4 +43,21 @@ router.put("/inquiries/:id/respond", supervisorController.respondToInquiry);
 router.get("/projects/:id/documents", supervisorController.getDocuments);
 router.post("/projects/:id/documents", upload.single("file"), supervisorController.uploadDocument);
 
+// Timeline
+router.get("/timeline/:projectId", supervisorController.getTimeline);
+
+// Gallery
+router.get("/gallery/:projectId", supervisorController.getGallery);
+
+// Alerts
+router.get("/alerts", supervisorController.getAlerts);
+router.put("/alerts/:id/read", supervisorController.markAlertRead);
+
+// Profile
+router.get("/profile", supervisorController.getProfile);
+router.put("/profile", supervisorController.updateProfile);
+
+// Reports
+router.get("/reports", supervisorController.getReports);
+
 module.exports = router;
