@@ -5,6 +5,9 @@ import { toast } from "react-toastify";
 
 const DEFAULT_CATEGORIES = [
   { key: "ALL", label: "All", color: "text-gray-700", bg: "bg-gray-100", dot: "bg-gray-500" },
+  { key: "ESCALATION", label: "Escalations", color: "text-red-700", bg: "bg-red-50", dot: "bg-red-500" },
+  { key: "ISSUE", label: "Issues", color: "text-rose-700", bg: "bg-rose-50", dot: "bg-rose-500" },
+  { key: "DELAY", label: "Delays", color: "text-orange-700", bg: "bg-orange-50", dot: "bg-orange-500" },
   { key: "GENERAL", label: "General", color: "text-blue-700", bg: "bg-blue-50", dot: "bg-blue-500" },
   { key: "FOUNDATION", label: "Foundation", color: "text-amber-700", bg: "bg-amber-50", dot: "bg-amber-500" },
   { key: "FRAMING", label: "Framing", color: "text-orange-700", bg: "bg-orange-50", dot: "bg-orange-500" },
@@ -202,6 +205,9 @@ export default function AdminAlerts() {
                   }}
                 >
                   <option value="GENERAL">General</option>
+                  <option value="ESCALATION">Escalation</option>
+                  <option value="ISSUE">Issue</option>
+                  <option value="DELAY">Delay</option>
                   <option value="FOUNDATION">Foundation</option>
                   <option value="FRAMING">Framing</option>
                   <option value="PLUMBING">Plumbing</option>
