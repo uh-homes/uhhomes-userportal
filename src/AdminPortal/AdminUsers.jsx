@@ -110,10 +110,19 @@ export default function AdminUsers() {
         address: editUser.address,
         isVerified: editUser.isVerified,
       });
-      if (editUser.projectId && editUser.floorPlan) {
-        await api.put(`/admin/projects/${editUser.projectId}`, {
-          name: `${editUser.floorPlan} at Park Place`,
-        });
+      if (editUser.floorPlan) {
+        if (editUser.projectId) {
+          await api.put(`/admin/projects/${editUser.projectId}`, {
+            name: `${editUser.floorPlan} at Park Place`,
+          });
+        } else {
+          await api.post("/admin/projects", {
+            userId: editUser.id,
+            name: `${editUser.floorPlan} at Park Place`,
+            address: editUser.address || "",
+            status: "PLANNING",
+          });
+        }
       }
       toast.success("User updated successfully!");
       setShowEditModal(false);

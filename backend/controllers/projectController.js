@@ -3,43 +3,51 @@ const { sendInquiryNotificationToAdmin } = require("../utils/sendEmail");
 
 // GET /user-projects
 exports.getUserProject = async (req, res) => {
-  const project = await Project.findOne({
-    where: { userId: req.user.id },
-    include: [
-      {
-        model: Property,
-        as: "property",
-      },
-      {
-        model: Milestone,
-        as: "milestones",
-        order: [["order", "ASC"]],
-      },
-      {
-        model: Update,
-        as: "updates",
-        include: [
-          { model: Media, as: "media" },
-          { model: Milestone, as: "milestone", attributes: ["id", "name"] },
-        ],
-        order: [["createdAt", "DESC"]],
-        limit: 5,
-      },
-    ],
-    order: [[{ model: Milestone, as: "milestones" }, "order", "ASC"]],
-  });
-
-  if (!project) {
-    return res.json({
-      status: "success",
-      data: null,
+  try {
+    console.log("[getUserProject] req.user.id:", req.user.id, "email:", req.user.email);
+    const project = await Project.findOne({
+      where: { userId: req.user.id },
+      include: [
+        {
+          model: Property,
+          as: "property",
+        },
+        {
+          model: Milestone,
+          as: "milestones",
+          order: [["order", "ASC"]],
+        },
+        {
+          model: Update,
+          as: "updates",
+          include: [
+            { model: Media, as: "media" },
+            { model: Milestone, as: "milestone", attributes: ["id", "name"] },
+          ],
+          order: [["createdAt", "DESC"]],
+          limit: 5,
+        },
+      ],
+      order: [[{ model: Milestone, as: "milestones" }, "order", "ASC"]],
     });
-  }
 
-  res.json({
-    status: "success",
-    data: project,
-  });
+    console.log("[getUserProject] project found:", project ? project.name : "NULL");
+
+    if (!project) {
+      return res.json({
+        status: "success",
+        data: null,
+      });
+    }
+
+    res.json({
+      status: "success",
+      data: project,
+    });
+  } catch (error) {
+    console.error("[getUserProject] ERROR:", error.message);
+    res.status(500).json({ status: "error", message: error.message });
+  }
 };
 
 // GET /user-projects/tracker

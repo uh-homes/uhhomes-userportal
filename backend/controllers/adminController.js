@@ -208,7 +208,7 @@ const updateProject = async (req, res) => {
 // POST /admin/projects - Create project for a user
 const createProject = async (req, res) => {
   try {
-    const { userId, name, address, status, completionPercentage, startDate, estimatedEndDate } = req.body;
+    const { userId, name, address, status, completionPercentage, startDate, estimatedEndDate, propertyId } = req.body;
 
     const user = await User.findByPk(userId);
     if (!user) {
@@ -217,7 +217,7 @@ const createProject = async (req, res) => {
 
     const project = await Project.create({
       userId, name, address, status: status || "PLANNED",
-      completionPercentage: completionPercentage || 0, startDate, estimatedEndDate,
+      completionPercentage: completionPercentage || 0, startDate, estimatedEndDate, propertyId,
     });
 
     res.status(201).json({ status: "success", data: project });
