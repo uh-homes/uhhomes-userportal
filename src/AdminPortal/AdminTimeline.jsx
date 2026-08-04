@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlinePencil } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineCalendar, HiOutlinePhotograph } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function AdminTimeline() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projectDetail, setProjectDetail] = useState(null);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
   const [editMilestone, setEditMilestone] = useState(null);
   const [form, setForm] = useState({
@@ -32,9 +33,24 @@ export default function AdminTimeline() {
     }
   };
 
+  const fetchProjectDetail = async (projectId) => {
+    try {
+      const res = await api.get(`/admin/projects/${projectId}`);
+      setProjectDetail(res.data.data);
+    } catch (err) {
+      console.error("Failed to fetch project detail:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (selectedProject?.id) {
+      fetchProjectDetail(selectedProject.id);
+    }
+  }, [selectedProject?.id]);
 
   const handleAddMilestone = async (e) => {
     e.preventDefault();
@@ -44,6 +60,7 @@ export default function AdminTimeline() {
       setShowMilestoneForm(false);
       resetForm();
       fetchProjects();
+      fetchProjectDetail(selectedProject.id);
     } catch (err) {
       toast.error("Failed to add milestone");
     }
@@ -57,6 +74,7 @@ export default function AdminTimeline() {
       setEditMilestone(null);
       resetForm();
       fetchProjects();
+      fetchProjectDetail(selectedProject.id);
     } catch (err) {
       toast.error("Failed to update milestone");
     }
@@ -235,6 +253,68 @@ export default function AdminTimeline() {
             ))}
             {(!currentProject.milestones || currentProject.milestones.length === 0) && (
               <p className="text-gray-500 text-sm">No milestones yet. Add one above.</p>
+            )}
+          </div>
+
+          {/* Site Updates from Supervisor */}
+          <div className="mt-8 border-t border-gray-100 pt-6">
+            <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
+              <HiOutlineCalendar className="text-[#C5A572]" />
+              Site Updates
+            </h3>
+            {projectDetail?.updates && projectDetail.updates.length > 0 ? (
+              <div className="space-y-4">
+                {projectDetail.updates.map((update) => (
+                  <div key={update.id} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-[#1A1A1A]">{update.title}</p>
+                        {update.description && (
+                          <p className="text-[13px] text-gray-600 mt-1">{update.description}</p>
+                        )}
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-[11px] text-gray-400">
+                            {new Date(update.createdAt).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                          {update.milestone && (
+                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                              {update.milestone.name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    {/* Media attachments */}
+                    {update.media && update.media.length > 0 && (
+                      <div className="mt-3 flex items-center gap-2 flex-wrap">
+                        {update.media.map((m) => (
+                          <div key={m.id} className="relative">
+                            {m.type === "IMAGE" ? (
+                              <img
+                                src={m.url}
+                                alt="Site update"
+                                className="w-16 h-16 object-cover rounded-lg border border-gray-200"
+                              />
+                            ) : (
+                              <div className="w-16 h-16 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center">
+                                <HiOutlinePhotograph className="text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400 text-sm">No site updates posted yet.</p>
             )}
           </div>
         </div>

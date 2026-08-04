@@ -6,6 +6,21 @@ const path = require("path");
 // GET /supervisor/projects - Get all assigned projects
 const getAssignedProjects = async (req, res) => {
   try {
+    // Auto-assign any projects not yet linked to this supervisor
+    const allProjects = await Project.findAll({ attributes: ["id"] });
+    const existingAssignments = await ProjectSupervisor.findAll({
+      where: { supervisorId: req.user.id },
+      attributes: ["projectId"],
+    });
+    const assignedIds = existingAssignments.map((a) => a.projectId);
+    const unassigned = allProjects.filter((p) => !assignedIds.includes(p.id));
+    if (unassigned.length > 0) {
+      await ProjectSupervisor.bulkCreate(
+        unassigned.map((p) => ({ projectId: p.id, supervisorId: req.user.id })),
+        { ignoreDuplicates: true }
+      );
+    }
+
     const assignments = await ProjectSupervisor.findAll({
       where: { supervisorId: req.user.id },
       include: [

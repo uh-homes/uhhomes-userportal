@@ -63,7 +63,7 @@ export default function SupervisorUpdates() {
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
             >
               {projects.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
+                <option key={p.id} value={p.id}>{p.name} — {p.user?.fullName || "No Client"}</option>
               ))}
             </select>
           </div>

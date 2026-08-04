@@ -1,4 +1,4 @@
-const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, sequelize } = require("../models");
+const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, ProjectSupervisor, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
 
@@ -219,6 +219,15 @@ const createProject = async (req, res) => {
       userId, name, address, status: status || "PLANNED",
       completionPercentage: completionPercentage || 0, startDate, estimatedEndDate, propertyId,
     });
+
+    // Auto-assign all site supervisors to the new project
+    const supervisors = await User.findAll({ where: { category: "site_supervisor" } });
+    if (supervisors.length > 0) {
+      await ProjectSupervisor.bulkCreate(
+        supervisors.map((s) => ({ projectId: project.id, supervisorId: s.id })),
+        { ignoreDuplicates: true }
+      );
+    }
 
     res.status(201).json({ status: "success", data: project });
   } catch (error) {
