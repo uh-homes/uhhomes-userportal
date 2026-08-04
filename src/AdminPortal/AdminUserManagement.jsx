@@ -26,16 +26,16 @@ const CATEGORIES = [
 ];
 
 const PERMISSION_MODULES = [
-  { key: "dashboard", label: "Dashboard", description: "View project overview and stats", actions: ["read", "write"] },
-  { key: "constructionTracker", label: "Construction Tracker", description: "View construction progress and milestones", actions: ["read", "write"] },
-  { key: "timeline", label: "Timeline", description: "View construction timeline", actions: ["read", "write"] },
-  { key: "gallery", label: "Photo Gallery", description: "View and manage construction photos", actions: ["read", "write"] },
-  { key: "documents", label: "Documents", description: "Access contracts, permits, and blueprints", actions: ["read", "write", "upload"] },
-  { key: "inquiries", label: "Inquiries", description: "Submit and view questions to builder", actions: ["read", "write"] },
-  { key: "alerts", label: "Alerts & Notifications", description: "Receive and manage notifications", actions: ["read", "write"] },
-  { key: "favorites", label: "Favorites", description: "Save and manage favorite properties", actions: ["read", "write"] },
-  { key: "profile", label: "Profile Settings", description: "View and edit personal profile", actions: ["read", "write"] },
-  { key: "reports", label: "Reports", description: "View and download project reports", actions: ["read", "download"] },
+  { key: "dashboard", label: "Dashboard", description: "View project overview and stats", actions: ["read", "write", "upload", "download"] },
+  { key: "constructionTracker", label: "Construction Tracker", description: "View construction progress and milestones", actions: ["read", "write", "upload", "download"] },
+  { key: "timeline", label: "Timeline", description: "View construction timeline", actions: ["read", "write", "upload", "download"] },
+  { key: "gallery", label: "Photo Gallery", description: "View and manage construction photos", actions: ["read", "write", "upload", "download"] },
+  { key: "documents", label: "Documents", description: "Access contracts, permits, and blueprints", actions: ["read", "write", "upload", "download"] },
+  { key: "inquiries", label: "Inquiries", description: "Submit and view questions to builder", actions: ["read", "write", "upload", "download"] },
+  { key: "alerts", label: "Alerts & Notifications", description: "Receive and manage notifications", actions: ["read", "write", "upload", "download"] },
+  { key: "favorites", label: "Favorites", description: "Save and manage favorite properties", actions: ["read", "write", "upload", "download"] },
+  { key: "profile", label: "Profile Settings", description: "View and edit personal profile", actions: ["read", "write", "upload", "download"] },
+  { key: "reports", label: "Reports", description: "View and download project reports", actions: ["read", "write", "upload", "download"] },
 ];
 
 const ACTION_LABELS = { read: "Read", write: "Write", upload: "Upload", download: "Download" };
