@@ -52,14 +52,14 @@ export default function UConstructionTimeline() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">Construction Timeline</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Timeline - Left */}
-        <div className="lg:col-span-2">
+        <div>
           <ConstructionTimeline milestones={project.milestones} />
         </div>
 
-        {/* Site Updates - Right sidebar */}
-        <div className="lg:col-span-1">
+        {/* Site Updates - Right */}
+        <div>
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 sticky top-6">
             <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <FaCalendarDay className="text-[#C5A572]" />
