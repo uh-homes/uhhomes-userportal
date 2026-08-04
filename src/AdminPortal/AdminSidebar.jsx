@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import logoUhhomes from "../assets/logowhite.png";
 import faviconLogo from "../assets/favicon_uhhomes.webp";
 import {
@@ -11,10 +11,12 @@ import {
   HiOutlineUsers,
   HiOutlinePhotograph,
   HiOutlineDocumentDownload,
-
   HiOutlineSparkles,
   HiOutlineMail,
   HiOutlineShieldCheck,
+  HiOutlineChevronDown,
+  HiOutlineChevronRight,
+  HiOutlineUserGroup,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -23,19 +25,27 @@ import { useSelector } from "react-redux";
 const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
+  const [usersExpanded, setUsersExpanded] = useState(
+    location.pathname === "/admin/users" || location.pathname === "/admin/user-management"
+  );
 
   const menuItems = [
     { title: "Dashboard", icon: <HiOutlineViewGrid />, path: "/admin/dashboard" },
-    { title: "Users", icon: <HiOutlineUsers />, path: "/admin/users" },
+    {
+      title: "Users",
+      icon: <HiOutlineUsers />,
+      children: [
+        { title: "Users List", icon: <HiOutlineUserGroup />, path: "/admin/users" },
+        { title: "User Management", icon: <HiOutlineShieldCheck />, path: "/admin/user-management" },
+      ],
+    },
     { title: "Alerts", icon: <HiOutlineBell />, path: "/admin/alerts" },
     { title: "Construction Tracker", icon: <HiOutlineLocationMarker />, path: "/admin/projects" },
     { title: "Construction Timeline", icon: <HiOutlineClock />, path: "/admin/timeline" },
     { title: "Photo Gallery", icon: <HiOutlinePhotograph />, path: "/admin/gallery" },
     { title: "PDF Reports", icon: <HiOutlineDocumentDownload />, path: "/admin/reports" },
     { title: "Inquiries", icon: <HiOutlineMail />, path: "/admin/inquiries" },
-
     { title: "AI Summary", icon: <HiOutlineSparkles />, path: "/admin/ai-summary" },
-    { title: "User Management", icon: <HiOutlineShieldCheck />, path: "/admin/user-management" },
     { title: "Settings", icon: <HiOutlineCog />, path: "/admin/settings" },
   ];
 
@@ -82,6 +92,73 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
       <nav className="flex-1 overflow-y-auto px-3 py-2">
         <ul className="space-y-1">
           {menuItems.map((item, index) => {
+            if (item.children) {
+              const isChildActive = item.children.some((c) => location.pathname === c.path);
+              return (
+                <li key={index}>
+                  <button
+                    onClick={() => {
+                      if (open) setUsersExpanded(!usersExpanded);
+                    }}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                      isChildActive && !usersExpanded
+                        ? "bg-[#C5A572] text-white font-medium"
+                        : "text-[#C5A572] hover:bg-white/10"
+                    }`}
+                  >
+                    <span className="text-lg">{item.icon}</span>
+                    <AnimatePresence>
+                      {open && (
+                        <motion.span
+                          initial={{ opacity: 0, width: 0 }}
+                          animate={{ opacity: 1, width: "auto" }}
+                          exit={{ opacity: 0, width: 0 }}
+                          className="whitespace-nowrap overflow-hidden text-sm flex-1 text-left"
+                        >
+                          {item.title}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                    {open && (
+                      <span className="text-sm">
+                        {usersExpanded ? <HiOutlineChevronDown /> : <HiOutlineChevronRight />}
+                      </span>
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {usersExpanded && open && (
+                      <motion.ul
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden ml-4 mt-1 space-y-1"
+                      >
+                        {item.children.map((child, ci) => {
+                          const isActive = location.pathname === child.path;
+                          return (
+                            <li key={ci}>
+                              <Link
+                                to={child.path}
+                                onClick={handleLinkClick}
+                                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 ${
+                                  isActive
+                                    ? "bg-[#C5A572] text-white font-medium"
+                                    : "text-[#C5A572] hover:bg-white/10"
+                                }`}
+                              >
+                                <span className="text-base">{child.icon}</span>
+                                <span className="text-sm whitespace-nowrap">{child.title}</span>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </motion.ul>
+                    )}
+                  </AnimatePresence>
+                </li>
+              );
+            }
+
             const isActive = location.pathname === item.path;
             return (
               <li key={index}>
