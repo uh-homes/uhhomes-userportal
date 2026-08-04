@@ -77,8 +77,8 @@ export default function SupervisorTimeline() {
                     "bg-white border-gray-300"
                   }`}></div>
                   <div>
-                    <p className="font-medium text-[#1A1A1A]">{milestone.name}</p>
-                    {milestone.description && <p className="text-xs text-gray-500">{milestone.description}</p>}
+                    <p className="text-sm font-semibold text-[#1A1A1A]">{milestone.name}</p>
+                    {milestone.description && <p className="text-[13px] text-gray-500">{milestone.description}</p>}
                     <div className="flex items-center gap-3 mt-1">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         milestone.status === "COMPLETE" ? "bg-green-100 text-green-700" :

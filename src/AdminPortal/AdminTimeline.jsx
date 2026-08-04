@@ -215,16 +215,16 @@ export default function AdminTimeline() {
                 <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 ${milestone.status === "COMPLETE" ? "bg-green-500 border-green-500" : milestone.status === "IN_PROGRESS" ? "bg-blue-500 border-blue-500" : "bg-white border-gray-300"}`}></div>
                 <div className="flex items-start justify-between">
                   <div>
-                    <p className="font-medium text-[#1A1A1A]">{milestone.name}</p>
-                    <p className="text-xs text-gray-500">{milestone.description}</p>
+                    <p className="text-sm font-semibold text-[#1A1A1A]">{milestone.name}</p>
+                    <p className="text-[13px] text-gray-500">{milestone.description}</p>
                     <div className="flex items-center gap-3 mt-1">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${milestone.status === "COMPLETE" ? "bg-green-100 text-green-700" : milestone.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}>
                         {milestone.status}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-[11px] text-gray-400">
                         {milestone.date ? new Date(milestone.date).toLocaleDateString() : "No date"}
                       </span>
-                      <span className="text-xs text-gray-400">{milestone.progress}%</span>
+                      <span className="text-[11px] text-gray-400">{milestone.progress}%</span>
                     </div>
                   </div>
                   <button onClick={() => openEditMilestone(milestone)} className="p-1.5 text-gray-400 hover:text-[#C5A572] rounded">

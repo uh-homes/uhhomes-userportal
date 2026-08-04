@@ -188,7 +188,7 @@ export default function AdminInquiries() {
                           : "bg-yellow-500"
                       }`}
                     ></span>
-                    <span className="font-medium text-[#1A1A1A]">
+                    <span className="text-sm font-semibold text-[#1A1A1A]">
                       {inquiry.subject}
                     </span>
                     <span
@@ -203,25 +203,25 @@ export default function AdminInquiries() {
                         : "Pending"}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 ml-4 line-clamp-2">
+                  <p className="text-[13px] text-gray-600 ml-4 line-clamp-2">
                     {inquiry.message}
                   </p>
-                  <div className="flex items-center gap-3 mt-1 ml-4">
-                    <span className="text-xs text-gray-500 font-medium">
+                  <div className="flex items-center gap-2 mt-1.5 ml-4">
+                    <span className="text-[11px] text-gray-400 font-medium">
                       {inquiry.user?.fullName || "Unknown User"}
                     </span>
-                    <span className="text-xs text-gray-400">•</span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-[11px] text-gray-300">•</span>
+                    <span className="text-[11px] text-gray-400">
                       {inquiry.user?.email}
                     </span>
-                    <span className="text-xs text-gray-400">•</span>
-                    <span className="text-xs text-gray-400">
+                    <span className="text-[11px] text-gray-300">•</span>
+                    <span className="text-[11px] text-gray-400">
                       {formatDate(inquiry.createdAt)}
                     </span>
                     {inquiry.project && (
                       <>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-blue-500">
+                        <span className="text-[11px] text-gray-300">•</span>
+                        <span className="text-[11px] text-[#C5A572]">
                           {inquiry.project.name}
                         </span>
                       </>
@@ -280,10 +280,10 @@ export default function AdminInquiries() {
                     "U"}
                 </div>
                 <div>
-                  <p className="font-medium text-[#1A1A1A]">
+                  <p className="text-sm font-semibold text-[#1A1A1A]">
                     {selectedInquiry.user?.fullName || "Unknown User"}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-[11px] text-gray-500">
                     {selectedInquiry.user?.email}
                   </p>
                 </div>

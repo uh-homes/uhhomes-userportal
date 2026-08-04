@@ -71,8 +71,8 @@ export default function SupervisorReports() {
                     <HiOutlineClipboardList className="w-5 h-5 text-[#C5A572]" />
                   </div>
                   <div>
-                    <p className="font-medium text-[#1A1A1A]">{project.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-semibold text-[#1A1A1A]">{project.name}</p>
+                    <p className="text-[11px] text-gray-500">
                       {project.user?.fullName} • {completedMilestones}/{totalMilestones} milestones
                     </p>
                   </div>

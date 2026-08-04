@@ -219,8 +219,8 @@ export default function AdminNotifications() {
                   alert.type === "ERROR" ? "bg-red-500" : "bg-blue-500"
                 }`}></span>
                 <div>
-                  <p className="text-sm font-medium text-[#1A1A1A]">{alert.title}</p>
-                  <p className="text-xs text-gray-500">{alert.user?.fullName} • {new Date(alert.createdAt).toLocaleDateString()}</p>
+                  <p className="text-sm font-semibold text-[#1A1A1A]">{alert.title}</p>
+                  <p className="text-[11px] text-gray-400">{alert.user?.fullName} • {new Date(alert.createdAt).toLocaleDateString()}</p>
                 </div>
               </div>
               <span className={`text-xs px-2 py-0.5 rounded-full ${alert.read ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>

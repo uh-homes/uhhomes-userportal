@@ -198,7 +198,7 @@ export default function AdminUsers() {
                     <div className="w-9 h-9 rounded-full bg-[#C5A572] flex items-center justify-center text-white font-semibold text-sm">
                       {user.fullName?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="font-medium text-[#1A1A1A]">{user.fullName}</span>
+                    <span className="text-sm font-semibold text-[#1A1A1A]">{user.fullName}</span>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>

@@ -346,27 +346,27 @@ export default function AdminAlerts() {
             filteredAlerts.map((alert) => (
               <div key={alert.id} className="px-6 py-4 flex items-start justify-between hover:bg-gray-50 transition-colors">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`w-2 h-2 rounded-full ${CATEGORIES.find((c) => c.key === alert.type)?.dot || "bg-gray-500"}`}></span>
-                    <span className="font-medium text-[#1A1A1A]">{alert.title}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${CATEGORIES.find((c) => c.key === alert.type)?.bg || "bg-gray-50"} ${CATEGORIES.find((c) => c.key === alert.type)?.color || "text-gray-600"}`}>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${CATEGORIES.find((c) => c.key === alert.type)?.dot || "bg-gray-500"}`}></span>
+                    <span className="text-sm font-semibold text-[#1A1A1A]">{alert.title}</span>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${CATEGORIES.find((c) => c.key === alert.type)?.bg || "bg-gray-50"} ${CATEGORIES.find((c) => c.key === alert.type)?.color || "text-gray-600"}`}>
                       {CATEGORIES.find((c) => c.key === alert.type)?.label || alert.type}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${alert.read ? "bg-gray-100 text-gray-500" : "bg-red-50 text-red-600"}`}>
+                    <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${alert.read ? "bg-gray-100 text-gray-500" : "bg-red-50 text-red-600"}`}>
                       {alert.read ? "Read" : "Unread"}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 ml-4">{alert.message}</p>
-                  <div className="flex items-center gap-3 mt-1 ml-4">
-                    <span className="text-xs text-gray-400">{alert.user?.fullName || "Unknown"}</span>
-                    <span className="text-xs text-gray-400">•</span>
-                    <span className="text-xs text-gray-400">{new Date(alert.createdAt).toLocaleDateString()}</span>
-                    <span className="text-xs text-gray-400">•</span>
-                    <span className="text-xs text-gray-400 capitalize">{alert.channel?.toLowerCase()}</span>
+                  <p className="text-[13px] text-gray-600 ml-4 leading-relaxed">{alert.message}</p>
+                  <div className="flex items-center gap-2 mt-1.5 ml-4">
+                    <span className="text-[11px] text-gray-400">{alert.user?.fullName || "Unknown"}</span>
+                    <span className="text-[11px] text-gray-300">•</span>
+                    <span className="text-[11px] text-gray-400">{new Date(alert.createdAt).toLocaleDateString()}</span>
+                    <span className="text-[11px] text-gray-300">•</span>
+                    <span className="text-[11px] text-gray-400 capitalize">{alert.channel?.toLowerCase()}</span>
                     {alert.creator && (
                       <>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs font-medium text-orange-600">
+                        <span className="text-[11px] text-gray-300">•</span>
+                        <span className="text-[11px] font-medium text-[#C5A572]">
                           Reported by: {alert.creator.fullName}
                         </span>
                       </>
