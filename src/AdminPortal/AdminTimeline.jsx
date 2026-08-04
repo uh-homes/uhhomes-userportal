@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlinePencil } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineCalendar } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function AdminTimeline() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projectDetail, setProjectDetail] = useState(null);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
   const [editMilestone, setEditMilestone] = useState(null);
   const [form, setForm] = useState({
@@ -32,9 +33,24 @@ export default function AdminTimeline() {
     }
   };
 
+  const fetchProjectDetail = async (projectId) => {
+    try {
+      const res = await api.get(`/admin/projects/${projectId}`);
+      setProjectDetail(res.data.data);
+    } catch (err) {
+      console.error("Failed to fetch project detail:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (selectedProject?.id) {
+      fetchProjectDetail(selectedProject.id);
+    }
+  }, [selectedProject?.id]);
 
   const handleAddMilestone = async (e) => {
     e.preventDefault();
@@ -238,6 +254,34 @@ export default function AdminTimeline() {
             )}
           </div>
 
+          {/* Site Updates from Supervisor */}
+          {projectDetail?.updates && projectDetail.updates.length > 0 && (
+            <div className="mt-8 border-t border-gray-100 pt-6">
+              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
+                <HiOutlineCalendar className="text-[#C5A572]" />
+                Site Updates
+              </h3>
+              <div className="space-y-3">
+                {projectDetail.updates.map((update) => (
+                  <div key={update.id} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                    <p className="text-sm font-semibold text-[#1A1A1A]">{update.title}</p>
+                    {update.description && (
+                      <p className="text-[13px] text-gray-600 mt-1">{update.description}</p>
+                    )}
+                    <span className="text-[11px] text-gray-400 mt-2 block">
+                      {new Date(update.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
