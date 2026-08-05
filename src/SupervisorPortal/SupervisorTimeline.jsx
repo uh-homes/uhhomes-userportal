@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineClipboardCheck, HiOutlineCheckCircle, HiOutlineUpload } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineClipboardCheck, HiOutlineCheckCircle, HiOutlineUpload, HiOutlineCalendar } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function SupervisorTimeline() {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [milestones, setMilestones] = useState([]);
+  const [updates, setUpdates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
   const [editMilestone, setEditMilestone] = useState(null);
@@ -46,6 +47,15 @@ export default function SupervisorTimeline() {
     }
   };
 
+  const fetchProjectUpdates = async (projectId) => {
+    try {
+      const res = await api.get(`/supervisor/projects/${projectId}`);
+      setUpdates(res.data.data?.updates || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
   }, []);
@@ -53,6 +63,7 @@ export default function SupervisorTimeline() {
   useEffect(() => {
     if (selectedProject?.id) {
       fetchTimeline(selectedProject.id);
+      fetchProjectUpdates(selectedProject.id);
     }
   }, [selectedProject?.id]);
 
@@ -151,6 +162,8 @@ export default function SupervisorTimeline() {
       </div>
 
       {selectedProject && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left - Construction Tracker */}
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -366,6 +379,40 @@ export default function SupervisorTimeline() {
               <p className="text-gray-500 text-sm">No milestones for this project yet. Add one above.</p>
             )}
           </div>
+        </div>
+
+        {/* Right - Site Updates */}
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 sticky top-6 self-start">
+          <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
+            <HiOutlineCalendar className="text-[#C5A572]" />
+            Site Updates
+          </h3>
+          {updates.length > 0 ? (
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+              {updates.map((update) => {
+                const dateKey = new Date(update.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                });
+                return (
+                  <div key={update.id} className="pb-3 border-b border-gray-100 last:border-0">
+                    <p className="text-[11px] font-semibold text-[#C5A572] uppercase tracking-wide">{dateKey}</p>
+                    <p className="text-[13px] font-medium text-gray-900 mt-1">{update.title}</p>
+                    {update.description && (
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-3">{update.description}</p>
+                    )}
+                    <span className="text-[10px] text-gray-400 mt-1 block">
+                      {new Date(update.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400">No site updates yet for this project.</p>
+          )}
+        </div>
         </div>
       )}
     </div>
