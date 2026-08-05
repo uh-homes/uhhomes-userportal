@@ -26,6 +26,7 @@ router.put("/projects/:id/progress", supervisorController.updateProgress);
 // Milestones
 router.post("/projects/:id/milestones", supervisorController.createMilestone);
 router.put("/milestones/:id", supervisorController.updateMilestone);
+router.post("/milestones/:id/inspect", upload.array("photos", 10), supervisorController.inspectMilestone);
 
 // Updates (daily/weekly site updates)
 router.post("/projects/:id/updates", supervisorController.createUpdate);

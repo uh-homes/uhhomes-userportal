@@ -126,6 +126,44 @@ const updateMilestone = async (req, res) => {
   }
 };
 
+// POST /supervisor/milestones/:id/inspect - Inspect and approve a milestone
+const inspectMilestone = async (req, res) => {
+  try {
+    const milestone = await Milestone.findByPk(req.params.id);
+    if (!milestone) {
+      return res.status(404).json({ status: "error", message: "Milestone not found." });
+    }
+
+    const assignment = await ProjectSupervisor.findOne({
+      where: { supervisorId: req.user.id, projectId: milestone.projectId },
+    });
+    if (!assignment) {
+      return res.status(403).json({ status: "error", message: "Not assigned to this project." });
+    }
+
+    const { notes } = req.body;
+
+    // Handle uploaded photos
+    let photos = milestone.inspectionPhotos || [];
+    if (req.files && req.files.length > 0) {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const newPhotos = req.files.map((file) => `${baseUrl}/uploads/${file.filename}`);
+      photos = [...photos, ...newPhotos];
+    }
+
+    await milestone.update({
+      inspectedAt: new Date(),
+      inspectionNotes: notes || null,
+      inspectionPhotos: photos,
+      approvedBy: req.user.id,
+    });
+
+    res.json({ status: "success", data: milestone });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 // POST /supervisor/projects/:id/updates - Post daily/weekly site update
 const createUpdate = async (req, res) => {
   try {
@@ -575,6 +613,7 @@ module.exports = {
   getProjectDetail,
   createMilestone,
   updateMilestone,
+  inspectMilestone,
   createUpdate,
   uploadMedia,
   updateProgress,

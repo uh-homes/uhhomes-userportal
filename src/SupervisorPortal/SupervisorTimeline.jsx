@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlinePencil } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineClipboardCheck, HiOutlineCheckCircle } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function SupervisorTimeline() {
@@ -10,6 +10,10 @@ export default function SupervisorTimeline() {
   const [loading, setLoading] = useState(true);
   const [showMilestoneForm, setShowMilestoneForm] = useState(false);
   const [editMilestone, setEditMilestone] = useState(null);
+  const [inspectMilestone, setInspectMilestone] = useState(null);
+  const [inspectNotes, setInspectNotes] = useState("");
+  const [inspectFiles, setInspectFiles] = useState(null);
+  const [inspecting, setInspecting] = useState(false);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -93,6 +97,32 @@ export default function SupervisorTimeline() {
 
   const resetForm = () => {
     setForm({ name: "", description: "", status: "PLANNED", date: "", progress: 0, order: 1 });
+  };
+
+  const handleInspect = async (e) => {
+    e.preventDefault();
+    setInspecting(true);
+    try {
+      const formData = new FormData();
+      formData.append("notes", inspectNotes);
+      if (inspectFiles) {
+        for (let i = 0; i < inspectFiles.length; i++) {
+          formData.append("photos", inspectFiles[i]);
+        }
+      }
+      await api.post(`/supervisor/milestones/${inspectMilestone.id}/inspect`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Milestone inspected & approved!");
+      setInspectMilestone(null);
+      setInspectNotes("");
+      setInspectFiles(null);
+      fetchTimeline(selectedProject.id);
+    } catch (err) {
+      toast.error("Inspection failed");
+    } finally {
+      setInspecting(false);
+    }
   };
 
   if (loading) {
@@ -217,6 +247,47 @@ export default function SupervisorTimeline() {
             </form>
           )}
 
+          {/* Inspection Form */}
+          {inspectMilestone && (
+            <form onSubmit={handleInspect} className="bg-green-50 rounded-lg p-4 mb-4 border border-green-200">
+              <h3 className="font-medium text-sm mb-3 flex items-center gap-2 text-green-800">
+                <HiOutlineClipboardCheck /> Inspect & Approve: {inspectMilestone.name}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Inspection Notes *</label>
+                  <textarea
+                    required
+                    rows="3"
+                    placeholder="Describe inspection findings, quality checks done..."
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+                    value={inspectNotes}
+                    onChange={(e) => setInspectNotes(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Inspection Photos</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
+                    onChange={(e) => setInspectFiles(e.target.files)}
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">Upload photos as proof of inspection</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" disabled={inspecting} className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 disabled:opacity-60">
+                  <HiOutlineCheckCircle /> {inspecting ? "Approving..." : "Approve Milestone"}
+                </button>
+                <button type="button" onClick={() => { setInspectMilestone(null); setInspectNotes(""); setInspectFiles(null); }} className="bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+
           {/* Timeline */}
           <div className="relative ml-4 mt-4">
             {milestones.sort((a, b) => a.order - b.order).map((milestone, idx) => (
@@ -225,15 +296,16 @@ export default function SupervisorTimeline() {
                   <div className="absolute left-[7px] top-3 w-0.5 h-full bg-gray-200"></div>
                 )}
                 <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 ${
+                  milestone.inspectedAt ? "bg-green-600 border-green-600" :
                   milestone.status === "COMPLETE" ? "bg-green-500 border-green-500" :
                   milestone.status === "IN_PROGRESS" ? "bg-blue-500 border-blue-500" :
                   "bg-white border-gray-300"
                 }`}></div>
                 <div className="flex items-start justify-between">
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm font-semibold text-[#1A1A1A]">{milestone.name}</p>
                     {milestone.description && <p className="text-[13px] text-gray-500">{milestone.description}</p>}
-                    <div className="flex items-center gap-3 mt-1">
+                    <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         milestone.status === "COMPLETE" ? "bg-green-100 text-green-700" :
                         milestone.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700" :
@@ -245,11 +317,30 @@ export default function SupervisorTimeline() {
                         {milestone.date ? new Date(milestone.date).toLocaleDateString() : "No date"}
                       </span>
                       <span className="text-[11px] text-gray-400">{milestone.progress}%</span>
+                      {milestone.inspectedAt && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-600 text-white flex items-center gap-1">
+                          <HiOutlineCheckCircle className="text-xs" /> Approved
+                        </span>
+                      )}
                     </div>
+                    {milestone.inspectedAt && milestone.inspectionNotes && (
+                      <p className="text-[11px] text-green-700 mt-1 italic">"{milestone.inspectionNotes}"</p>
+                    )}
                   </div>
-                  <button onClick={() => openEditMilestone(milestone)} className="p-1.5 text-gray-400 hover:text-[#C5A572] rounded">
-                    <HiOutlinePencil className="text-sm" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    {!milestone.inspectedAt && (
+                      <button
+                        onClick={() => { setInspectMilestone(milestone); setEditMilestone(null); setShowMilestoneForm(false); }}
+                        className="p-1.5 text-green-600 hover:text-green-800 rounded"
+                        title="Inspect & Approve"
+                      >
+                        <HiOutlineClipboardCheck className="text-sm" />
+                      </button>
+                    )}
+                    <button onClick={() => openEditMilestone(milestone)} className="p-1.5 text-gray-400 hover:text-[#C5A572] rounded">
+                      <HiOutlinePencil className="text-sm" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

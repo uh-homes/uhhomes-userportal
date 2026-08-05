@@ -79,7 +79,7 @@ const ConstructionTimeline = ({ milestones = [] }) => {
                   {milestone.description && (
                     <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{milestone.description}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-1.5">
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                     <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
                       isComplete ? "bg-green-50 text-green-700" :
                       isInProgress ? "bg-blue-50 text-blue-700" :
@@ -90,6 +90,11 @@ const ConstructionTimeline = ({ milestones = [] }) => {
                     {milestone.date && (
                       <span className="text-[11px] text-gray-400">
                         {new Date(milestone.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </span>
+                    )}
+                    {milestone.inspectedAt && (
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-green-600 text-white font-medium flex items-center gap-1">
+                        <FaCheckCircle className="text-[9px]" /> Approved by Site Supervisor • {new Date(milestone.inspectedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                       </span>
                     )}
                   </div>

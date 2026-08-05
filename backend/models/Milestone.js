@@ -37,6 +37,29 @@ const Milestone = sequelize.define(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    inspectedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    inspectionNotes: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    inspectionPhotos: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      get() {
+        const val = this.getDataValue("inspectionPhotos");
+        return val ? JSON.parse(val) : [];
+      },
+      set(val) {
+        this.setDataValue("inspectionPhotos", val ? JSON.stringify(val) : null);
+      },
+    },
+    approvedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineCalendar } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineCalendar, HiOutlineCheckCircle } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function AdminTimeline() {
@@ -228,12 +228,17 @@ export default function AdminTimeline() {
                 {idx < currentProject.milestones.length - 1 && (
                   <div className="absolute left-[7px] top-3 w-0.5 h-full bg-gray-200"></div>
                 )}
-                <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 ${milestone.status === "COMPLETE" ? "bg-green-500 border-green-500" : milestone.status === "IN_PROGRESS" ? "bg-blue-500 border-blue-500" : "bg-white border-gray-300"}`}></div>
+                <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 ${
+                  milestone.inspectedAt ? "bg-green-600 border-green-600" :
+                  milestone.status === "COMPLETE" ? "bg-green-500 border-green-500" :
+                  milestone.status === "IN_PROGRESS" ? "bg-blue-500 border-blue-500" :
+                  "bg-white border-gray-300"
+                }`}></div>
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-sm font-semibold text-[#1A1A1A]">{milestone.name}</p>
                     <p className="text-[13px] text-gray-500">{milestone.description}</p>
-                    <div className="flex items-center gap-3 mt-1">
+                    <div className="flex items-center gap-3 mt-1 flex-wrap">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${milestone.status === "COMPLETE" ? "bg-green-100 text-green-700" : milestone.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}>
                         {milestone.status}
                       </span>
@@ -241,7 +246,15 @@ export default function AdminTimeline() {
                         {milestone.date ? new Date(milestone.date).toLocaleDateString() : "No date"}
                       </span>
                       <span className="text-[11px] text-gray-400">{milestone.progress}%</span>
+                      {milestone.inspectedAt && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-600 text-white flex items-center gap-1">
+                          <HiOutlineCheckCircle className="text-xs" /> Approved {new Date(milestone.inspectedAt).toLocaleDateString()}
+                        </span>
+                      )}
                     </div>
+                    {milestone.inspectionNotes && (
+                      <p className="text-[11px] text-green-700 mt-1 italic">Inspection: "{milestone.inspectionNotes}"</p>
+                    )}
                   </div>
                   <button onClick={() => openEditMilestone(milestone)} className="p-1.5 text-gray-400 hover:text-[#C5A572] rounded">
                     <HiOutlinePencil className="text-sm" />
