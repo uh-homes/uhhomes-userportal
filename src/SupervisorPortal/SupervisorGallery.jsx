@@ -143,14 +143,33 @@ export default function SupervisorGallery() {
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Photos *</label>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                required
-                className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
-                onChange={(e) => setUploadFiles(e.target.files)}
-              />
+              <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#C5A572] hover:bg-[#C5A572]/5 transition-colors">
+                <HiOutlineUpload className="text-xl text-gray-400 mb-1" />
+                <span className="text-xs text-gray-500">
+                  {uploadFiles ? `${uploadFiles.length} photo(s) selected` : "Click to upload photos"}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  required
+                  className="hidden"
+                  onChange={(e) => setUploadFiles(e.target.files)}
+                />
+              </label>
+              {/* Image Preview */}
+              {uploadFiles && uploadFiles.length > 0 && (
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  {Array.from(uploadFiles).map((file, i) => (
+                    <img
+                      key={i}
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${i + 1}`}
+                      className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="flex gap-2">
