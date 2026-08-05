@@ -25,7 +25,7 @@ const ICON_MAP = {
   "/supervisor/timeline": <HiOutlineClock />,
   "/supervisor/gallery": <HiOutlinePhotograph />,
   "/supervisor/documents": <HiOutlineDocumentText />,
-  "/supervisor/inquiries": <HiOutlineChatAlt2 />,
+
   "/supervisor/alerts": <HiOutlineBell />,
 
   "/supervisor/reports": <HiOutlineDocumentDownload />,

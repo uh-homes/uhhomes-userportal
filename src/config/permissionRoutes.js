@@ -9,10 +9,10 @@
 export const SUPERVISOR_MENU_CONFIG = [
   { permissionKey: "dashboard", title: "Dashboard", path: "/supervisor/dashboard" },
   { permissionKey: "constructionTracker", title: "Projects", path: "/supervisor/projects" },
-  { permissionKey: "timeline", title: "Timeline", path: "/supervisor/timeline" },
+  { permissionKey: "timeline", title: "Construction Timeline", path: "/supervisor/timeline" },
   { permissionKey: "gallery", title: "Photo Gallery", path: "/supervisor/gallery" },
   { permissionKey: "documents", title: "Documents", path: "/supervisor/documents" },
-  { permissionKey: "inquiries", title: "Inquiries", path: "/supervisor/inquiries" },
+
   { permissionKey: "alerts", title: "Alerts", path: "/supervisor/alerts" },
 
   { permissionKey: "reports", title: "Reports", path: "/supervisor/reports" },
