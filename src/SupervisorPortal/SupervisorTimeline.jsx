@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlinePlus, HiOutlinePencil, HiOutlineClipboardCheck, HiOutlineCheckCircle } from "react-icons/hi";
+import { HiOutlinePlus, HiOutlinePencil, HiOutlineClipboardCheck, HiOutlineCheckCircle, HiOutlineUpload } from "react-icons/hi";
 import { toast } from "react-toastify";
 
 export default function SupervisorTimeline() {
@@ -267,14 +267,19 @@ export default function SupervisorTimeline() {
                 </div>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">Inspection Photos</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="w-full border border-gray-200 rounded-lg px-3 py-1.5 text-sm"
-                    onChange={(e) => setInspectFiles(e.target.files)}
-                  />
-                  <p className="text-[11px] text-gray-400 mt-1">Upload photos as proof of inspection</p>
+                  <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-400 hover:bg-green-50/50 transition-colors">
+                    <HiOutlineUpload className="text-xl text-gray-400 mb-1" />
+                    <span className="text-xs text-gray-500">
+                      {inspectFiles ? `${inspectFiles.length} photo(s) selected` : "Click to upload photos"}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      className="hidden"
+                      onChange={(e) => setInspectFiles(e.target.files)}
+                    />
+                  </label>
                 </div>
               </div>
               <div className="flex gap-2">
