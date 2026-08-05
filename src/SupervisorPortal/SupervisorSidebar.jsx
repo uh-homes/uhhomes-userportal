@@ -13,7 +13,6 @@ import {
   HiOutlineBell,
   HiOutlineDocumentDownload,
   HiOutlineCog,
-  HiOutlineHeart,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -28,7 +27,7 @@ const ICON_MAP = {
   "/supervisor/documents": <HiOutlineDocumentText />,
   "/supervisor/inquiries": <HiOutlineChatAlt2 />,
   "/supervisor/alerts": <HiOutlineBell />,
-  "/supervisor/favorites": <HiOutlineHeart />,
+
   "/supervisor/reports": <HiOutlineDocumentDownload />,
   "/supervisor/updates": <HiOutlineExclamationCircle />,
   "/supervisor/issues": <HiOutlineExclamationCircle />,

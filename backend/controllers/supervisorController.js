@@ -518,6 +518,58 @@ const getDashboard = async (req, res) => {
   }
 };
 
+// POST /supervisor/gallery - Create a gallery for a project
+const createGallery = async (req, res) => {
+  try {
+    const { projectId, phase, caption } = req.body;
+    const assignment = await ProjectSupervisor.findOne({
+      where: { supervisorId: req.user.id, projectId },
+    });
+    if (!assignment) {
+      return res.status(403).json({ status: "error", message: "Not assigned to this project." });
+    }
+
+    const gallery = await Gallery.create({ projectId, phase, caption });
+    res.status(201).json({ status: "success", data: gallery });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// POST /supervisor/gallery/:galleryId/upload - Upload photos to a gallery
+const uploadGalleryPhotos = async (req, res) => {
+  try {
+    const gallery = await Gallery.findByPk(req.params.galleryId);
+    if (!gallery) {
+      return res.status(404).json({ status: "error", message: "Gallery not found." });
+    }
+
+    const assignment = await ProjectSupervisor.findOne({
+      where: { supervisorId: req.user.id, projectId: gallery.projectId },
+    });
+    if (!assignment) {
+      return res.status(403).json({ status: "error", message: "Not assigned to this project." });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ status: "error", message: "No files uploaded." });
+    }
+
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const media = await Media.bulkCreate(
+      req.files.map((file) => ({
+        galleryId: gallery.id,
+        url: `${baseUrl}/uploads/${file.filename}`,
+        type: "image",
+      }))
+    );
+
+    res.status(201).json({ status: "success", data: media });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   getAssignedProjects,
   getProjectDetail,
@@ -534,6 +586,8 @@ module.exports = {
   uploadDocument,
   getTimeline,
   getGallery,
+  createGallery,
+  uploadGalleryPhotos,
   getAlerts,
   markAlertRead,
   getProfile,

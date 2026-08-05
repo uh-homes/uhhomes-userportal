@@ -14,7 +14,7 @@ export const SUPERVISOR_MENU_CONFIG = [
   { permissionKey: "documents", title: "Documents", path: "/supervisor/documents" },
   { permissionKey: "inquiries", title: "Inquiries", path: "/supervisor/inquiries" },
   { permissionKey: "alerts", title: "Alerts", path: "/supervisor/alerts" },
-  { permissionKey: "favorites", title: "Favorites", path: "/supervisor/favorites" },
+
   { permissionKey: "reports", title: "Reports", path: "/supervisor/reports" },
   { permissionKey: null, title: "Site Updates", path: "/supervisor/updates" },
   { permissionKey: null, title: "Issues & Delays", path: "/supervisor/issues" },

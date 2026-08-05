@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../Api/api";
-import { HiArrowLeft, HiOutlinePlusCircle } from "react-icons/hi";
+import { HiArrowLeft } from "react-icons/hi";
 
 export default function SupervisorProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [progressValue, setProgressValue] = useState(0);
-  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const res = await api.get(`/supervisor/projects/${id}`);
         setProject(res.data.data);
-        setProgressValue(res.data.data.completionPercentage || 0);
       } catch (err) {
         console.error("Failed to fetch project:", err);
       } finally {
@@ -25,18 +22,6 @@ export default function SupervisorProjectDetail() {
     };
     fetchProject();
   }, [id]);
-
-  const handleUpdateProgress = async () => {
-    setUpdating(true);
-    try {
-      await api.put(`/supervisor/projects/${id}/progress`, { completionPercentage: progressValue });
-      setProject((prev) => ({ ...prev, completionPercentage: progressValue }));
-    } catch (err) {
-      console.error("Failed to update progress:", err);
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -83,41 +68,24 @@ export default function SupervisorProjectDetail() {
           </p>
         )}
 
-        {/* Progress update */}
+        {/* Progress */}
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Update Progress</h3>
-          <div className="flex items-center gap-4">
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={progressValue}
-              onChange={(e) => setProgressValue(parseInt(e.target.value))}
-              className="flex-1 accent-[#C5A572]"
-            />
-            <span className="text-[#1A1A1A] font-bold text-lg w-12 text-right">{progressValue}%</span>
-            <button
-              onClick={handleUpdateProgress}
-              disabled={updating}
-              className="bg-[#C5A572] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#b39362] disabled:opacity-60 transition-colors"
-            >
-              {updating ? "Saving..." : "Save"}
-            </button>
+          <div className="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Progress</span>
+            <span className="font-semibold text-[#1A1A1A]">{project.completionPercentage || 0}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div
+              className="bg-[#C5A572] h-2.5 rounded-full transition-all"
+              style={{ width: `${project.completionPercentage || 0}%` }}
+            ></div>
           </div>
         </div>
       </div>
 
       {/* Milestones */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-[#1A1A1A]">Milestones</h2>
-          <button
-            onClick={() => navigate(`/supervisor/projects/${id}/milestone/new`)}
-            className="flex items-center gap-1 text-sm text-[#C5A572] hover:text-[#b39362] transition-colors"
-          >
-            <HiOutlinePlusCircle className="w-4 h-4" /> Add
-          </button>
-        </div>
+        <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Milestones</h2>
         {project.milestones?.length > 0 ? (
           <div className="space-y-3">
             {project.milestones.map((m) => (

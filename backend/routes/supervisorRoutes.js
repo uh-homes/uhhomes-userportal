@@ -48,6 +48,8 @@ router.get("/timeline/:projectId", supervisorController.getTimeline);
 
 // Gallery
 router.get("/gallery/:projectId", supervisorController.getGallery);
+router.post("/gallery", supervisorController.createGallery);
+router.post("/gallery/:galleryId/upload", upload.array("photos", 10), supervisorController.uploadGalleryPhotos);
 
 // Alerts
 router.get("/alerts", supervisorController.getAlerts);
