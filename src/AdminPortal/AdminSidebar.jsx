@@ -26,7 +26,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
   const [usersExpanded, setUsersExpanded] = useState(
-    location.pathname === "/admin/users" || location.pathname === "/admin/user-management"
+    location.pathname === "/admin/users" || location.pathname === "/admin/user-management" || location.pathname === "/admin/project-managers"
   );
 
   const menuItems = [
@@ -37,6 +37,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
       children: [
         { title: "Users List", icon: <HiOutlineUserGroup />, path: "/admin/users" },
         { title: "User Management", icon: <HiOutlineShieldCheck />, path: "/admin/user-management" },
+        { title: "Project Managers", icon: <HiOutlineUserGroup />, path: "/admin/project-managers" },
       ],
     },
     { title: "Alerts", icon: <HiOutlineBell />, path: "/admin/alerts" },
@@ -46,6 +47,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
     { title: "PDF Reports", icon: <HiOutlineDocumentDownload />, path: "/admin/reports" },
     { title: "Inquiries", icon: <HiOutlineMail />, path: "/admin/inquiries" },
     { title: "AI Summary", icon: <HiOutlineSparkles />, path: "/admin/ai-summary" },
+    { title: "Warranty Config", icon: <HiOutlineShieldCheck />, path: "/admin/warranty-config" },
     { title: "Settings", icon: <HiOutlineCog />, path: "/admin/settings" },
   ];
 

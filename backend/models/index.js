@@ -12,6 +12,9 @@ const Favorite = require("./Favorite");
 const Alert = require("./Alert");
 const Property = require("./Property");
 const ProjectSupervisor = require("./ProjectSupervisor");
+const ProjectManager = require("./ProjectManager");
+const Warranty = require("./Warranty");
+const WarrantyConfig = require("./WarrantyConfig");
 const Lead = require("./Lead");
 const Tour = require("./Tour");
 
@@ -78,6 +81,17 @@ Project.belongsToMany(User, { through: ProjectSupervisor, foreignKey: "projectId
 ProjectSupervisor.belongsTo(User, { foreignKey: "supervisorId", as: "supervisor" });
 ProjectSupervisor.belongsTo(Project, { foreignKey: "projectId", as: "project" });
 
+// Project Manager <-> Projects (many-to-many)
+User.belongsToMany(Project, { through: ProjectManager, foreignKey: "managerId", otherKey: "projectId", as: "managedProjects" });
+Project.belongsToMany(User, { through: ProjectManager, foreignKey: "projectId", otherKey: "managerId", as: "projectManagers" });
+ProjectManager.belongsTo(User, { foreignKey: "managerId", as: "manager" });
+ProjectManager.belongsTo(Project, { foreignKey: "projectId", as: "project" });
+
+// Project -> Warranties
+Project.hasMany(Warranty, { foreignKey: "projectId", as: "warranties" });
+Warranty.belongsTo(Project, { foreignKey: "projectId", as: "project" });
+Warranty.belongsTo(User, { foreignKey: "uploadedBy", as: "uploader" });
+
 // Sales Agent -> Leads
 User.hasMany(Lead, { foreignKey: "salesAgentId", as: "leads" });
 Lead.belongsTo(User, { foreignKey: "salesAgentId", as: "salesAgent" });
@@ -115,6 +129,9 @@ module.exports = {
   Alert,
   Property,
   ProjectSupervisor,
+  ProjectManager,
+  Warranty,
+  WarrantyConfig,
   Lead,
   Tour,
 };

@@ -21,6 +21,19 @@ export const SUPERVISOR_MENU_CONFIG = [
   { permissionKey: "profile", title: "Profile", path: "/supervisor/profile" },
 ];
 
+export const PM_MENU_CONFIG = [
+  { permissionKey: "dashboard", title: "Dashboard", path: "/pm/dashboard" },
+  { permissionKey: "constructionTracker", title: "Projects", path: "/pm/projects" },
+  { permissionKey: "timeline", title: "Construction Timeline", path: "/pm/timeline" },
+  { permissionKey: "gallery", title: "Photo Gallery", path: "/pm/gallery" },
+  { permissionKey: "documents", title: "Documents", path: "/pm/documents" },
+  { permissionKey: "documents", title: "Warranties & Certificates", path: "/pm/warranties" },
+  { permissionKey: "inquiries", title: "Buyer Inquiries", path: "/pm/inquiries" },
+  { permissionKey: "alerts", title: "Alerts", path: "/pm/alerts" },
+  { permissionKey: "reports", title: "Reports", path: "/pm/reports" },
+  { permissionKey: "profile", title: "Profile", path: "/pm/profile" },
+];
+
 export const SALES_MENU_CONFIG = [
   { permissionKey: "dashboard", title: "Dashboard", path: "/sales/dashboard" },
   { permissionKey: "constructionTracker", title: "Property Catalog", path: "/sales/properties" },

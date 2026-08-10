@@ -67,4 +67,14 @@ const salesAgentOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly, supervisorOnly, salesAgentOnly };
+const projectManagerOnly = (req, res, next) => {
+  if (req.user?.category !== "project_manager") {
+    return res.status(403).json({
+      status: "error",
+      message: "Project Manager access required.",
+    });
+  }
+  next();
+};
+
+module.exports = { protect, adminOnly, supervisorOnly, salesAgentOnly, projectManagerOnly };

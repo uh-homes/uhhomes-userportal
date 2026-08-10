@@ -554,7 +554,7 @@ export default function UDashboard() {
 
         {/* Documents */}
         <div className="bg-white rounded-2xl shadow-sm mt-6 overflow-hidden">
-          <DocumentsSection documents={project.documents || []} />
+          <DocumentsSection documents={project.documents || []} warranties={project.warranties || []} />
         </div>
 
         {/* Footer */}

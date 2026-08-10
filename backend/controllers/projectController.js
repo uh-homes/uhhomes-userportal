@@ -1,4 +1,4 @@
-const { Project, Milestone, Update, Media, Gallery, Document, Question, User, Property } = require("../models");
+const { Project, Milestone, Update, Media, Gallery, Document, Question, User, Property, Warranty } = require("../models");
 const { sendInquiryNotificationToAdmin } = require("../utils/sendEmail");
 
 // GET /user-projects
@@ -81,6 +81,11 @@ exports.getProjectTracker = async (req, res) => {
       {
         model: Document,
         as: "documents",
+      },
+      {
+        model: Warranty,
+        as: "warranties",
+        include: [{ model: User, as: "uploader", attributes: ["id", "fullName"] }],
       },
     ],
     order: [

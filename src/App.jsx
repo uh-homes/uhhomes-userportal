@@ -18,7 +18,7 @@ import UpdatesPage from "./UserPortal/Common/UpdatesPage";
 import useWishlist from "./hooks/useWishlist";
 import useCurrentUser from "./hooks/useCurrentUser";
 import LoginPage from "./Pages/LoginPage";
-import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute, SalesAgentRoute } from "./components/ProtectedRoute";
+import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute, SalesAgentRoute, ProjectManagerRoute } from "./components/ProtectedRoute";
 
 import AdminDashboard from "./AdminPortal/AdminDashboard";
 import AdminUsers from "./AdminPortal/AdminUsers";
@@ -31,6 +31,8 @@ import AdminReports from "./AdminPortal/AdminReports";
 import AdminAISummary from "./AdminPortal/AdminAISummary";
 import AdminInquiries from "./AdminPortal/AdminInquiries";
 import AdminUserManagement from "./AdminPortal/AdminUserManagement";
+import AdminProjectManagers from "./AdminPortal/AdminProjectManagers";
+import AdminWarrantyConfig from "./AdminPortal/AdminWarrantyConfig";
 
 import SupervisorLayout from "./Layout/SupervisorLayout";
 import SupervisorDashboard from "./SupervisorPortal/SupervisorDashboard";
@@ -40,6 +42,19 @@ import SupervisorUpdates from "./SupervisorPortal/SupervisorUpdates";
 import SupervisorInquiries from "./SupervisorPortal/SupervisorInquiries";
 import SupervisorDocuments from "./SupervisorPortal/SupervisorDocuments";
 import SupervisorIssues from "./SupervisorPortal/SupervisorIssues";
+
+import PMLayout from "./Layout/PMLayout";
+import PMDashboard from "./PMPortal/PMDashboard";
+import PMProjects from "./PMPortal/PMProjects";
+import PMProjectDetail from "./PMPortal/PMProjectDetail";
+import PMTimeline from "./PMPortal/PMTimeline";
+import PMGallery from "./PMPortal/PMGallery";
+import PMDocuments from "./PMPortal/PMDocuments";
+import PMInquiries from "./PMPortal/PMInquiries";
+import PMAlerts from "./PMPortal/PMAlerts";
+import PMReports from "./PMPortal/PMReports";
+import PMProfile from "./PMPortal/PMProfile";
+import PMWarranties from "./PMPortal/PMWarranties";
 
 import SalesAgentLayout from "./Layout/SalesAgentLayout";
 import SalesAgentDashboard from "./SalesAgentPortal/SalesAgentDashboard";
@@ -98,6 +113,8 @@ function App() {
             <Route path="/admin/inquiries" element={<AdminInquiries />} />
             <Route path="/admin/ai-summary" element={<AdminAISummary />} />
             <Route path="/admin/user-management" element={<AdminUserManagement />} />
+            <Route path="/admin/project-managers" element={<AdminProjectManagers />} />
+            <Route path="/admin/warranty-config" element={<AdminWarrantyConfig />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>
@@ -117,6 +134,23 @@ function App() {
             <Route path="/supervisor/alerts" element={<PermissionGuard module="alerts"><SupervisorAlerts /></PermissionGuard>} />
             <Route path="/supervisor/profile" element={<PermissionGuard module="profile"><SupervisorProfile /></PermissionGuard>} />
             <Route path="/supervisor/reports" element={<PermissionGuard module="reports"><SupervisorReports /></PermissionGuard>} />
+          </Route>
+        </Route>
+
+        {/* Project Manager Portal Routes */}
+        <Route element={<ProjectManagerRoute />}>
+          <Route element={<PMLayout />}>
+            <Route path="/pm/dashboard" element={<PMDashboard />} />
+            <Route path="/pm/projects" element={<PermissionGuard module="constructionTracker"><PMProjects /></PermissionGuard>} />
+            <Route path="/pm/projects/:id" element={<PermissionGuard module="constructionTracker"><PMProjectDetail /></PermissionGuard>} />
+            <Route path="/pm/timeline" element={<PermissionGuard module="timeline"><PMTimeline /></PermissionGuard>} />
+            <Route path="/pm/gallery" element={<PermissionGuard module="gallery"><PMGallery /></PermissionGuard>} />
+            <Route path="/pm/documents" element={<PermissionGuard module="documents"><PMDocuments /></PermissionGuard>} />
+            <Route path="/pm/warranties" element={<PermissionGuard module="documents"><PMWarranties /></PermissionGuard>} />
+            <Route path="/pm/inquiries" element={<PermissionGuard module="inquiries"><PMInquiries /></PermissionGuard>} />
+            <Route path="/pm/alerts" element={<PermissionGuard module="alerts"><PMAlerts /></PermissionGuard>} />
+            <Route path="/pm/reports" element={<PermissionGuard module="reports"><PMReports /></PermissionGuard>} />
+            <Route path="/pm/profile" element={<PermissionGuard module="profile"><PMProfile /></PermissionGuard>} />
           </Route>
         </Route>
 

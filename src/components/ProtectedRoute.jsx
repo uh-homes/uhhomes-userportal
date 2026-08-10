@@ -44,6 +44,10 @@ export function UserRoute() {
     return <Navigate to="/sales/dashboard" replace />;
   }
 
+  if (user.category === "project_manager") {
+    return <Navigate to="/pm/dashboard" replace />;
+  }
+
   return <Outlet />;
 }
 
@@ -55,6 +59,20 @@ export function SalesAgentRoute() {
   }
 
   if (user.category !== "sales_agent") {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export function ProjectManagerRoute() {
+  const user = useSelector((state) => state?.user);
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user.category !== "project_manager") {
     return <Navigate to="/" replace />;
   }
 

@@ -8,6 +8,8 @@ import {
   HiOutlinePencil,
   HiOutlineTrash,
   HiOutlineFilter,
+  HiChevronLeft,
+  HiChevronRight,
 } from "react-icons/hi";
 
 const TOUR_STATUS_COLORS = {
@@ -16,6 +18,27 @@ const TOUR_STATUS_COLORS = {
   CANCELLED: "bg-red-50 text-red-700 border-red-200",
   NO_SHOW: "bg-gray-100 text-gray-600 border-gray-200",
 };
+
+const TOUR_STATUS_DOT = {
+  SCHEDULED: "bg-blue-500",
+  COMPLETED: "bg-green-500",
+  CANCELLED: "bg-red-500",
+  NO_SHOW: "bg-gray-400",
+};
+
+const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+function getDaysInMonth(year, month) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function getFirstDayOfMonth(year, month) {
+  return new Date(year, month, 1).getDay();
+}
+
+function formatDateKey(year, month, day) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
 
 export default function SalesAgentTours() {
   const [tours, setTours] = useState([]);
@@ -27,6 +50,12 @@ export default function SalesAgentTours() {
   const [editingTour, setEditingTour] = useState(null);
   const [form, setForm] = useState({ leadId: "", propertyId: "", scheduledDate: "", scheduledTime: "", notes: "" });
   const [saving, setSaving] = useState(false);
+
+  // Calendar state
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const fetchTours = async () => {
     try {
@@ -119,13 +148,66 @@ export default function SalesAgentTours() {
     }
   };
 
-  // Group tours by date
-  const groupedTours = tours.reduce((acc, tour) => {
-    const date = tour.scheduledDate || "Unknown";
+  // Group tours by date for calendar lookup
+  const toursByDate = tours.reduce((acc, tour) => {
+    const date = tour.scheduledDate || "";
     if (!acc[date]) acc[date] = [];
     acc[date].push(tour);
     return acc;
   }, {});
+
+  // Calendar navigation
+  const goToPrevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
+  const goToToday = () => {
+    setCurrentMonth(today.getMonth());
+    setCurrentYear(today.getFullYear());
+    setSelectedDate(formatDateKey(today.getFullYear(), today.getMonth(), today.getDate()));
+  };
+
+  // Build calendar grid
+  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+  const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
+  const calendarDays = [];
+
+  // Previous month trailing days
+  const prevMonthDays = getDaysInMonth(currentYear, currentMonth - 1);
+  for (let i = firstDay - 1; i >= 0; i--) {
+    calendarDays.push({ day: prevMonthDays - i, currentMonth: false, dateKey: null });
+  }
+
+  // Current month days
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateKey = formatDateKey(currentYear, currentMonth, d);
+    calendarDays.push({ day: d, currentMonth: true, dateKey });
+  }
+
+  // Next month leading days to fill grid
+  const remaining = 42 - calendarDays.length;
+  for (let i = 1; i <= remaining; i++) {
+    calendarDays.push({ day: i, currentMonth: false, dateKey: null });
+  }
+
+  const todayKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+  // Tours for selected date
+  const selectedDateTours = selectedDate ? (toursByDate[selectedDate] || []) : [];
 
   if (loading) {
     return (
@@ -239,65 +321,171 @@ export default function SalesAgentTours() {
         </div>
       )}
 
-      {/* Tours List grouped by date */}
-      {tours.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">
-          <HiOutlineCalendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No tours found.</p>
+      {/* Calendar View */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-100">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold text-[#1A1A1A]">
+              {new Date(currentYear, currentMonth).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
+            </h2>
+            <button
+              onClick={goToToday}
+              className="text-xs font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              Today
+            </button>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={goToPrevMonth}
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            >
+              <HiChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={goToNextMonth}
+              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            >
+              <HiChevronRight className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-      ) : (
-        <div className="space-y-6">
-          {Object.entries(groupedTours).sort(([a], [b]) => a.localeCompare(b)).map(([date, dateTours]) => (
-            <div key={date}>
-              <h3 className="text-sm font-semibold text-gray-500 mb-3">{new Date(date + "T00:00").toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</h3>
-              <div className="space-y-3">
-                {dateTours.map((tour) => (
-                  <div key={tour.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-[#C5A572]/30 transition-all">
-                    <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-lg font-semibold text-[#C5A572]">{tour.scheduledTime}</span>
-                          <span className={`text-xs px-2 py-0.5 rounded-full border ${TOUR_STATUS_COLORS[tour.status] || ""}`}>
-                            {tour.status?.replace("_", " ")}
-                          </span>
-                        </div>
-                        <p className="text-sm font-medium text-[#1A1A1A]">{tour.lead?.name || "Unknown Lead"}</p>
-                        <div className="flex flex-wrap gap-3 text-sm text-gray-500 mt-1">
-                          {tour.lead?.phone && <span>{tour.lead.phone}</span>}
-                          {tour.lead?.email && <span>{tour.lead.email}</span>}
-                        </div>
-                        <p className="text-sm text-[#C5A572] mt-1">{tour.property?.name} — {tour.property?.location}</p>
-                        {tour.notes && <p className="text-sm text-gray-400 mt-2">{tour.notes}</p>}
-                        {tour.feedback && (
-                          <div className="mt-2 pl-3 border-l-2 border-[#C5A572]">
-                            <p className="text-sm text-gray-600">{tour.feedback}</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <select
-                          value={tour.status}
-                          onChange={(e) => handleStatusChange(tour.id, e.target.value)}
-                          className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-                        >
-                          <option value="SCHEDULED">Scheduled</option>
-                          <option value="COMPLETED">Completed</option>
-                          <option value="CANCELLED">Cancelled</option>
-                          <option value="NO_SHOW">No Show</option>
-                        </select>
-                        <button onClick={() => handleEdit(tour)} className="p-2 text-gray-400 hover:text-[#C5A572] transition-colors">
-                          <HiOutlinePencil className="w-4 h-4" />
-                        </button>
-                        <button onClick={() => handleDelete(tour.id)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                          <HiOutlineTrash className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+
+        {/* Day-of-week headers */}
+        <div className="grid grid-cols-7 border-b border-gray-100">
+          {DAYS_OF_WEEK.map((day) => (
+            <div key={day} className="py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              {day}
             </div>
           ))}
+        </div>
+
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7">
+          {calendarDays.map((cell, idx) => {
+            const isToday = cell.dateKey === todayKey;
+            const isSelected = cell.dateKey === selectedDate;
+            const dayTours = cell.dateKey ? (toursByDate[cell.dateKey] || []) : [];
+            const hasTours = dayTours.length > 0;
+
+            return (
+              <div
+                key={idx}
+                onClick={() => {
+                  if (cell.currentMonth && cell.dateKey) {
+                    setSelectedDate(cell.dateKey === selectedDate ? null : cell.dateKey);
+                  }
+                }}
+                className={`
+                  relative min-h-[90px] p-2 border-b border-r border-gray-50 transition-colors
+                  ${cell.currentMonth ? "cursor-pointer hover:bg-[#C5A572]/5" : "bg-gray-50/50 cursor-default"}
+                  ${isSelected ? "bg-[#C5A572]/10 ring-1 ring-inset ring-[#C5A572]/30" : ""}
+                `}
+              >
+                <span
+                  className={`
+                    inline-flex items-center justify-center w-7 h-7 text-sm rounded-full
+                    ${isToday ? "bg-[#C5A572] text-white font-bold" : ""}
+                    ${cell.currentMonth ? "text-[#1A1A1A]" : "text-gray-300"}
+                    ${isSelected && !isToday ? "font-semibold" : ""}
+                  `}
+                >
+                  {cell.day}
+                </span>
+
+                {/* Tour indicators */}
+                {hasTours && cell.currentMonth && (
+                  <div className="mt-1 space-y-0.5">
+                    {dayTours.slice(0, 3).map((tour, i) => (
+                      <div
+                        key={tour.id || i}
+                        className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium truncate ${TOUR_STATUS_COLORS[tour.status] || "bg-gray-50 text-gray-600"}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${TOUR_STATUS_DOT[tour.status] || "bg-gray-400"}`}></span>
+                        <span className="truncate">{tour.scheduledTime} {tour.lead?.name?.split(" ")[0] || ""}</span>
+                      </div>
+                    ))}
+                    {dayTours.length > 3 && (
+                      <div className="text-[10px] text-gray-400 pl-1.5">+{dayTours.length - 3} more</div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Selected Date Tour Details */}
+      {selectedDate && (
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold text-gray-500 mb-3">
+            {new Date(selectedDate + "T00:00").toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          </h3>
+          {selectedDateTours.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+              <HiOutlineCalendar className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+              <p className="text-gray-500 text-sm">No tours scheduled for this date.</p>
+              <button
+                onClick={() => {
+                  setShowForm(true);
+                  setEditingTour(null);
+                  setForm({ leadId: "", propertyId: "", scheduledDate: selectedDate, scheduledTime: "", notes: "" });
+                }}
+                className="mt-3 text-sm text-[#C5A572] hover:text-[#b39362] font-medium transition-colors"
+              >
+                + Schedule a tour
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {selectedDateTours.map((tour) => (
+                <div key={tour.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-[#C5A572]/30 transition-all">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-lg font-semibold text-[#C5A572]">{tour.scheduledTime}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full border ${TOUR_STATUS_COLORS[tour.status] || ""}`}>
+                          {tour.status?.replace("_", " ")}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-[#1A1A1A]">{tour.lead?.name || "Unknown Lead"}</p>
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mt-1">
+                        {tour.lead?.phone && <span>{tour.lead.phone}</span>}
+                        {tour.lead?.email && <span>{tour.lead.email}</span>}
+                      </div>
+                      <p className="text-sm text-[#C5A572] mt-1">{tour.property?.name} — {tour.property?.location}</p>
+                      {tour.notes && <p className="text-sm text-gray-400 mt-2">{tour.notes}</p>}
+                      {tour.feedback && (
+                        <div className="mt-2 pl-3 border-l-2 border-[#C5A572]">
+                          <p className="text-sm text-gray-600">{tour.feedback}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={tour.status}
+                        onChange={(e) => handleStatusChange(tour.id, e.target.value)}
+                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                      >
+                        <option value="SCHEDULED">Scheduled</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="NO_SHOW">No Show</option>
+                      </select>
+                      <button onClick={() => handleEdit(tour)} className="p-2 text-gray-400 hover:text-[#C5A572] transition-colors">
+                        <HiOutlinePencil className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete(tour.id)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

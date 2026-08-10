@@ -18,6 +18,7 @@ export default function PermissionGuard({ module, action = "read", fallback, chi
     if (fallback) return fallback;
     // Redirect to the user's portal dashboard
     const dashboardPath =
+      user.category === "project_manager" ? "/pm/dashboard" :
       user.category === "site_supervisor" ? "/supervisor/dashboard" :
       user.category === "sales_agent" ? "/sales/dashboard" :
       user.role === "admin" ? "/admin/dashboard" : "/userportal";

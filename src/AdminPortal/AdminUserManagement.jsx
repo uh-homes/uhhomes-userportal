@@ -195,9 +195,11 @@ export default function AdminUserManagement() {
         password: newUser.password,
         role: newUser.category === "super_admin" ? "admin" : "user",
       };
-      // Use supervisor endpoint for site_supervisor, otherwise general createUser
+      // Use dedicated endpoints for site_supervisor and project_manager, otherwise general createUser
       if (newUser.category === "site_supervisor") {
         await api.post("/admin/supervisors", payload);
+      } else if (newUser.category === "project_manager") {
+        await api.post("/admin/project-managers", payload);
       } else {
         const res = await api.post("/admin/users", payload);
         // Update category if not homebuyer (default)

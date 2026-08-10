@@ -30,6 +30,8 @@ const { generateWeeklySummary, sendWeeklySummary, sendAllWeeklySummaries } = req
 const { getAllInquiries, respondToInquiry, deleteInquiry } = require("../controllers/adminInquiryController");
 const { getAllUsersPermissions, getUserPermissions, updateUserPermissions, bulkUpdatePermissions, resetUserPermissions, updateUserCategory } = require("../controllers/adminPermissionsController");
 const { createSupervisor, getSupervisors, assignProjects, unassignProject, deleteSupervisor } = require("../controllers/adminSupervisorController");
+const { createProjectManager, getProjectManagers, assignProjects: assignPMProjects, unassignProject: unassignPMProject, deleteProjectManager } = require("../controllers/adminProjectManagerController");
+const { getWarrantyConfigs, createWarrantyConfig, updateWarrantyConfig, deleteWarrantyConfig, getAllWarranties } = require("../controllers/adminWarrantyController");
 
 // All routes require auth + admin
 router.use(protect, adminOnly);
@@ -104,5 +106,19 @@ router.post("/supervisors", createSupervisor);
 router.post("/supervisors/:id/assign", assignProjects);
 router.delete("/supervisors/:id/unassign/:projectId", unassignProject);
 router.delete("/supervisors/:id", deleteSupervisor);
+
+// Project Manager Management
+router.get("/project-managers", getProjectManagers);
+router.post("/project-managers", createProjectManager);
+router.post("/project-managers/:id/assign", assignPMProjects);
+router.delete("/project-managers/:id/unassign/:projectId", unassignPMProject);
+router.delete("/project-managers/:id", deleteProjectManager);
+
+// Warranty Configuration
+router.get("/warranty-configs", getWarrantyConfigs);
+router.post("/warranty-configs", createWarrantyConfig);
+router.put("/warranty-configs/:id", updateWarrantyConfig);
+router.delete("/warranty-configs/:id", deleteWarrantyConfig);
+router.get("/warranties", getAllWarranties);
 
 module.exports = router;
