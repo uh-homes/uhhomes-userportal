@@ -199,20 +199,12 @@ export default function AdminUserManagement() {
         password: newUser.password,
         role: newUser.category === "super_admin" ? "admin" : "user",
       };
-      // Use dedicated endpoints for site_supervisor, project_manager, and architect, otherwise general createUser
-      if (newUser.category === "site_supervisor") {
-        await api.post("/admin/supervisors", payload);
-      } else if (newUser.category === "project_manager") {
-        await api.post("/admin/project-managers", payload);
-      } else if (newUser.category === "architect") {
-        const res = await api.post("/admin/users", payload);
-        await api.put(`/admin/permissions/category/${res.data.data.id}`, { category: "architect" });
-      } else {
-        const res = await api.post("/admin/users", payload);
-        // Update category if not homebuyer (default)
-        if (newUser.category !== "homebuyer" && newUser.category !== "super_admin") {
-          await api.put(`/admin/permissions/category/${res.data.data.id}`, { category: newUser.category });
-        }
+      // Create user first, then assign category
+      const res = await api.post("/admin/users", payload);
+      const userId = res.data.data?.id || res.data.data?._id;
+      // Update category if not homebuyer (default)
+      if (newUser.category !== "homebuyer" && newUser.category !== "super_admin" && userId) {
+        await api.put(`/admin/permissions/category/${userId}`, { category: newUser.category });
       }
       toast.success(`User "${newUser.fullName}" created as ${CATEGORIES.find(c => c.key === newUser.category)?.label}`);
       setShowAddUser(false);
