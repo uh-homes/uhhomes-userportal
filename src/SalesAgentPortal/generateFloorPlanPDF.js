@@ -69,7 +69,7 @@ async function drawHeader(doc, planData) {
 function drawSpecsBar(doc, planData, y) {
   const specs = planData.specs;
   doc.setFillColor(245, 245, 245);
-  doc.roundedRect(15, y, 180, 22, 3, 3, "F");
+  doc.roundedRect(20, y, 170, 22, 3, 3, "F");
 
   const items = [
     `${specs.bedrooms} Bed`,
@@ -80,8 +80,8 @@ function drawSpecsBar(doc, planData, y) {
     `${specs.garage} Garage`,
   ].filter(Boolean);
 
-  const startX = 25;
-  const spacing = 28;
+  const startX = 30;
+  const spacing = 27;
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
@@ -106,11 +106,11 @@ function drawSectionTitle(doc, title, y) {
   doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
-  doc.text(title, 15, y);
+  doc.text(title, 20, y);
 
   doc.setDrawColor(...GOLD);
   doc.setLineWidth(1.0);
-  doc.line(15, y + 3, 15 + doc.getTextWidth(title), y + 3);
+  doc.line(20, y + 3, 20 + doc.getTextWidth(title), y + 3);
 
   return y + 12;
 }
@@ -142,12 +142,12 @@ function drawDimensions(doc, planData, y) {
   if (!dims) return y;
 
   doc.setFillColor(245, 245, 245);
-  doc.roundedRect(15, y, 180, 30, 3, 3, "F");
+  doc.roundedRect(20, y, 170, 30, 3, 3, "F");
 
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
-  doc.text("Plan Dimensions", 25, y + 8);
+  doc.text("Plan Dimensions", 30, y + 8);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
@@ -155,15 +155,15 @@ function drawDimensions(doc, planData, y) {
 
   let dimY = y + 14;
   if (dims.totalArea) {
-    doc.text(`Total Area: ${dims.totalArea}`, 25, dimY);
+    doc.text(`Total Area: ${dims.totalArea}`, 30, dimY);
     dimY += 5;
   }
   if (dims.firstFloor) {
-    doc.text(`First Floor: ${dims.firstFloor}`, 25, dimY);
+    doc.text(`First Floor: ${dims.firstFloor}`, 30, dimY);
     dimY += 5;
   }
   if (dims.secondFloor) {
-    doc.text(`Second Floor: ${dims.secondFloor}`, 25, dimY);
+    doc.text(`Second Floor: ${dims.secondFloor}`, 30, dimY);
   }
 
   const specs = planData.specs;
@@ -206,41 +206,59 @@ function checkPageBreak(doc, y, neededSpace) {
 async function embedImage(doc, imgUrl, y, label, fullPage = false) {
   try {
     const img = await loadImage(imgUrl);
-    const imgWidth = 180; // Wider images for better clarity
-    const imgHeight = (img.height / img.width) * imgWidth;
+    const pageHeight = doc.internal.pageSize.getHeight();
 
     if (fullPage) {
-      // For floor plans: start a new page and use maximum available space
+      // For floor plans: start a new page and scale image to fill the available space
       drawFooter(doc);
       doc.addPage();
-      y = 15;
+      y = 20;
 
       if (label) {
         doc.setFontSize(14);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...DARK);
-        doc.text(label, 15, y);
+        doc.text(label, 20, y);
         y += 10;
       }
 
-      const maxH = 255; // maximize page usage for floor plan clarity
-      const clampedHeight = Math.min(imgHeight, maxH);
-      doc.addImage(img.dataUrl, "JPEG", 15, y, imgWidth, clampedHeight);
-      y += clampedHeight + 6;
+      // Calculate max available space and scale image to fill it
+      const availableH = pageHeight - y - 20; // leave margin for footer
+      const availableW = 170; // page width minus margins
+      const aspectRatio = img.width / img.height;
+
+      let finalW, finalH;
+      // Scale to fill the available area while maintaining aspect ratio
+      if ((availableW / availableH) > aspectRatio) {
+        // Height is the constraint
+        finalH = availableH;
+        finalW = finalH * aspectRatio;
+      } else {
+        // Width is the constraint
+        finalW = availableW;
+        finalH = finalW / aspectRatio;
+      }
+
+      // Center horizontally within content area
+      const imgX = 20 + (availableW - finalW) / 2;
+      doc.addImage(img.dataUrl, "JPEG", imgX, y, finalW, finalH);
+      y += finalH + 6;
     } else {
-      // For elevations: fit within current page flow with larger images
-      const clampedHeight = Math.min(imgHeight, 140);
+      // For elevations: fit within current page flow
+      const imgWidth = 170;
+      const imgHeight = (img.height / img.width) * imgWidth;
+      const clampedHeight = Math.min(imgHeight, 100);
       y = checkPageBreak(doc, y, clampedHeight + (label ? 10 : 4));
 
       if (label) {
         doc.setFontSize(10);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(...GRAY);
-        doc.text(label, 15, y);
+        doc.text(label, 20, y);
         y += 6;
       }
 
-      doc.addImage(img.dataUrl, "JPEG", 15, y, imgWidth, clampedHeight);
+      doc.addImage(img.dataUrl, "JPEG", 20, y, imgWidth, clampedHeight);
       y += clampedHeight + 6;
     }
 
@@ -264,11 +282,12 @@ export async function generateFloorPlanCatalogPDF(planData) {
     const elevationLabels = ["Elevation A", "Elevation B", "Elevation C", "Elevation D"];
 
     for (let i = 0; i < planData.elevationImages.length; i++) {
-      // Add generous spacing between elevation sections for clear separation
+      // Compact spacing between elevations so they can fit together on one page
       if (i > 0) {
-        y += 20;
+        y += 8;
       }
-      y = checkPageBreak(doc, y, 100);
+      // Only break page if there's truly not enough room for the title + image
+      y = checkPageBreak(doc, y, 60);
       y = drawSectionTitle(doc, elevationLabels[i] || `Elevation ${i + 1}`, y);
 
       const result = await embedImage(doc, planData.elevationImages[i], y, null);
