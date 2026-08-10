@@ -63,7 +63,7 @@ export default function ArchitectProfile() {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-[#1A1A1A]">{user?.fullName}</h2>
-              <p className="text-sm text-gray-500">Architect / Designer</p>
+              <p className="text-sm text-gray-500">Architect</p>
             </div>
           </div>
 
@@ -182,7 +182,7 @@ export default function ArchitectProfile() {
         {/* Note about no financial access */}
         <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
           <p className="text-sm text-amber-700">
-            <strong>Note:</strong> As an Architect/Designer, you have access to design-related modules only. 
+            <strong>Note:</strong> As an Architect, you have access to design-related modules only. 
             Financial data and billing information are not accessible from this portal.
           </p>
         </div>

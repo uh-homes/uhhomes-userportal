@@ -117,7 +117,7 @@ export default function AdminArchitects() {
         <div>
           <h1 className="text-2xl font-bold text-[#1A1A1A] flex items-center gap-2">
             <HiOutlinePencilAlt className="text-[#C5A572]" />
-            Architects / Designers
+            Architects
           </h1>
           <p className="text-sm text-gray-500 mt-1">Manage architects and assign them to projects</p>
         </div>

@@ -22,7 +22,7 @@ const CATEGORIES = [
   { key: "project_manager", label: "Project Managers", icon: <HiOutlineBriefcase />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
   { key: "sales_agent", label: "Sales Agents", icon: <HiOutlineCurrencyDollar />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
   { key: "site_supervisor", label: "Site Supervisors", icon: <HiOutlineClipboardList />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
-  { key: "architect", label: "Architects / Designers", icon: <HiOutlineClipboardList />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
+  { key: "architect", label: "Architects", icon: <HiOutlineClipboardList />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
   { key: "super_admin", label: "Super Admins", icon: <HiOutlineStar />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
 ];
 

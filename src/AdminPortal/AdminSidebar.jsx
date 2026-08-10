@@ -17,7 +17,6 @@ import {
   HiOutlineChevronDown,
   HiOutlineChevronRight,
   HiOutlineUserGroup,
-  HiOutlinePencilAlt,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -27,7 +26,7 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
   const user = useSelector((state) => state?.user);
   const location = useLocation();
   const [usersExpanded, setUsersExpanded] = useState(
-    location.pathname === "/admin/users" || location.pathname === "/admin/user-management" || location.pathname === "/admin/project-managers" || location.pathname === "/admin/architects"
+    location.pathname === "/admin/users" || location.pathname === "/admin/user-management"
   );
 
   const menuItems = [
@@ -38,8 +37,6 @@ const AdminSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
       children: [
         { title: "Users List", icon: <HiOutlineUserGroup />, path: "/admin/users" },
         { title: "User Management", icon: <HiOutlineShieldCheck />, path: "/admin/user-management" },
-        { title: "Project Managers", icon: <HiOutlineUserGroup />, path: "/admin/project-managers" },
-        { title: "Architects", icon: <HiOutlinePencilAlt />, path: "/admin/architects" },
       ],
     },
     { title: "Alerts", icon: <HiOutlineBell />, path: "/admin/alerts" },

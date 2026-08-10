@@ -31,9 +31,7 @@ import AdminReports from "./AdminPortal/AdminReports";
 import AdminAISummary from "./AdminPortal/AdminAISummary";
 import AdminInquiries from "./AdminPortal/AdminInquiries";
 import AdminUserManagement from "./AdminPortal/AdminUserManagement";
-import AdminProjectManagers from "./AdminPortal/AdminProjectManagers";
 import AdminWarrantyConfig from "./AdminPortal/AdminWarrantyConfig";
-import AdminArchitects from "./AdminPortal/AdminArchitects";
 
 import SupervisorLayout from "./Layout/SupervisorLayout";
 import SupervisorDashboard from "./SupervisorPortal/SupervisorDashboard";
@@ -124,9 +122,7 @@ function App() {
             <Route path="/admin/inquiries" element={<AdminInquiries />} />
             <Route path="/admin/ai-summary" element={<AdminAISummary />} />
             <Route path="/admin/user-management" element={<AdminUserManagement />} />
-            <Route path="/admin/project-managers" element={<AdminProjectManagers />} />
             <Route path="/admin/warranty-config" element={<AdminWarrantyConfig />} />
-            <Route path="/admin/architects" element={<AdminArchitects />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>
@@ -179,7 +175,7 @@ function App() {
           </Route>
         </Route>
 
-        {/* Architect / Designer Portal Routes */}
+        {/* Architect Portal Routes */}
         <Route element={<ArchitectRoute />}>
           <Route element={<ArchitectLayout />}>
             <Route path="/architect/dashboard" element={<ArchitectDashboard />} />

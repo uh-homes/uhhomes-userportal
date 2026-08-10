@@ -53,7 +53,7 @@ export default function ArchitectDashboard() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-[#1A1A1A] mb-2">Architect / Designer Dashboard</h1>
+      <h1 className="text-2xl font-bold text-[#1A1A1A] mb-2">Architect Dashboard</h1>
       <p className="text-sm text-gray-500 mb-6">Manage designs, floorplans, and project assignments</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
