@@ -341,7 +341,8 @@ export default function AdminUsers() {
                   type="tel"
                   className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
                   value={editUser.phone}
-                  onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+                  onChange={(e) => setEditUser({ ...editUser, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                  maxLength={10}
                 />
               </div>
               <div>
@@ -446,9 +447,10 @@ export default function AdminUsers() {
                 <input
                   type="tel"
                   className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-                  placeholder="(555) 123-4567"
+                  placeholder="1234567890"
                   value={newUser.phone}
-                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                  maxLength={10}
                 />
               </div>
               <div>

@@ -74,7 +74,8 @@ export const SignupStep1 = ({ setStep, setEmail, setUserData }) => {
             type="tel"
             placeholder="Phone Number"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+            maxLength={10}
             required
             disabled={loading}
             className="w-full border rounded pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"

@@ -183,11 +183,12 @@ export default function AdminProjectManagers() {
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
                 <input
-                  type="text"
+                  type="tel"
                   value={newPM.phone}
-                  onChange={(e) => setNewPM({ ...newPM, phone: e.target.value })}
+                  onChange={(e) => setNewPM({ ...newPM, phone: e.target.value.replace(/\D/g, "").slice(0, 10) })}
+                  maxLength={10}
                   className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-                  placeholder="+1 234 567 8900"
+                  placeholder="1234567890"
                 />
               </div>
               <div>
