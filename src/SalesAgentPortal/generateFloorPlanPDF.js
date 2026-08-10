@@ -35,33 +35,35 @@ async function drawHeader(doc, planData) {
   doc.setFillColor(...GOLD);
   doc.rect(0, 35, 210, 1.5, "F");
 
-  // Add logo image - doubled size, centered
+  // Add logo image - centered, maintain aspect ratio (no stretch)
   const logo = await getLogoDataUrl();
   if (logo) {
-    const logoW = 80;
-    const logoH = 32;
+    const logoH = 20;
+    const logoW = 50;
     const logoX = (210 - logoW) / 2;
-    doc.addImage(logo, "PNG", logoX, 2, logoW, logoH);
+    const logoY = (35 - logoH) / 2;
+    doc.addImage(logo, "PNG", logoX, logoY, logoW, logoH);
   } else {
     doc.setTextColor(...WHITE);
-    doc.setFontSize(24);
+    doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
     doc.text("UH HOMES", 105, 22, { align: "center" });
   }
 
-  // Plan name and location BELOW the header
-  let y = 44;
-  doc.setFontSize(26);
+  // Plan name and location BELOW the header - same baseline for alignment
+  let y = 48;
+  doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...GOLD);
   doc.text(planData.name, 20, y);
 
+  // Location aligned to same baseline as the plan name
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...GRAY);
   doc.text(`${planData.community} | ${planData.location}`, 190, y, { align: "right" });
 
-  return y + 8;
+  return y + 10;
 }
 
 function drawSpecsBar(doc, planData, y) {
@@ -101,16 +103,16 @@ function drawDescription(doc, planData, y) {
 }
 
 function drawSectionTitle(doc, title, y) {
-  doc.setFontSize(14);
+  doc.setFontSize(16);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...DARK);
-  doc.text(title, 20, y);
+  doc.text(title, 15, y);
 
   doc.setDrawColor(...GOLD);
-  doc.setLineWidth(0.8);
-  doc.line(20, y + 2, 20 + doc.getTextWidth(title), y + 2);
+  doc.setLineWidth(1.0);
+  doc.line(15, y + 3, 15 + doc.getTextWidth(title), y + 3);
 
-  return y + 10;
+  return y + 12;
 }
 
 function drawFeatureCategory(doc, title, items, x, y, maxWidth) {
@@ -201,25 +203,47 @@ function checkPageBreak(doc, y, neededSpace) {
   return y;
 }
 
-async function embedImage(doc, imgUrl, y, label) {
+async function embedImage(doc, imgUrl, y, label, fullPage = false) {
   try {
     const img = await loadImage(imgUrl);
-    const imgWidth = 170;
+    const imgWidth = 180; // Wider images for better clarity
     const imgHeight = (img.height / img.width) * imgWidth;
-    const clampedHeight = Math.min(imgHeight, 110);
 
-    y = checkPageBreak(doc, y, clampedHeight + (label ? 8 : 4));
+    if (fullPage) {
+      // For floor plans: start a new page and use maximum available space
+      drawFooter(doc);
+      doc.addPage();
+      y = 15;
 
-    if (label) {
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(...GRAY);
-      doc.text(label, 20, y);
-      y += 5;
+      if (label) {
+        doc.setFontSize(14);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...DARK);
+        doc.text(label, 15, y);
+        y += 10;
+      }
+
+      const maxH = 255; // maximize page usage for floor plan clarity
+      const clampedHeight = Math.min(imgHeight, maxH);
+      doc.addImage(img.dataUrl, "JPEG", 15, y, imgWidth, clampedHeight);
+      y += clampedHeight + 6;
+    } else {
+      // For elevations: fit within current page flow with larger images
+      const clampedHeight = Math.min(imgHeight, 140);
+      y = checkPageBreak(doc, y, clampedHeight + (label ? 10 : 4));
+
+      if (label) {
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...GRAY);
+        doc.text(label, 15, y);
+        y += 6;
+      }
+
+      doc.addImage(img.dataUrl, "JPEG", 15, y, imgWidth, clampedHeight);
+      y += clampedHeight + 6;
     }
 
-    doc.addImage(img.dataUrl, "JPEG", 20, y, imgWidth, clampedHeight);
-    y += clampedHeight + 6;
     return { y, success: true };
   } catch (err) {
     return { y, success: false };
@@ -240,7 +264,11 @@ export async function generateFloorPlanCatalogPDF(planData) {
     const elevationLabels = ["Elevation A", "Elevation B", "Elevation C", "Elevation D"];
 
     for (let i = 0; i < planData.elevationImages.length; i++) {
-      y = checkPageBreak(doc, y, 80);
+      // Add generous spacing between elevation sections for clear separation
+      if (i > 0) {
+        y += 20;
+      }
+      y = checkPageBreak(doc, y, 100);
       y = drawSectionTitle(doc, elevationLabels[i] || `Elevation ${i + 1}`, y);
 
       const result = await embedImage(doc, planData.elevationImages[i], y, null);
@@ -255,17 +283,17 @@ export async function generateFloorPlanCatalogPDF(planData) {
     }
   }
 
-  // --- SECTION 2: Floor Plans ---
+  // --- SECTION 2: Floor Plans (each on its own page for clarity) ---
   if (planData.floorPlanImages && planData.floorPlanImages.length > 0) {
-    y = checkPageBreak(doc, y, 80);
-    y = drawSectionTitle(doc, "Floor Plans", y);
-
     for (let i = 0; i < planData.floorPlanImages.length; i++) {
-      const label = planData.floorPlanImages.length > 1 ? `Floor ${i + 1}` : null;
-      const result = await embedImage(doc, planData.floorPlanImages[i], y, label);
+      const label = planData.floorPlanImages.length > 1 ? `Floor ${i + 1}` : "Floor Plan";
+      const result = await embedImage(doc, planData.floorPlanImages[i], y, label, true);
       if (result.success) {
         y = result.y;
       } else {
+        drawFooter(doc);
+        doc.addPage();
+        y = 20;
         doc.setFontSize(9);
         doc.setTextColor(...GRAY);
         doc.text(`Floor plan ${i + 1} available at: ${planData.websiteUrl}`, 20, y);
@@ -341,8 +369,8 @@ function loadImage(url) {
       clearTimeout(timeout);
       try {
         const canvas = document.createElement("canvas");
-        // Limit resolution for PDF to keep file size reasonable
-        const maxDim = 1600;
+        // Higher resolution for clear, readable images and text
+        const maxDim = 2400;
         let w = img.naturalWidth;
         let h = img.naturalHeight;
         if (w > maxDim) {
@@ -352,8 +380,10 @@ function loadImage(url) {
         canvas.width = w;
         canvas.height = h;
         const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
         ctx.drawImage(img, 0, 0, w, h);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.92);
         resolve({ dataUrl, width: w, height: h });
       } catch (e) {
         reject(e);

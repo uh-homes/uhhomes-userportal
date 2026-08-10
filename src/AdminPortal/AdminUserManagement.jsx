@@ -22,6 +22,7 @@ const CATEGORIES = [
   { key: "project_manager", label: "Project Managers", icon: <HiOutlineBriefcase />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
   { key: "sales_agent", label: "Sales Agents", icon: <HiOutlineCurrencyDollar />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
   { key: "site_supervisor", label: "Site Supervisors", icon: <HiOutlineClipboardList />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
+  { key: "architect", label: "Architects / Designers", icon: <HiOutlineClipboardList />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
   { key: "super_admin", label: "Super Admins", icon: <HiOutlineStar />, color: "text-[#8B7355]", bg: "bg-[#FAF7F2]", border: "border-[#E8D5B5]", activeBg: "bg-[#C5A572]" },
 ];
 
@@ -36,6 +37,9 @@ const PERMISSION_MODULES = [
   { key: "favorites", label: "Favorites", description: "Save and manage favorite properties", actions: ["read", "write", "upload", "download"] },
   { key: "profile", label: "Profile Settings", description: "View and edit personal profile", actions: ["read", "write", "upload", "download"] },
   { key: "reports", label: "Reports", description: "View and download project reports", actions: ["read", "write", "upload", "download"] },
+  { key: "floorplans", label: "Floor Plans", description: "Upload and manage floor plans (Architect)", actions: ["read", "write", "upload", "download"] },
+  { key: "designRequests", label: "Design Requests", description: "Handle buyer customization requests (Architect)", actions: ["read", "write", "upload", "download"] },
+  { key: "changeRequests", label: "Change Requests", description: "Manage design change requests (Architect)", actions: ["read", "write", "upload", "download"] },
 ];
 
 const ACTION_LABELS = { read: "Read", write: "Write", upload: "Upload", download: "Download" };
@@ -195,11 +199,14 @@ export default function AdminUserManagement() {
         password: newUser.password,
         role: newUser.category === "super_admin" ? "admin" : "user",
       };
-      // Use dedicated endpoints for site_supervisor and project_manager, otherwise general createUser
+      // Use dedicated endpoints for site_supervisor, project_manager, and architect, otherwise general createUser
       if (newUser.category === "site_supervisor") {
         await api.post("/admin/supervisors", payload);
       } else if (newUser.category === "project_manager") {
         await api.post("/admin/project-managers", payload);
+      } else if (newUser.category === "architect") {
+        const res = await api.post("/admin/users", payload);
+        await api.put(`/admin/permissions/category/${res.data.data.id}`, { category: "architect" });
       } else {
         const res = await api.post("/admin/users", payload);
         // Update category if not homebuyer (default)

@@ -48,6 +48,10 @@ export function UserRoute() {
     return <Navigate to="/pm/dashboard" replace />;
   }
 
+  if (user.category === "architect") {
+    return <Navigate to="/architect/dashboard" replace />;
+  }
+
   return <Outlet />;
 }
 
@@ -87,6 +91,20 @@ export function SupervisorRoute() {
   }
 
   if (user.category !== "site_supervisor") {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export function ArchitectRoute() {
+  const user = useSelector((state) => state?.user);
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (user.category !== "architect") {
     return <Navigate to="/" replace />;
   }
 

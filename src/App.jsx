@@ -18,7 +18,7 @@ import UpdatesPage from "./UserPortal/Common/UpdatesPage";
 import useWishlist from "./hooks/useWishlist";
 import useCurrentUser from "./hooks/useCurrentUser";
 import LoginPage from "./Pages/LoginPage";
-import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute, SalesAgentRoute, ProjectManagerRoute } from "./components/ProtectedRoute";
+import ProtectedRoute, { AdminRoute, UserRoute, SupervisorRoute, SalesAgentRoute, ProjectManagerRoute, ArchitectRoute } from "./components/ProtectedRoute";
 
 import AdminDashboard from "./AdminPortal/AdminDashboard";
 import AdminUsers from "./AdminPortal/AdminUsers";
@@ -33,6 +33,7 @@ import AdminInquiries from "./AdminPortal/AdminInquiries";
 import AdminUserManagement from "./AdminPortal/AdminUserManagement";
 import AdminProjectManagers from "./AdminPortal/AdminProjectManagers";
 import AdminWarrantyConfig from "./AdminPortal/AdminWarrantyConfig";
+import AdminArchitects from "./AdminPortal/AdminArchitects";
 
 import SupervisorLayout from "./Layout/SupervisorLayout";
 import SupervisorDashboard from "./SupervisorPortal/SupervisorDashboard";
@@ -70,6 +71,16 @@ import SupervisorGallery from "./SupervisorPortal/SupervisorGallery";
 import SupervisorAlerts from "./SupervisorPortal/SupervisorAlerts";
 import SupervisorProfile from "./SupervisorPortal/SupervisorProfile";
 import SupervisorReports from "./SupervisorPortal/SupervisorReports";
+
+import ArchitectLayout from "./Layout/ArchitectLayout";
+import ArchitectDashboard from "./ArchitectPortal/ArchitectDashboard";
+import ArchitectProjects from "./ArchitectPortal/ArchitectProjects";
+import ArchitectFloorPlans from "./ArchitectPortal/ArchitectFloorPlans";
+import ArchitectUploads from "./ArchitectPortal/ArchitectUploads";
+import ArchitectDesignRequests from "./ArchitectPortal/ArchitectDesignRequests";
+import ArchitectChangeRequests from "./ArchitectPortal/ArchitectChangeRequests";
+import ArchitectMilestones from "./ArchitectPortal/ArchitectMilestones";
+import ArchitectProfile from "./ArchitectPortal/ArchitectProfile";
 
 function App() {
   const location = useLocation();
@@ -115,6 +126,7 @@ function App() {
             <Route path="/admin/user-management" element={<AdminUserManagement />} />
             <Route path="/admin/project-managers" element={<AdminProjectManagers />} />
             <Route path="/admin/warranty-config" element={<AdminWarrantyConfig />} />
+            <Route path="/admin/architects" element={<AdminArchitects />} />
             <Route path="/admin/settings" element={<AdminSettings />} />
           </Route>
         </Route>
@@ -164,6 +176,20 @@ function App() {
             <Route path="/sales/buyers" element={<PermissionGuard module="favorites"><SalesAgentBuyers /></PermissionGuard>} />
             <Route path="/sales/pipeline" element={<PermissionGuard module="reports"><SalesAgentPipeline /></PermissionGuard>} />
             <Route path="/sales/profile" element={<PermissionGuard module="profile"><SalesAgentProfile /></PermissionGuard>} />
+          </Route>
+        </Route>
+
+        {/* Architect / Designer Portal Routes */}
+        <Route element={<ArchitectRoute />}>
+          <Route element={<ArchitectLayout />}>
+            <Route path="/architect/dashboard" element={<ArchitectDashboard />} />
+            <Route path="/architect/projects" element={<PermissionGuard module="constructionTracker"><ArchitectProjects /></PermissionGuard>} />
+            <Route path="/architect/floorplans" element={<PermissionGuard module="documents"><ArchitectFloorPlans /></PermissionGuard>} />
+            <Route path="/architect/uploads" element={<PermissionGuard module="gallery"><ArchitectUploads /></PermissionGuard>} />
+            <Route path="/architect/design-requests" element={<PermissionGuard module="inquiries"><ArchitectDesignRequests /></PermissionGuard>} />
+            <Route path="/architect/change-requests" element={<ArchitectChangeRequests />} />
+            <Route path="/architect/milestones" element={<PermissionGuard module="timeline"><ArchitectMilestones /></PermissionGuard>} />
+            <Route path="/architect/profile" element={<PermissionGuard module="profile"><ArchitectProfile /></PermissionGuard>} />
           </Route>
         </Route>
 

@@ -34,6 +34,17 @@ export const PM_MENU_CONFIG = [
   { permissionKey: "profile", title: "Profile", path: "/pm/profile" },
 ];
 
+export const ARCHITECT_MENU_CONFIG = [
+  { permissionKey: "dashboard", title: "Dashboard", path: "/architect/dashboard" },
+  { permissionKey: "constructionTracker", title: "Assigned Projects", path: "/architect/projects" },
+  { permissionKey: "documents", title: "Floor Plans", path: "/architect/floorplans" },
+  { permissionKey: "gallery", title: "Uploads", path: "/architect/uploads" },
+  { permissionKey: "inquiries", title: "Design Requests", path: "/architect/design-requests" },
+  { permissionKey: null, title: "Change Requests", path: "/architect/change-requests" },
+  { permissionKey: "timeline", title: "Milestone Updates", path: "/architect/milestones" },
+  { permissionKey: "profile", title: "Profile", path: "/architect/profile" },
+];
+
 export const SALES_MENU_CONFIG = [
   { permissionKey: "dashboard", title: "Dashboard", path: "/sales/dashboard" },
   { permissionKey: "constructionTracker", title: "Property Catalog", path: "/sales/properties" },
