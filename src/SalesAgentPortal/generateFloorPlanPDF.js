@@ -1,43 +1,65 @@
 import { jsPDF } from "jspdf";
+import logoWhite from "../assets/logowhite.png";
 
 // UH Homes brand colors
 const GOLD = [197, 165, 114]; // #C5A572
 const DARK = [26, 26, 26]; // #1A1A1A
 const GRAY = [100, 100, 100];
-const LIGHT_GRAY = [220, 220, 220];
 const WHITE = [255, 255, 255];
 
-function drawHeader(doc, planData) {
-  // Header background
+// Pre-load logo as base64 for PDF embedding
+let logoDataUrl = null;
+function getLogoDataUrl() {
+  if (logoDataUrl) return Promise.resolve(logoDataUrl);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      logoDataUrl = canvas.toDataURL("image/png");
+      resolve(logoDataUrl);
+    };
+    img.onerror = () => resolve(null);
+    img.src = logoWhite;
+  });
+}
+
+async function drawHeader(doc, planData) {
   doc.setFillColor(...DARK);
   doc.rect(0, 0, 210, 45, "F");
 
-  // Gold accent bar
   doc.setFillColor(...GOLD);
   doc.rect(0, 45, 210, 2, "F");
 
-  // Brand name
-  doc.setTextColor(...WHITE);
-  doc.setFontSize(22);
-  doc.setFont("helvetica", "bold");
-  doc.text("UH HOMES", 20, 20);
+  // Add logo image
+  const logo = await getLogoDataUrl();
+  if (logo) {
+    // Logo positioned in the top-left with proper aspect ratio
+    doc.addImage(logo, "PNG", 15, 8, 40, 16);
+  } else {
+    doc.setTextColor(...WHITE);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("UH HOMES", 20, 20);
+  }
 
-  // Tagline
   doc.setFontSize(9);
   doc.setFont("helvetica", "normal");
-  doc.text("Homes for today's lifestyle, built with values that never fade.", 20, 28);
+  doc.setTextColor(...WHITE);
+  doc.text("Homes for today's lifestyle, built with values that never fade.", 20, 30);
 
-  // Plan name
   doc.setFontSize(28);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...GOLD);
-  doc.text(planData.name, 20, 40);
+  doc.text(planData.name, 20, 42);
 
-  // Community and location on right
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...WHITE);
-  doc.text(`${planData.community} | ${planData.location}`, 190, 40, { align: "right" });
+  doc.text(`${planData.community} | ${planData.location}`, 190, 42, { align: "right" });
 }
 
 function drawSpecsBar(doc, planData, y) {
@@ -82,7 +104,6 @@ function drawSectionTitle(doc, title, y) {
   doc.setTextColor(...DARK);
   doc.text(title, 20, y);
 
-  // Gold underline
   doc.setDrawColor(...GOLD);
   doc.setLineWidth(0.8);
   doc.line(20, y + 2, 20 + doc.getTextWidth(title), y + 2);
@@ -141,7 +162,6 @@ function drawDimensions(doc, planData, y) {
     doc.text(`Second Floor: ${dims.secondFloor}`, 25, dimY);
   }
 
-  // Right column
   const specs = planData.specs;
   doc.text(`Bedrooms: ${specs.bedrooms}`, 120, y + 14);
   doc.text(`Bathrooms: ${specs.bathrooms}`, 120, y + 19);
@@ -166,7 +186,6 @@ function drawFooter(doc) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.text("8580 Belleview Dr, Suite #100, Plano, TX 75024  |  214-619-9929  |  sales@uhhomes.com", 105, pageHeight - 8, { align: "center" });
-
   doc.text("www.uhhomes.com", 190, pageHeight - 8, { align: "right" });
 }
 
@@ -180,54 +199,103 @@ function checkPageBreak(doc, y, neededSpace) {
   return y;
 }
 
+async function embedImage(doc, imgUrl, y, label) {
+  try {
+    const img = await loadImage(imgUrl);
+    const imgWidth = 170;
+    const imgHeight = (img.height / img.width) * imgWidth;
+    const clampedHeight = Math.min(imgHeight, 110);
+
+    y = checkPageBreak(doc, y, clampedHeight + (label ? 8 : 4));
+
+    if (label) {
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...GRAY);
+      doc.text(label, 20, y);
+      y += 5;
+    }
+
+    doc.addImage(img.dataUrl, "JPEG", 20, y, imgWidth, clampedHeight);
+    y += clampedHeight + 6;
+    return { y, success: true };
+  } catch (err) {
+    return { y, success: false };
+  }
+}
+
 export async function generateFloorPlanCatalogPDF(planData) {
   const doc = new jsPDF("p", "mm", "a4");
 
-  // Page 1: Header + Overview
-  drawHeader(doc, planData);
+  // Page 1: Header + Overview + Specs
+  await drawHeader(doc, planData);
   let y = 55;
 
   y = drawSpecsBar(doc, planData, y);
   y = drawDescription(doc, planData, y);
 
-  // Elevation section - try to load and embed images
-  if (planData.floorPlanImages && planData.floorPlanImages.length > 0) {
+  // --- SECTION 1: Elevation A ---
+  if (planData.elevationImages && planData.elevationImages.length > 0) {
     y = checkPageBreak(doc, y, 80);
-    y = drawSectionTitle(doc, "Elevations & Floor Plans", y);
+    y = drawSectionTitle(doc, "Elevation A", y);
 
-    for (const imgUrl of planData.floorPlanImages) {
-      try {
-        const img = await loadImage(imgUrl);
-        const imgWidth = 170;
-        const imgHeight = (img.height / img.width) * imgWidth;
-        const clampedHeight = Math.min(imgHeight, 100);
-
-        y = checkPageBreak(doc, y, clampedHeight + 10);
-        doc.addImage(img.dataUrl, "JPEG", 20, y, imgWidth, clampedHeight);
-        y += clampedHeight + 8;
-      } catch (err) {
+    // Load first elevation image as the primary elevation
+    const result = await embedImage(doc, planData.elevationImages[0], y, null);
+    if (result.success) {
+      y = result.y;
+    } else {
+      // Try second elevation image as fallback
+      if (planData.elevationImages.length > 1) {
+        const result2 = await embedImage(doc, planData.elevationImages[1], y, null);
+        if (result2.success) {
+          y = result2.y;
+        } else {
+          doc.setFontSize(9);
+          doc.setTextColor(...GRAY);
+          doc.text("Elevation image available on the UH Homes website.", 20, y);
+          y += 8;
+        }
+      } else {
         doc.setFontSize(9);
         doc.setTextColor(...GRAY);
-        doc.text("Floor plan image available at: " + imgUrl, 20, y);
+        doc.text("Elevation image available on the UH Homes website.", 20, y);
         y += 8;
       }
     }
-  } else {
-    y = checkPageBreak(doc, y, 15);
-    y = drawSectionTitle(doc, "Floor Plans", y);
-    doc.setFontSize(9);
-    doc.setTextColor(...GRAY);
-    doc.text("Full floor plan PDF available for download from UH Homes website.", 20, y);
-    y += 10;
+
+    // Show second elevation if available (as alternate angle)
+    if (planData.elevationImages.length > 1) {
+      const result2 = await embedImage(doc, planData.elevationImages[1], y, "Alternate View");
+      if (result2.success) {
+        y = result2.y;
+      }
+    }
   }
 
-  // Features & Details section
+  // --- SECTION 2: Floor Plans ---
+  if (planData.floorPlanImages && planData.floorPlanImages.length > 0) {
+    y = checkPageBreak(doc, y, 80);
+    y = drawSectionTitle(doc, "Floor Plans", y);
+
+    for (let i = 0; i < planData.floorPlanImages.length; i++) {
+      const label = planData.floorPlanImages.length > 1 ? `Floor ${i + 1}` : null;
+      const result = await embedImage(doc, planData.floorPlanImages[i], y, label);
+      if (result.success) {
+        y = result.y;
+      } else {
+        doc.setFontSize(9);
+        doc.setTextColor(...GRAY);
+        doc.text(`Floor plan ${i + 1} available at: ${planData.websiteUrl}`, 20, y);
+        y += 8;
+      }
+    }
+  }
+
+  // --- SECTION 3: Features & Details ---
   y = checkPageBreak(doc, y, 60);
   y = drawSectionTitle(doc, "Features & Details", y);
 
   const features = planData.features;
-
-  // Two column layout
   const colWidth = 82;
   const leftX = 20;
   const rightX = 110;
@@ -259,7 +327,7 @@ export async function generateFloorPlanCatalogPDF(planData) {
 
   y = Math.max(leftY, rightY) + 4;
 
-  // Dimensions
+  // --- SECTION 4: Dimensions ---
   y = checkPageBreak(doc, y, 40);
   y = drawDimensions(doc, planData, y);
 
@@ -269,10 +337,10 @@ export async function generateFloorPlanCatalogPDF(planData) {
   doc.setTextColor(...GRAY);
   doc.text(`More details: ${planData.websiteUrl}`, 20, y);
 
-  // Footer
+  // Footer on last page
   drawFooter(doc);
 
-  // Save
+  // Save PDF
   doc.save(`UH_Homes_${planData.name}_Catalog.pdf`);
 }
 
@@ -280,20 +348,40 @@ function loadImage(url) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
+
+    // Set a timeout to reject if image takes too long
+    const timeout = setTimeout(() => {
+      reject(new Error("Image load timeout"));
+    }, 10000);
+
     img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0);
+      clearTimeout(timeout);
       try {
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
-        resolve({ dataUrl, width: img.naturalWidth, height: img.naturalHeight });
+        const canvas = document.createElement("canvas");
+        // Limit resolution for PDF to keep file size reasonable
+        const maxDim = 1600;
+        let w = img.naturalWidth;
+        let h = img.naturalHeight;
+        if (w > maxDim) {
+          h = (h / w) * maxDim;
+          w = maxDim;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        resolve({ dataUrl, width: w, height: h });
       } catch (e) {
         reject(e);
       }
     };
-    img.onerror = reject;
+
+    img.onerror = () => {
+      clearTimeout(timeout);
+      reject(new Error("Image failed to load: " + url));
+    };
+
     img.src = url;
   });
 }

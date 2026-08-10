@@ -55,7 +55,9 @@ export default function SalesAgentTours() {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [selectedDate, setSelectedDate] = useState(null);
+
+  // Detail popup for date with tours
+  const [detailDate, setDetailDate] = useState(null);
 
   const fetchTours = async () => {
     try {
@@ -114,6 +116,7 @@ export default function SalesAgentTours() {
   };
 
   const handleEdit = (tour) => {
+    setDetailDate(null);
     setEditingTour(tour);
     setForm({
       leadId: tour.leadId || "",
@@ -148,6 +151,21 @@ export default function SalesAgentTours() {
     }
   };
 
+  // Click on a calendar date cell
+  const handleDateClick = (dateKey) => {
+    if (!dateKey) return;
+    const dayTours = toursByDate[dateKey] || [];
+    if (dayTours.length > 0) {
+      // Date has tours - open detail popup
+      setDetailDate(dateKey);
+    } else {
+      // Empty date - open schedule form with date pre-filled
+      setEditingTour(null);
+      setForm({ leadId: "", propertyId: "", scheduledDate: dateKey, scheduledTime: "", notes: "" });
+      setShowForm(true);
+    }
+  };
+
   // Group tours by date for calendar lookup
   const toursByDate = tours.reduce((acc, tour) => {
     const date = tour.scheduledDate || "";
@@ -178,7 +196,6 @@ export default function SalesAgentTours() {
   const goToToday = () => {
     setCurrentMonth(today.getMonth());
     setCurrentYear(today.getFullYear());
-    setSelectedDate(formatDateKey(today.getFullYear(), today.getMonth(), today.getDate()));
   };
 
   // Build calendar grid
@@ -206,8 +223,8 @@ export default function SalesAgentTours() {
 
   const todayKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
 
-  // Tours for selected date
-  const selectedDateTours = selectedDate ? (toursByDate[selectedDate] || []) : [];
+  // Tours for detail popup date
+  const detailDateTours = detailDate ? (toursByDate[detailDate] || []) : [];
 
   if (loading) {
     return (
@@ -321,6 +338,86 @@ export default function SalesAgentTours() {
         </div>
       )}
 
+      {/* Tour Detail Popup - shows when clicking a date with tours */}
+      {detailDate && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
+              <div>
+                <h2 className="text-lg font-semibold text-[#1A1A1A]">
+                  {new Date(detailDate + "T00:00").toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+                </h2>
+                <p className="text-sm text-gray-500 mt-0.5">{detailDateTours.length} tour{detailDateTours.length !== 1 ? "s" : ""} scheduled</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setDetailDate(null);
+                    setEditingTour(null);
+                    setForm({ leadId: "", propertyId: "", scheduledDate: detailDate, scheduledTime: "", notes: "" });
+                    setShowForm(true);
+                  }}
+                  className="flex items-center gap-1.5 bg-[#C5A572] text-white text-xs font-medium px-3 py-2 rounded-lg hover:bg-[#b39362] transition-colors"
+                >
+                  <HiOutlinePlus className="w-3.5 h-3.5" />
+                  Add Tour
+                </button>
+                <button onClick={() => setDetailDate(null)} className="text-gray-400 hover:text-gray-600 p-1">
+                  <HiOutlineX className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-5 space-y-4">
+              {detailDateTours.map((tour) => (
+                <div key={tour.id} className="bg-gray-50 rounded-xl border border-gray-100 p-4 hover:border-[#C5A572]/30 transition-all">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-lg font-semibold text-[#C5A572]">{tour.scheduledTime}</span>
+                        <span className={`text-xs px-2.5 py-0.5 rounded-full border font-medium ${TOUR_STATUS_COLORS[tour.status] || ""}`}>
+                          {tour.status?.replace("_", " ")}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-[#1A1A1A]">{tour.lead?.name || "Unknown Lead"}</p>
+                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mt-1">
+                        {tour.lead?.phone && <span>{tour.lead.phone}</span>}
+                        {tour.lead?.email && <span>{tour.lead.email}</span>}
+                      </div>
+                      <p className="text-sm text-[#C5A572] mt-1.5">{tour.property?.name} — {tour.property?.location}</p>
+                      {tour.notes && <p className="text-sm text-gray-400 mt-2 italic">"{tour.notes}"</p>}
+                      {tour.feedback && (
+                        <div className="mt-2 pl-3 border-l-2 border-[#C5A572]">
+                          <p className="text-xs text-gray-500 font-medium mb-0.5">Feedback:</p>
+                          <p className="text-sm text-gray-600">{tour.feedback}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={tour.status}
+                        onChange={(e) => handleStatusChange(tour.id, e.target.value)}
+                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent bg-white"
+                      >
+                        <option value="SCHEDULED">Scheduled</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="NO_SHOW">No Show</option>
+                      </select>
+                      <button onClick={() => handleEdit(tour)} className="p-2 text-gray-400 hover:text-[#C5A572] transition-colors">
+                        <HiOutlinePencil className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleDelete(tour.id)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                        <HiOutlineTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Calendar View */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Calendar Header */}
@@ -365,7 +462,6 @@ export default function SalesAgentTours() {
         <div className="grid grid-cols-7">
           {calendarDays.map((cell, idx) => {
             const isToday = cell.dateKey === todayKey;
-            const isSelected = cell.dateKey === selectedDate;
             const dayTours = cell.dateKey ? (toursByDate[cell.dateKey] || []) : [];
             const hasTours = dayTours.length > 0;
 
@@ -374,13 +470,13 @@ export default function SalesAgentTours() {
                 key={idx}
                 onClick={() => {
                   if (cell.currentMonth && cell.dateKey) {
-                    setSelectedDate(cell.dateKey === selectedDate ? null : cell.dateKey);
+                    handleDateClick(cell.dateKey);
                   }
                 }}
                 className={`
-                  relative min-h-[90px] p-2 border-b border-r border-gray-50 transition-colors
+                  relative min-h-[100px] p-2 border-b border-r border-gray-50 transition-colors
                   ${cell.currentMonth ? "cursor-pointer hover:bg-[#C5A572]/5" : "bg-gray-50/50 cursor-default"}
-                  ${isSelected ? "bg-[#C5A572]/10 ring-1 ring-inset ring-[#C5A572]/30" : ""}
+                  ${hasTours && cell.currentMonth ? "bg-[#C5A572]/[0.04]" : ""}
                 `}
               >
                 <span
@@ -388,13 +484,12 @@ export default function SalesAgentTours() {
                     inline-flex items-center justify-center w-7 h-7 text-sm rounded-full
                     ${isToday ? "bg-[#C5A572] text-white font-bold" : ""}
                     ${cell.currentMonth ? "text-[#1A1A1A]" : "text-gray-300"}
-                    ${isSelected && !isToday ? "font-semibold" : ""}
                   `}
                 >
                   {cell.day}
                 </span>
 
-                {/* Tour indicators */}
+                {/* Tour indicators - highlighted on the block */}
                 {hasTours && cell.currentMonth && (
                   <div className="mt-1 space-y-0.5">
                     {dayTours.slice(0, 3).map((tour, i) => (
@@ -407,7 +502,7 @@ export default function SalesAgentTours() {
                       </div>
                     ))}
                     {dayTours.length > 3 && (
-                      <div className="text-[10px] text-gray-400 pl-1.5">+{dayTours.length - 3} more</div>
+                      <div className="text-[10px] text-gray-400 pl-1.5 font-medium">+{dayTours.length - 3} more</div>
                     )}
                   </div>
                 )}
@@ -416,78 +511,6 @@ export default function SalesAgentTours() {
           })}
         </div>
       </div>
-
-      {/* Selected Date Tour Details */}
-      {selectedDate && (
-        <div className="mt-6">
-          <h3 className="text-sm font-semibold text-gray-500 mb-3">
-            {new Date(selectedDate + "T00:00").toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
-          </h3>
-          {selectedDateTours.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
-              <HiOutlineCalendar className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-500 text-sm">No tours scheduled for this date.</p>
-              <button
-                onClick={() => {
-                  setShowForm(true);
-                  setEditingTour(null);
-                  setForm({ leadId: "", propertyId: "", scheduledDate: selectedDate, scheduledTime: "", notes: "" });
-                }}
-                className="mt-3 text-sm text-[#C5A572] hover:text-[#b39362] font-medium transition-colors"
-              >
-                + Schedule a tour
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {selectedDateTours.map((tour) => (
-                <div key={tour.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-[#C5A572]/30 transition-all">
-                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-lg font-semibold text-[#C5A572]">{tour.scheduledTime}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded-full border ${TOUR_STATUS_COLORS[tour.status] || ""}`}>
-                          {tour.status?.replace("_", " ")}
-                        </span>
-                      </div>
-                      <p className="text-sm font-medium text-[#1A1A1A]">{tour.lead?.name || "Unknown Lead"}</p>
-                      <div className="flex flex-wrap gap-3 text-sm text-gray-500 mt-1">
-                        {tour.lead?.phone && <span>{tour.lead.phone}</span>}
-                        {tour.lead?.email && <span>{tour.lead.email}</span>}
-                      </div>
-                      <p className="text-sm text-[#C5A572] mt-1">{tour.property?.name} — {tour.property?.location}</p>
-                      {tour.notes && <p className="text-sm text-gray-400 mt-2">{tour.notes}</p>}
-                      {tour.feedback && (
-                        <div className="mt-2 pl-3 border-l-2 border-[#C5A572]">
-                          <p className="text-sm text-gray-600">{tour.feedback}</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={tour.status}
-                        onChange={(e) => handleStatusChange(tour.id, e.target.value)}
-                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-                      >
-                        <option value="SCHEDULED">Scheduled</option>
-                        <option value="COMPLETED">Completed</option>
-                        <option value="CANCELLED">Cancelled</option>
-                        <option value="NO_SHOW">No Show</option>
-                      </select>
-                      <button onClick={() => handleEdit(tour)} className="p-2 text-gray-400 hover:text-[#C5A572] transition-colors">
-                        <HiOutlinePencil className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleDelete(tour.id)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
-                        <HiOutlineTrash className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }

@@ -19,8 +19,13 @@ const floorPlanCatalog = {
       firstFloor: "3,654 Sqft",
       secondFloor: "1,405 Sqft",
     },
+    elevationImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/exterior-ai-1771975839839-3.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/chinna-el2-1.webp",
+    ],
     floorPlanImages: [
-      "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-scaled.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F2-1.webp",
     ],
     pdfUrl: "https://www.uhhomes.com/wp-content/uploads/2026/07/Vista.pdf",
     features: {
@@ -61,8 +66,13 @@ const floorPlanCatalog = {
       firstFloor: "3,286 Sqft",
       secondFloor: "1,294 Sqft",
     },
+    elevationImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/Utopia-Elev.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/Utopia-2.2-1.webp",
+    ],
     floorPlanImages: [
-      "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-F1-1-scaled.jpg",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-Template-F1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-Template-F2.webp",
     ],
     pdfUrl: "https://www.uhhomes.com/wp-content/uploads/2026/07/Utopia.pdf",
     features: {
@@ -107,7 +117,14 @@ const floorPlanCatalog = {
       firstFloor: "3,685 Sqft",
       secondFloor: "1,369 Sqft",
     },
-    floorPlanImages: [],
+    elevationImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Front-Elevation-1-2.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/PP-1920-X-1080-1.webp",
+    ],
+    floorPlanImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Velora-F1-1-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Velora-F2-1-1.webp",
+    ],
     pdfUrl: "https://www.uhhomes.com/wp-content/uploads/2026/07/Velora.pdf",
     features: {
       kitchen: ["Kitchen Island", "L-Shaped", "Walk-In Pantry"],
@@ -151,7 +168,13 @@ const floorPlanCatalog = {
       firstFloor: "4,400 Sqft",
       secondFloor: null,
     },
-    floorPlanImages: [],
+    elevationImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/Ranch-Elevation-2-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/Ranch-Elevation-3.webp",
+    ],
+    floorPlanImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Ranch-Template.webp",
+    ],
     pdfUrl: "https://www.uhhomes.com/wp-content/uploads/2026/07/Nexa.pdf",
     features: {
       kitchen: ["Kitchen Island", "L-Shaped", "Walk-in Pantry"],
@@ -193,8 +216,13 @@ const floorPlanCatalog = {
       firstFloor: "3,122 Sqft",
       secondFloor: "1,142 Sqft",
     },
+    elevationImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/Zyra-Elevation-2-2.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/Zyra-Elevation-3.webp",
+    ],
     floorPlanImages: [
-      "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-F1-2-scaled.jpg",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-Template-F1-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-Template-F2.webp",
     ],
     pdfUrl: "https://www.uhhomes.com/wp-content/uploads/2026/07/Zyra.pdf",
     features: {
@@ -239,8 +267,13 @@ const floorPlanCatalog = {
       firstFloor: "3,455 Sqft",
       secondFloor: "940 Sqft",
     },
+    elevationImages: [
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/Nirvaan-Elevation-2.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-Elevation-5.webp",
+    ],
     floorPlanImages: [
-      "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F1-2-scaled.jpg",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F1-1-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F2-1-1.webp",
     ],
     pdfUrl: "https://www.uhhomes.com/wp-content/uploads/2026/05/Nirvaan-2.pdf",
     features: {
