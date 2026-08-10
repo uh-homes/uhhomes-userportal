@@ -1,64 +1,64 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlineDocumentDownload, HiOutlineClipboardList } from "react-icons/hi";
+import { HiOutlineDocumentDownload, HiOutlineSearch, HiOutlineLocationMarker, HiOutlineHome } from "react-icons/hi";
 import { toast } from "react-toastify";
+import floorPlanCatalog from "../SalesAgentPortal/floorPlanCatalogData";
+import { generateFloorPlanCatalogPDF } from "../SalesAgentPortal/generateFloorPlanPDF";
 
 export default function AdminReports() {
-  const [projects, setProjects] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(null);
+  const [search, setSearch] = useState("");
+  const [generatingPDF, setGeneratingPDF] = useState(null);
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchProperties = async () => {
       try {
-        const res = await api.get("/admin/projects");
-        setProjects(res.data.data);
+        const res = await api.get("/admin/properties");
+        setProperties(res.data.data);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch properties:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchProjects();
+    fetchProperties();
   }, []);
 
-  const downloadProjectReport = async (projectId, projectName) => {
-    setGenerating(projectId);
-    try {
-      const res = await api.get(`/admin/reports/project/${projectId}`, { responseType: "blob" });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${projectName.replace(/\s+/g, "_")}_Report.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      toast.success("Report downloaded!");
-    } catch (err) {
-      toast.error("Failed to generate report");
-    } finally {
-      setGenerating(null);
-    }
+  const filtered = properties.filter(
+    (p) =>
+      p.name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.location?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const formatPrice = (price) => {
+    if (!price) return "N/A";
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(price);
   };
 
-  const downloadSummaryReport = async () => {
-    setGenerating("summary");
+  const getFloorPlanData = (propertyName) => {
+    if (!propertyName) return null;
+    const key = propertyName.toLowerCase().trim();
+    return floorPlanCatalog[key] || null;
+  };
+
+  const handleDownloadCatalog = async (e, property) => {
+    e.stopPropagation();
+    const planData = getFloorPlanData(property.name);
+    if (!planData) {
+      toast.error("Catalog data not available for this property.");
+      return;
+    }
+
+    setGeneratingPDF(property.id);
     try {
-      const res = await api.get("/admin/reports/summary", { responseType: "blob" });
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `UHHomes_Summary_Report_${new Date().toISOString().split("T")[0]}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      toast.success("Summary report downloaded!");
+      await generateFloorPlanCatalogPDF(planData);
+      toast.success(`${planData.name} catalog downloaded!`);
     } catch (err) {
-      toast.error("Failed to generate summary report");
+      console.error("PDF generation error:", err);
+      toast.error("Failed to generate catalog PDF.");
     } finally {
-      setGenerating(null);
+      setGeneratingPDF(null);
     }
   };
 
@@ -72,88 +72,99 @@ export default function AdminReports() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-[#1A1A1A] mb-6">PDF Reports</h1>
-
-      {/* Summary Report Card */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
-              <HiOutlineClipboardList className="text-2xl text-purple-600" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-[#1A1A1A]">All Projects Summary Report</h2>
-              <p className="text-sm text-gray-500">Complete overview of all projects, statuses, and milestones</p>
-            </div>
-          </div>
-          <button
-            onClick={downloadSummaryReport}
-            disabled={generating === "summary"}
-            className="bg-[#C5A572] text-white px-4 py-2 rounded-lg hover:bg-[#b39362] flex items-center gap-2 disabled:opacity-50"
-          >
-            {generating === "summary" ? (
-              <span className="block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-            ) : (
-              <HiOutlineDocumentDownload className="text-lg" />
-            )}
-            Download PDF
-          </button>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">PDF Reports</h1>
+        <div className="relative w-full sm:w-72">
+          <HiOutlineSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search properties..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+          />
         </div>
       </div>
 
-      {/* Individual Project Reports */}
-      <h2 className="text-lg font-semibold text-[#1A1A1A] mb-4">Individual Project Reports</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((project) => (
-          <div key={project.id} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <h3 className="font-semibold text-[#1A1A1A]">{project.name}</h3>
-                <p className="text-sm text-gray-500">{project.user?.fullName}</p>
-                <p className="text-xs text-gray-400">{project.address}</p>
-              </div>
-              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                project.status === "COMPLETED" ? "bg-green-100 text-green-700" :
-                project.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700" :
-                "bg-gray-100 text-gray-700"
-              }`}>
-                {project.status?.replace("_", " ")}
-              </span>
-            </div>
+      {filtered.length === 0 ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-10 text-center">
+          <HiOutlineHome className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500">No properties found.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((property) => {
+            const planData = getFloorPlanData(property.name);
+            const isGenerating = generatingPDF === property.id;
 
-            <div className="mb-3">
-              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                <span>Progress</span>
-                <span>{project.completionPercentage}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-[#C5A572] h-2 rounded-full" style={{ width: `${project.completionPercentage}%` }}></div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-400">
-                {project.milestones?.length || 0} milestones
-              </span>
-              <button
-                onClick={() => downloadProjectReport(project.id, project.name)}
-                disabled={generating === project.id}
-                className="text-[#C5A572] hover:text-[#b39362] text-sm font-medium flex items-center gap-1 disabled:opacity-50"
+            return (
+              <div
+                key={property.id}
+                className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-[#C5A572]/40 transition-all flex flex-col"
               >
-                {generating === project.id ? (
-                  <span className="block h-3 w-3 border-2 border-[#C5A572] border-t-transparent rounded-full animate-spin"></span>
-                ) : (
-                  <HiOutlineDocumentDownload />
-                )}
-                Download Report
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+                {/* Image area - elevation thumbnail */}
+                <div className="relative">
+                  {(() => {
+                    const elevationImg = planData?.elevationImages?.[0];
+                    if (elevationImg) {
+                      return <img src={elevationImg} alt={property.name} className="w-full h-44 object-cover" />;
+                    } else if (property.thumbnail) {
+                      return <img src={property.thumbnail} alt={property.name} className="w-full h-44 object-cover" />;
+                    } else {
+                      return (
+                        <div className="w-full h-44 bg-gray-100 flex items-center justify-center">
+                          <HiOutlineHome className="w-10 h-10 text-gray-300" />
+                        </div>
+                      );
+                    }
+                  })()}
+                </div>
 
-      {projects.length === 0 && (
-        <div className="text-center py-10 text-gray-500">No projects to generate reports for.</div>
+                {/* Card body */}
+                <div className="p-4 flex flex-col flex-1">
+                  <h3 className="text-[#1A1A1A] font-semibold text-lg mb-1">{property.name}</h3>
+                  {property.location && (
+                    <p className="text-gray-500 text-sm flex items-center gap-1 mb-2">
+                      <HiOutlineLocationMarker className="w-4 h-4" />
+                      {property.location}
+                    </p>
+                  )}
+                  <p className="text-xl font-bold text-[#C5A572] mb-3">{formatPrice(property.price)}</p>
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-4">
+                    {property.bedrooms && <span className="bg-gray-50 border border-gray-100 px-2 py-1 rounded">{property.bedrooms} Beds</span>}
+                    {property.bathrooms && <span className="bg-gray-50 border border-gray-100 px-2 py-1 rounded">{property.bathrooms} Baths</span>}
+                    {property.squareFeet && <span className="bg-gray-50 border border-gray-100 px-2 py-1 rounded">{property.squareFeet.toLocaleString()} sqft</span>}
+                    {property.garageSpaces && <span className="bg-gray-50 border border-gray-100 px-2 py-1 rounded">{property.garageSpaces} Garage</span>}
+                  </div>
+
+                  {/* Spacer to push button to bottom */}
+                  <div className="flex-1"></div>
+
+                  {/* Download Catalog Button */}
+                  {planData && (
+                    <button
+                      onClick={(e) => handleDownloadCatalog(e, property)}
+                      disabled={isGenerating}
+                      className="w-full flex items-center justify-center gap-2 bg-[#1A1A1A] text-white text-sm font-medium px-4 py-2.5 rounded-lg hover:bg-[#333] disabled:opacity-60 transition-colors mt-auto"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <HiOutlineDocumentDownload className="w-4 h-4" />
+                          Download Catalog
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
