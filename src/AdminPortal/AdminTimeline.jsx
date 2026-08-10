@@ -125,6 +125,8 @@ export default function AdminTimeline() {
       </div>
 
       {currentProject && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left - Construction Tracker */}
         <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -267,34 +269,40 @@ export default function AdminTimeline() {
             )}
           </div>
 
-          {/* Site Updates from Supervisor */}
-          {projectDetail?.updates && projectDetail.updates.length > 0 && (
-            <div className="mt-8 border-t border-gray-100 pt-6">
-              <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
-                <HiOutlineCalendar className="text-[#C5A572]" />
-                Site Updates
-              </h3>
-              <div className="space-y-3">
-                {projectDetail.updates.map((update) => (
-                  <div key={update.id} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                    <p className="text-sm font-semibold text-[#1A1A1A]">{update.title}</p>
+        </div>
+
+        {/* Right - Site Updates */}
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 sticky top-6 self-start">
+          <h3 className="text-sm font-semibold text-[#1A1A1A] mb-4 flex items-center gap-2">
+            <HiOutlineCalendar className="text-[#C5A572]" />
+            Site Updates
+          </h3>
+          {projectDetail?.updates && projectDetail.updates.length > 0 ? (
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+              {projectDetail.updates.map((update) => {
+                const dateKey = new Date(update.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                });
+                return (
+                  <div key={update.id} className="pb-3 border-b border-gray-100 last:border-0">
+                    <p className="text-[11px] font-semibold text-[#C5A572] uppercase tracking-wide">{dateKey}</p>
+                    <p className="text-[13px] font-medium text-gray-900 mt-1">{update.title}</p>
                     {update.description && (
-                      <p className="text-[13px] text-gray-600 mt-1">{update.description}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-3">{update.description}</p>
                     )}
-                    <span className="text-[11px] text-gray-400 mt-2 block">
-                      {new Date(update.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    <span className="text-[10px] text-gray-400 mt-1 block">
+                      {new Date(update.createdAt).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
+          ) : (
+            <p className="text-xs text-gray-400">No site updates yet for this project.</p>
           )}
+        </div>
         </div>
       )}
     </div>

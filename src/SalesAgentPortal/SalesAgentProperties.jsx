@@ -104,15 +104,22 @@ export default function SalesAgentProperties() {
                 className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md hover:border-[#C5A572]/40 transition-all cursor-pointer flex flex-col"
                 onClick={() => setSelectedProperty(selectedProperty?.id === property.id ? null : property)}
               >
-                {/* Image area with lead tag overlay */}
+                {/* Image area with lead tag overlay - use elevation image as thumbnail */}
                 <div className="relative">
-                  {property.thumbnail ? (
-                    <img src={property.thumbnail} alt={property.name} className="w-full h-44 object-cover" />
-                  ) : (
-                    <div className="w-full h-44 bg-gray-100 flex items-center justify-center">
-                      <HiOutlineHome className="w-10 h-10 text-gray-300" />
-                    </div>
-                  )}
+                  {(() => {
+                    const elevationImg = planData?.elevationImages?.[0];
+                    if (elevationImg) {
+                      return <img src={elevationImg} alt={property.name} className="w-full h-44 object-cover" />;
+                    } else if (property.thumbnail) {
+                      return <img src={property.thumbnail} alt={property.name} className="w-full h-44 object-cover" />;
+                    } else {
+                      return (
+                        <div className="w-full h-44 bg-gray-100 flex items-center justify-center">
+                          <HiOutlineHome className="w-10 h-10 text-gray-300" />
+                        </div>
+                      );
+                    }
+                  })()}
                   {/* Lead count tag - top right corner */}
                   {property.leads?.length > 0 && (
                     <span className="absolute top-2 right-2 bg-[#C5A572] text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-sm">
@@ -123,14 +130,7 @@ export default function SalesAgentProperties() {
 
                 {/* Card body */}
                 <div className="p-4 flex flex-col flex-1">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="text-[#1A1A1A] font-semibold text-lg">{property.name}</h3>
-                    {planData && (
-                      <span className="text-[10px] font-semibold bg-gray-100 text-gray-600 border border-gray-200 px-2 py-0.5 rounded whitespace-nowrap">
-                        Elevation A
-                      </span>
-                    )}
-                  </div>
+                  <h3 className="text-[#1A1A1A] font-semibold text-lg mb-1">{property.name}</h3>
                   {property.location && (
                     <p className="text-gray-500 text-sm flex items-center gap-1 mb-2">
                       <HiOutlineLocationMarker className="w-4 h-4" />

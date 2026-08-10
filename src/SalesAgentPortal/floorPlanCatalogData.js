@@ -22,6 +22,7 @@ const floorPlanCatalog = {
     elevationImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/exterior-ai-1771975839839-3.webp",
       "https://www.uhhomes.com/wp-content/uploads/2026/04/chinna-el2-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/Chinna-1920-X-1080-1.webp",
     ],
     floorPlanImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Vista-F1-1.webp",
@@ -69,6 +70,7 @@ const floorPlanCatalog = {
     elevationImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/05/Utopia-Elev.webp",
       "https://www.uhhomes.com/wp-content/uploads/2026/05/Utopia-2.2-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/Utopia-3.2-1.webp",
     ],
     floorPlanImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Scott-Plan-Template-F1.webp",
@@ -120,6 +122,7 @@ const floorPlanCatalog = {
     elevationImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Front-Elevation-1-2.webp",
       "https://www.uhhomes.com/wp-content/uploads/2026/05/PP-1920-X-1080-1.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/PP-3840-X-2175-3.webp",
     ],
     floorPlanImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Velora-F1-1-1.webp",
@@ -171,6 +174,7 @@ const floorPlanCatalog = {
     elevationImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/04/Ranch-Elevation-2-1.webp",
       "https://www.uhhomes.com/wp-content/uploads/2026/04/Ranch-Elevation-3.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/Ranch-Elevation-5.webp",
     ],
     floorPlanImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Ranch-Template.webp",
@@ -219,6 +223,7 @@ const floorPlanCatalog = {
     elevationImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/04/Zyra-Elevation-2-2.webp",
       "https://www.uhhomes.com/wp-content/uploads/2026/04/Zyra-Elevation-3.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/05/Zyra-1-1.webp",
     ],
     floorPlanImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Zyra-Template-F1-1.webp",
@@ -270,6 +275,7 @@ const floorPlanCatalog = {
     elevationImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/04/Nirvaan-Elevation-2.webp",
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-Elevation-5.webp",
+      "https://www.uhhomes.com/wp-content/uploads/2026/04/exterior-ai-1771975982061-3.webp",
     ],
     floorPlanImages: [
       "https://www.uhhomes.com/wp-content/uploads/2026/03/Nirvaan-F1-1-1.webp",

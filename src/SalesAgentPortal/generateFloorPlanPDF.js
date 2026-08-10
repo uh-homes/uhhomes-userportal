@@ -28,38 +28,40 @@ function getLogoDataUrl() {
 }
 
 async function drawHeader(doc, planData) {
+  // Dark header with centered logo only
   doc.setFillColor(...DARK);
-  doc.rect(0, 0, 210, 45, "F");
+  doc.rect(0, 0, 210, 35, "F");
 
   doc.setFillColor(...GOLD);
-  doc.rect(0, 45, 210, 2, "F");
+  doc.rect(0, 35, 210, 1.5, "F");
 
-  // Add logo image
+  // Add logo image - doubled size, centered
   const logo = await getLogoDataUrl();
   if (logo) {
-    // Logo positioned in the top-left with proper aspect ratio
-    doc.addImage(logo, "PNG", 15, 8, 40, 16);
+    const logoW = 80;
+    const logoH = 32;
+    const logoX = (210 - logoW) / 2;
+    doc.addImage(logo, "PNG", logoX, 2, logoW, logoH);
   } else {
     doc.setTextColor(...WHITE);
-    doc.setFontSize(22);
+    doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
-    doc.text("UH HOMES", 20, 20);
+    doc.text("UH HOMES", 105, 22, { align: "center" });
   }
 
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(...WHITE);
-  doc.text("Homes for today's lifestyle, built with values that never fade.", 20, 30);
-
-  doc.setFontSize(28);
+  // Plan name and location BELOW the header
+  let y = 44;
+  doc.setFontSize(26);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...GOLD);
-  doc.text(planData.name, 20, 42);
+  doc.text(planData.name, 20, y);
 
-  doc.setFontSize(10);
+  doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.setTextColor(...WHITE);
-  doc.text(`${planData.community} | ${planData.location}`, 190, 42, { align: "right" });
+  doc.setTextColor(...GRAY);
+  doc.text(`${planData.community} | ${planData.location}`, 190, y, { align: "right" });
+
+  return y + 8;
 }
 
 function drawSpecsBar(doc, planData, y) {
@@ -228,46 +230,27 @@ export async function generateFloorPlanCatalogPDF(planData) {
   const doc = new jsPDF("p", "mm", "a4");
 
   // Page 1: Header + Overview + Specs
-  await drawHeader(doc, planData);
-  let y = 55;
+  let y = await drawHeader(doc, planData);
 
   y = drawSpecsBar(doc, planData, y);
   y = drawDescription(doc, planData, y);
 
-  // --- SECTION 1: Elevation A ---
+  // --- SECTION 1: Elevations (A, B, C) ---
   if (planData.elevationImages && planData.elevationImages.length > 0) {
-    y = checkPageBreak(doc, y, 80);
-    y = drawSectionTitle(doc, "Elevation A", y);
+    const elevationLabels = ["Elevation A", "Elevation B", "Elevation C", "Elevation D"];
 
-    // Load first elevation image as the primary elevation
-    const result = await embedImage(doc, planData.elevationImages[0], y, null);
-    if (result.success) {
-      y = result.y;
-    } else {
-      // Try second elevation image as fallback
-      if (planData.elevationImages.length > 1) {
-        const result2 = await embedImage(doc, planData.elevationImages[1], y, null);
-        if (result2.success) {
-          y = result2.y;
-        } else {
-          doc.setFontSize(9);
-          doc.setTextColor(...GRAY);
-          doc.text("Elevation image available on the UH Homes website.", 20, y);
-          y += 8;
-        }
+    for (let i = 0; i < planData.elevationImages.length; i++) {
+      y = checkPageBreak(doc, y, 80);
+      y = drawSectionTitle(doc, elevationLabels[i] || `Elevation ${i + 1}`, y);
+
+      const result = await embedImage(doc, planData.elevationImages[i], y, null);
+      if (result.success) {
+        y = result.y;
       } else {
         doc.setFontSize(9);
         doc.setTextColor(...GRAY);
         doc.text("Elevation image available on the UH Homes website.", 20, y);
         y += 8;
-      }
-    }
-
-    // Show second elevation if available (as alternate angle)
-    if (planData.elevationImages.length > 1) {
-      const result2 = await embedImage(doc, planData.elevationImages[1], y, "Alternate View");
-      if (result2.success) {
-        y = result2.y;
       }
     }
   }
