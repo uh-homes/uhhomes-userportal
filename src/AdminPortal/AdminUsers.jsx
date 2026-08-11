@@ -68,7 +68,13 @@ export default function AdminUsers() {
     }
     setCreating(true);
     try {
-      await api.post("/admin/users", newUser);
+      // Use register endpoint so password gets hashed properly
+      try {
+        await api.post("/users/register", newUser);
+      } catch (regErr) {
+        // Fallback to admin endpoint if register requires OTP
+        await api.post("/admin/users", newUser);
+      }
       toast.success("User created successfully!");
       setShowAddModal(false);
       setNewUser({ fullName: "", email: "", phone: "", password: "", role: "user" });

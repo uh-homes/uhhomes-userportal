@@ -58,8 +58,18 @@ export default function AdminArchitects() {
         password: newArchitect.password,
         role: "user",
       };
-      const res = await api.post("/admin/users", payload);
-      await api.put(`/admin/permissions/category/${res.data.data.id}`, { category: "architect" });
+      // Use register endpoint so password gets hashed properly
+      let userId;
+      try {
+        const res = await api.post("/users/register", payload);
+        userId = res.data.data?.user?.id || res.data.data?.user?._id || res.data.data?.id || res.data.data?._id;
+      } catch (regErr) {
+        const res = await api.post("/admin/users", payload);
+        userId = res.data.data?.id || res.data.data?._id;
+      }
+      if (userId) {
+        await api.put(`/admin/permissions/category/${userId}`, { category: "architect" });
+      }
       toast.success(`Architect "${newArchitect.fullName}" created successfully`);
       setShowCreate(false);
       setNewArchitect({ fullName: "", email: "", phone: "", password: "" });

@@ -24,6 +24,10 @@ export default function LoginPage() {
         navigate("/supervisor/dashboard");
       } else if (user.category === "sales_agent") {
         navigate("/sales/dashboard");
+      } else if (user.category === "project_manager") {
+        navigate("/pm/dashboard");
+      } else if (user.category === "architect") {
+        navigate("/architect/dashboard");
       } else {
         navigate(user.role === "admin" ? "/admin/dashboard" : "/userportal");
       }

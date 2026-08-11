@@ -199,9 +199,16 @@ export default function AdminUserManagement() {
         password: newUser.password,
         role: newUser.category === "super_admin" ? "admin" : "user",
       };
-      // Create user first, then assign category
-      const res = await api.post("/admin/users", payload);
-      const userId = res.data.data?.id || res.data.data?._id;
+      // Use register endpoint so password gets hashed properly
+      let userId;
+      try {
+        const res = await api.post("/users/register", payload);
+        userId = res.data.data?.user?.id || res.data.data?.user?._id || res.data.data?.id || res.data.data?._id;
+      } catch (regErr) {
+        // Fallback to admin endpoint if register requires OTP verification
+        const res = await api.post("/admin/users", payload);
+        userId = res.data.data?.id || res.data.data?._id;
+      }
       // Update category if not homebuyer (default)
       if (newUser.category !== "homebuyer" && newUser.category !== "super_admin" && userId) {
         await api.put(`/admin/permissions/category/${userId}`, { category: newUser.category });
