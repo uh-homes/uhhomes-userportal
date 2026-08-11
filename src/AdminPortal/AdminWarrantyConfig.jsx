@@ -27,14 +27,23 @@ export default function AdminWarrantyConfig() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [configRes, warrantyRes] = await Promise.all([
+      const [configRes, warrantyRes] = await Promise.allSettled([
         api.get("/admin/warranty-configs"),
         api.get("/admin/warranties"),
       ]);
-      setConfigs(configRes.data.data);
-      setWarranties(warrantyRes.data.data);
+      if (configRes.status === "fulfilled") {
+        setConfigs(configRes.value.data.data || []);
+      } else {
+        setConfigs([]);
+      }
+      if (warrantyRes.status === "fulfilled") {
+        setWarranties(warrantyRes.value.data.data || []);
+      } else {
+        setWarranties([]);
+      }
     } catch (err) {
-      toast.error("Failed to load data");
+      setConfigs([]);
+      setWarranties([]);
     } finally {
       setLoading(false);
     }
