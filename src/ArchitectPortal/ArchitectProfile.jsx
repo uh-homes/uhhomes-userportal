@@ -180,13 +180,7 @@ export default function ArchitectProfile() {
           )}
         </div>
 
-        {/* Note about no financial access */}
-        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <p className="text-sm text-amber-700">
-            <strong>Note:</strong> As an Architect, you have access to design-related modules only. 
-            Financial data and billing information are not accessible from this portal.
-          </p>
-        </div>
+
       </div>
     </div>
   );

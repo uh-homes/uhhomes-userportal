@@ -415,6 +415,29 @@ const createUser = async (req, res) => {
   }
 };
 
+// PUT /admin/users/:id/toggle-active - Toggle user active/inactive
+const toggleUserActive = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found." });
+    }
+    // Don't allow deactivating yourself
+    if (user.id === req.user.id) {
+      return res.status(400).json({ status: "error", message: "You cannot deactivate your own account." });
+    }
+    const newStatus = !user.isActive;
+    await user.update({ isActive: newStatus });
+    res.json({
+      status: "success",
+      message: `User ${newStatus ? "activated" : "deactivated"} successfully.`,
+      data: { userId: user.id, fullName: user.fullName, isActive: newStatus },
+    });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   getStats,
   getUsers,
@@ -435,4 +458,5 @@ module.exports = {
   createProperty,
   updateProperty,
   deleteProperty,
+  toggleUserActive,
 };

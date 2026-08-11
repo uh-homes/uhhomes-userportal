@@ -160,6 +160,22 @@ export default function AdminUserManagement() {
     }
   };
 
+  const [togglingUser, setTogglingUser] = useState(null);
+
+  const handleToggleActive = async (userId, currentStatus, e) => {
+    e.stopPropagation();
+    try {
+      setTogglingUser(userId);
+      await api.put(`/admin/users/${userId}/toggle-active`);
+      toast.success(`User ${currentStatus ? "deactivated" : "activated"} successfully`);
+      await fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to toggle user status");
+    } finally {
+      setTogglingUser(null);
+    }
+  };
+
   const categoryUsers = users.filter((u) => u.category === activeCategory);
   const filteredUsers = categoryUsers.filter(
     (u) =>
@@ -403,19 +419,26 @@ export default function AdminUserManagement() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[#C5A572] flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ${user.isActive === false ? "bg-gray-400" : "bg-[#C5A572]"}`}>
                         {user.fullName?.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm text-[#1A1A1A] truncate">{user.fullName}</p>
+                        <div className="flex items-center gap-2">
+                          <p className={`font-medium text-sm truncate ${user.isActive === false ? "text-gray-400 line-through" : "text-[#1A1A1A]"}`}>{user.fullName}</p>
+                          {user.isActive === false && <span className="text-[10px] px-1.5 py-0.5 bg-red-100 text-red-600 rounded-full font-medium">Inactive</span>}
+                        </div>
                         <p className="text-xs text-gray-500 truncate">{user.email}</p>
                       </div>
-                      <div className="text-right flex-shrink-0">
-                        <span className="text-xs text-gray-400">{enabled}/{total}</span>
-                        <div className="w-12 h-1.5 bg-gray-200 rounded-full mt-1">
-                          <div className="h-full bg-[#C5A572] rounded-full transition-all" style={{ width: `${(enabled / total) * 100}%` }}></div>
+                      <button
+                        onClick={(e) => handleToggleActive(user.id, user.isActive !== false, e)}
+                        disabled={togglingUser === user.id}
+                        title={user.isActive === false ? "Activate user" : "Deactivate user"}
+                        className="flex-shrink-0"
+                      >
+                        <div className={`relative w-9 h-5 rounded-full transition-colors ${user.isActive === false ? "bg-gray-300" : "bg-green-500"} ${togglingUser === user.id ? "opacity-50" : ""}`}>
+                          <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${user.isActive === false ? "left-0.5" : "left-[18px]"}`}></div>
                         </div>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 );

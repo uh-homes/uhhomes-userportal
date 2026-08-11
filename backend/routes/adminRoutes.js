@@ -8,6 +8,7 @@ const {
   createUser,
   updateUser,
   deleteUser,
+  toggleUserActive,
   getAllProjects,
   getProjectById,
   updateProject,
@@ -44,6 +45,7 @@ router.get("/users", getUsers);
 router.post("/users", createUser);
 router.get("/users/:id", getUserById);
 router.put("/users/:id", updateUser);
+router.put("/users/:id/toggle-active", toggleUserActive);
 router.delete("/users/:id", deleteUser);
 
 // Projects management

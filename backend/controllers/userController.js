@@ -17,6 +17,10 @@ exports.login = async (req, res) => {
     return res.status(401).json({ message: "Invalid email or password." });
   }
 
+  if (user.isActive === false) {
+    return res.status(403).json({ message: "Your account has been deactivated. Please contact the administrator." });
+  }
+
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     return res.status(401).json({ message: "Invalid email or password." });
