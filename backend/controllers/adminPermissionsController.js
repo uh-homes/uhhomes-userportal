@@ -170,7 +170,7 @@ const bulkUpdatePermissions = async (req, res) => {
 const getAllUsersPermissions = async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ["id", "fullName", "email", "phone", "role", "category", "permissions", "isVerified", "createdAt"],
+      attributes: ["id", "fullName", "email", "phone", "role", "category", "permissions", "isVerified", "isActive", "createdAt"],
       order: [["fullName", "ASC"]],
     });
 
