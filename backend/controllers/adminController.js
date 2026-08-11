@@ -1,4 +1,4 @@
-const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, ProjectSupervisor, sequelize } = require("../models");
+const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, ProjectSupervisor, ProjectManager, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
 
@@ -438,6 +438,84 @@ const toggleUserActive = async (req, res) => {
   }
 };
 
+// GET /admin/users/:id/projects - Get user's assigned projects (all roles)
+const getUserProjects = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id, { attributes: ["id", "fullName", "category"] });
+    if (!user) return res.status(404).json({ status: "error", message: "User not found." });
+
+    let assignedProjects = [];
+
+    if (user.category === "homebuyer") {
+      // Direct ownership
+      assignedProjects = await Project.findAll({ where: { userId: user.id }, include: [{ model: Property, as: "property", attributes: ["name", "location"] }] });
+    } else if (user.category === "site_supervisor") {
+      const records = await ProjectSupervisor.findAll({ where: { supervisorId: user.id }, include: [{ model: Project, as: "project", include: [{ model: Property, as: "property", attributes: ["name", "location"] }] }] });
+      assignedProjects = records.map(r => r.project);
+    } else if (user.category === "project_manager") {
+      const records = await ProjectManager.findAll({ where: { managerId: user.id }, include: [{ model: Project, as: "project", include: [{ model: Property, as: "property", attributes: ["name", "location"] }] }] });
+      assignedProjects = records.map(r => r.project);
+    }
+    // For architect, sales_agent - use ProjectSupervisor table as generic assignment for now
+    // (can be expanded with dedicated tables later)
+
+    const allProjects = await Project.findAll({ attributes: ["id", "name", "status"], include: [{ model: Property, as: "property", attributes: ["name", "location"] }] });
+
+    res.json({ status: "success", data: { assignedProjects, allProjects, category: user.category } });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// POST /admin/users/:id/assign-projects - Assign projects to user (any role)
+const assignUserProjects = async (req, res) => {
+  try {
+    const { projectIds } = req.body;
+    const userId = parseInt(req.params.id);
+
+    const user = await User.findByPk(userId, { attributes: ["id", "fullName", "category"] });
+    if (!user) return res.status(404).json({ status: "error", message: "User not found." });
+    if (!projectIds || !Array.isArray(projectIds) || projectIds.length === 0) {
+      return res.status(400).json({ status: "error", message: "projectIds array is required." });
+    }
+
+    if (user.category === "site_supervisor") {
+      await ProjectSupervisor.bulkCreate(projectIds.map(pid => ({ supervisorId: userId, projectId: pid })), { ignoreDuplicates: true });
+    } else if (user.category === "project_manager") {
+      await ProjectManager.bulkCreate(projectIds.map(pid => ({ managerId: userId, projectId: pid })), { ignoreDuplicates: true });
+    } else {
+      return res.status(400).json({ status: "error", message: `Project assignment not supported for ${user.category} category.` });
+    }
+
+    res.json({ status: "success", message: "Projects assigned successfully." });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
+// DELETE /admin/users/:id/unassign-project/:projectId - Unassign project from user
+const unassignUserProject = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const projectId = parseInt(req.params.projectId);
+
+    const user = await User.findByPk(userId, { attributes: ["id", "category"] });
+    if (!user) return res.status(404).json({ status: "error", message: "User not found." });
+
+    let deleted = 0;
+    if (user.category === "site_supervisor") {
+      deleted = await ProjectSupervisor.destroy({ where: { supervisorId: userId, projectId } });
+    } else if (user.category === "project_manager") {
+      deleted = await ProjectManager.destroy({ where: { managerId: userId, projectId } });
+    }
+
+    if (!deleted) return res.status(404).json({ status: "error", message: "Assignment not found." });
+    res.json({ status: "success", message: "Project unassigned successfully." });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+};
+
 module.exports = {
   getStats,
   getUsers,
@@ -459,4 +537,7 @@ module.exports = {
   updateProperty,
   deleteProperty,
   toggleUserActive,
+  getUserProjects,
+  assignUserProjects,
+  unassignUserProject,
 };

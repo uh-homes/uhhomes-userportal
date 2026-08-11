@@ -63,6 +63,11 @@ export default function AdminUserManagement() {
   const [newUser, setNewUser] = useState({ fullName: "", email: "", phone: "", password: "", category: "homebuyer" });
   const [addingUser, setAddingUser] = useState(false);
   const [listCollapsed, setListCollapsed] = useState(false);
+  const [userProjects, setUserProjects] = useState({ assignedProjects: [], allProjects: [] });
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [assigningProjects, setAssigningProjects] = useState(false);
+  const [showProjectPicker, setShowProjectPicker] = useState(false);
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
 
   const fetchUsers = async () => {
     try {
@@ -78,10 +83,55 @@ export default function AdminUserManagement() {
 
   useEffect(() => { fetchUsers(); }, []);
 
+  const fetchUserProjects = async (userId) => {
+    try {
+      setLoadingProjects(true);
+      const res = await api.get(`/admin/users/${userId}/projects`);
+      setUserProjects(res.data.data);
+    } catch {
+      setUserProjects({ assignedProjects: [], allProjects: [] });
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const handleAssignProjects = async () => {
+    if (selectedProjectIds.length === 0) return;
+    try {
+      setAssigningProjects(true);
+      await api.post(`/admin/users/${selectedUser.id}/assign-projects`, { projectIds: selectedProjectIds });
+      toast.success("Projects assigned successfully");
+      setShowProjectPicker(false);
+      setSelectedProjectIds([]);
+      await fetchUserProjects(selectedUser.id);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to assign projects");
+    } finally {
+      setAssigningProjects(false);
+    }
+  };
+
+  const handleUnassignProject = async (projectId) => {
+    try {
+      await api.delete(`/admin/users/${selectedUser.id}/unassign-project/${projectId}`);
+      toast.success("Project unassigned");
+      await fetchUserProjects(selectedUser.id);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to unassign project");
+    }
+  };
+
   const handleSelectUser = (user) => {
     setSelectedUser(user);
     setPermissions(JSON.parse(JSON.stringify(user.permissions)));
     setListCollapsed(true);
+    setShowProjectPicker(false);
+    setSelectedProjectIds([]);
+    if (user.category === "project_manager" || user.category === "site_supervisor") {
+      fetchUserProjects(user.id);
+    } else {
+      setUserProjects({ assignedProjects: [], allProjects: [] });
+    }
   };
 
   const handleToggle = (moduleKey, action) => {
@@ -562,6 +612,95 @@ export default function AdminUserManagement() {
                   <span className="text-gray-400">Changes are not saved until you click "Save Changes"</span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Project Assignments Section */}
+          {selectedUser && (selectedUser.category === "project_manager" || selectedUser.category === "site_supervisor") && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
+              <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-[#1A1A1A]">Assigned Projects</h3>
+                  <p className="text-xs text-gray-500">Manage which projects this user can access</p>
+                </div>
+                <button
+                  onClick={() => { setShowProjectPicker(true); setSelectedProjectIds([]); }}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-[#C5A572] hover:bg-[#b39362] rounded-lg"
+                >
+                  <HiOutlinePlus className="text-sm" /> Assign Projects
+                </button>
+              </div>
+
+              <div className="p-5">
+                {loadingProjects ? (
+                  <div className="flex justify-center py-6"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#C5A572]"></div></div>
+                ) : userProjects.assignedProjects.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-6">No projects assigned yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {userProjects.assignedProjects.map((project) => (
+                      <div key={project.id} className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm font-medium text-[#1A1A1A]">{project.name}</p>
+                          <p className="text-xs text-gray-500">{project.property?.name} — {project.property?.location || project.status}</p>
+                        </div>
+                        <button
+                          onClick={() => handleUnassignProject(project.id)}
+                          className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Unassign project"
+                        >
+                          <HiOutlineX className="text-sm" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Project Picker Modal */}
+              {showProjectPicker && (
+                <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+                  <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+                    <h3 className="text-lg font-bold text-[#1A1A1A] mb-1">Assign Projects to {selectedUser.fullName}</h3>
+                    <p className="text-xs text-gray-500 mb-4">Select one or more projects</p>
+                    <div className="max-h-60 overflow-y-auto space-y-1 mb-4">
+                      {userProjects.allProjects
+                        .filter(p => !userProjects.assignedProjects.some(ap => ap.id === p.id))
+                        .map((project) => {
+                          const isChecked = selectedProjectIds.includes(project.id);
+                          return (
+                            <label key={project.id} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${isChecked ? "bg-[#C5A572]/10 border border-[#C5A572]/30" : "hover:bg-gray-50 border border-transparent"}`}>
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => setSelectedProjectIds(prev => isChecked ? prev.filter(id => id !== project.id) : [...prev, project.id])}
+                                className="accent-[#C5A572]"
+                              />
+                              <div>
+                                <p className="text-sm font-medium text-[#1A1A1A]">{project.name}</p>
+                                <p className="text-xs text-gray-500">{project.property?.name} — {project.property?.location || project.status}</p>
+                              </div>
+                            </label>
+                          );
+                        })}
+                      {userProjects.allProjects.filter(p => !userProjects.assignedProjects.some(ap => ap.id === p.id)).length === 0 && (
+                        <p className="text-sm text-gray-400 text-center py-4">All projects are already assigned</p>
+                      )}
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => setShowProjectPicker(false)} className="px-4 py-2 text-sm text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">Cancel</button>
+                      <button
+                        onClick={handleAssignProjects}
+                        disabled={selectedProjectIds.length === 0 || assigningProjects}
+                        className="px-4 py-2 text-sm text-white bg-[#C5A572] rounded-lg hover:bg-[#b39362] disabled:opacity-50 flex items-center gap-1.5"
+                      >
+                        {assigningProjects && <span className="h-3 w-3 border-2 border-white/60 border-t-transparent rounded-full animate-spin"></span>}
+                        Assign ({selectedProjectIds.length})
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

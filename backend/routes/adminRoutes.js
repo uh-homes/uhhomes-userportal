@@ -9,6 +9,9 @@ const {
   updateUser,
   deleteUser,
   toggleUserActive,
+  getUserProjects,
+  assignUserProjects,
+  unassignUserProject,
   getAllProjects,
   getProjectById,
   updateProject,
@@ -46,6 +49,9 @@ router.post("/users", createUser);
 router.get("/users/:id", getUserById);
 router.put("/users/:id", updateUser);
 router.put("/users/:id/toggle-active", toggleUserActive);
+router.get("/users/:id/projects", getUserProjects);
+router.post("/users/:id/assign-projects", assignUserProjects);
+router.delete("/users/:id/unassign-project/:projectId", unassignUserProject);
 router.delete("/users/:id", deleteUser);
 
 // Projects management
