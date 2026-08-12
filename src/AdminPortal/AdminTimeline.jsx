@@ -104,6 +104,9 @@ export default function AdminTimeline() {
   }
 
   const currentProject = projects.find((p) => p.id === selectedProject?.id) || selectedProject;
+  const sorted = currentProject?.milestones ? [...currentProject.milestones].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+  const completedCount = sorted.filter((m) => m.status === "COMPLETE").length;
+  const overallProgress = sorted.length > 0 ? Math.round((completedCount / sorted.length) * 100) : 0;
 
   return (
     <div className="p-6">
@@ -112,7 +115,7 @@ export default function AdminTimeline() {
       {/* Project Selector */}
       <div className="mb-6">
         <select
-          className="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+          className="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
           value={selectedProject?.id || ""}
           onChange={(e) => setSelectedProject(projects.find((p) => p.id === parseInt(e.target.value)))}
         >
@@ -139,6 +142,18 @@ export default function AdminTimeline() {
             >
               <HiOutlinePlus /> Add Milestone
             </button>
+          </div>
+
+          {/* Overall Progress Bar */}
+          <div className="flex items-center gap-3 mb-1">
+            <span className="text-xs text-gray-500">{completedCount} of {sorted.length} complete</span>
+            <span className="text-xs font-medium text-[#C5A572]">{overallProgress}%</span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-6">
+            <div
+              className="h-2 rounded-full bg-gradient-to-r from-[#C5A572] to-[#D4AF37] transition-all"
+              style={{ width: `${overallProgress}%` }}
+            />
           </div>
 
           {/* Milestone Form */}
@@ -225,46 +240,77 @@ export default function AdminTimeline() {
 
           {/* Timeline */}
           <div className="relative ml-4 mt-4">
-            {currentProject.milestones?.sort((a, b) => a.order - b.order).map((milestone, idx) => (
-              <div key={milestone.id} className="relative pl-8 pb-6 last:pb-0">
-                {idx < currentProject.milestones.length - 1 && (
-                  <div className="absolute left-[7px] top-3 w-0.5 h-full bg-gray-200"></div>
-                )}
-                <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 ${
-                  milestone.inspectedAt ? "bg-green-600 border-green-600" :
-                  milestone.status === "COMPLETE" ? "bg-green-500 border-green-500" :
-                  milestone.status === "IN_PROGRESS" ? "bg-blue-500 border-blue-500" :
-                  "bg-white border-gray-300"
-                }`}></div>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm font-semibold text-[#1A1A1A]">{milestone.name}</p>
-                    <p className="text-[13px] text-gray-500">{milestone.description}</p>
-                    <div className="flex items-center gap-3 mt-1 flex-wrap">
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${milestone.status === "COMPLETE" ? "bg-green-100 text-green-700" : milestone.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}>
-                        {milestone.status}
-                      </span>
-                      <span className="text-[11px] text-gray-400">
-                        {milestone.date ? new Date(milestone.date).toLocaleDateString() : "No date"}
-                      </span>
-                      <span className="text-[11px] text-gray-400">{milestone.progress}%</span>
-                      {milestone.inspectedAt && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-600 text-white flex items-center gap-1">
-                          <HiOutlineCheckCircle className="text-xs" /> Approved {new Date(milestone.inspectedAt).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    {milestone.inspectionNotes && (
-                      <p className="text-[11px] text-green-700 mt-1 italic">Inspection: "{milestone.inspectionNotes}"</p>
+            {sorted.map((milestone, idx) => {
+              const isComplete = milestone.status === "COMPLETE";
+              const isInProgress = milestone.status === "IN_PROGRESS";
+              const isLast = idx === sorted.length - 1;
+
+              return (
+                <div key={milestone.id} className="relative pl-8 pb-6 last:pb-0">
+                  {/* Connector line */}
+                  {!isLast && (
+                    <div className={`absolute left-[7px] top-4 w-0.5 h-full ${isComplete ? "bg-[#C5A572]" : "bg-gray-200"}`}></div>
+                  )}
+
+                  {/* Node dot */}
+                  <div className={`absolute left-0 top-1 w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                    milestone.inspectedAt ? "bg-[#C5A572] border-[#C5A572]" :
+                    isComplete ? "bg-[#C5A572] border-[#C5A572]" :
+                    isInProgress ? "bg-white border-[#C5A572]" :
+                    "bg-white border-gray-300"
+                  }`}>
+                    {(isComplete || milestone.inspectedAt) && (
+                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
                     )}
                   </div>
-                  <button onClick={() => openEditMilestone(milestone)} className="p-1.5 text-gray-400 hover:text-[#C5A572] rounded">
-                    <HiOutlinePencil className="text-sm" />
-                  </button>
+
+                  {/* Content */}
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <p className={`text-sm font-semibold ${isComplete || isInProgress ? "text-[#1A1A1A]" : "text-gray-400"}`}>{milestone.name}</p>
+                      {milestone.description && <p className="text-[13px] text-gray-500 mt-0.5">{milestone.description}</p>}
+                      <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${
+                          isComplete ? "bg-green-50 text-green-700" :
+                          isInProgress ? "bg-blue-50 text-blue-700" :
+                          "bg-gray-50 text-gray-500"
+                        }`}>
+                          {isComplete ? "Complete" : isInProgress ? "In Progress" : "Planned"}
+                        </span>
+                        <span className="text-[11px] text-gray-400">
+                          {milestone.date ? new Date(milestone.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "No date"}
+                        </span>
+                        {isInProgress && <span className="text-[11px] font-medium text-[#C5A572]">{milestone.progress}%</span>}
+                        {milestone.inspectedAt && (
+                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-green-600 text-white font-medium flex items-center gap-1">
+                            <HiOutlineCheckCircle className="text-[9px]" /> Approved {new Date(milestone.inspectedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          </span>
+                        )}
+                      </div>
+                      {milestone.inspectionNotes && (
+                        <p className="text-[11px] text-green-700 mt-1 italic">"{milestone.inspectionNotes}"</p>
+                      )}
+                    </div>
+
+                    {/* Progress indicator for in-progress */}
+                    {isInProgress && milestone.progress > 0 && (
+                      <div className="text-right ml-3">
+                        <div className="w-16 bg-gray-100 rounded-full h-1.5">
+                          <div className="h-1.5 rounded-full bg-[#C5A572] transition-all" style={{ width: `${milestone.progress}%` }} />
+                        </div>
+                      </div>
+                    )}
+
+                    <button onClick={() => openEditMilestone(milestone)} className="p-1.5 text-gray-400 hover:text-[#C5A572] rounded ml-2">
+                      <HiOutlinePencil className="text-sm" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-            {(!currentProject.milestones || currentProject.milestones.length === 0) && (
+              );
+            })}
+            {sorted.length === 0 && (
               <p className="text-gray-500 text-sm">No milestones yet. Add one above.</p>
             )}
           </div>
