@@ -19,7 +19,7 @@ export default function AdminUsers() {
     role: "user",
   });
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editUser, setEditUser] = useState({ id: null, fullName: "", email: "", phone: "", isVerified: false, floorPlan: "", projectId: null });
+  const [editUser, setEditUser] = useState({ id: null, fullName: "", email: "", phone: "", isVerified: false, floorPlan: "", projectId: null, startDate: "", estimatedEndDate: "" });
   const [saving, setSaving] = useState(false);
 
   const FLOOR_PLANS = ["Zyra", "Vista", "Velora", "Nexa", "Utopia", "Nirvaan"];
@@ -86,6 +86,8 @@ export default function AdminUsers() {
     }
   };
 
+  const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : "");
+
   const handleEditOpen = (user) => {
     const project = user.projects?.[0];
     setEditUser({
@@ -97,6 +99,8 @@ export default function AdminUsers() {
       isVerified: user.isVerified ?? false,
       floorPlan: project?.name?.split(" at ")[0] || "",
       projectId: project?.id || null,
+      startDate: toDateInput(project?.startDate),
+      estimatedEndDate: toDateInput(project?.estimatedEndDate),
     });
     setShowEditModal(true);
   };
@@ -117,9 +121,14 @@ export default function AdminUsers() {
         isVerified: editUser.isVerified,
       });
       if (editUser.floorPlan) {
+        const dates = {
+          startDate: editUser.startDate || null,
+          estimatedEndDate: editUser.estimatedEndDate || null,
+        };
         if (editUser.projectId) {
           await api.put(`/admin/projects/${editUser.projectId}`, {
             name: `${editUser.floorPlan} at Park Place`,
+            ...dates,
           });
         } else {
           await api.post("/admin/projects", {
@@ -127,6 +136,7 @@ export default function AdminUsers() {
             name: `${editUser.floorPlan} at Park Place`,
             address: editUser.address || "",
             status: "PLANNING",
+            ...dates,
           });
         }
       }
@@ -374,6 +384,28 @@ export default function AdminUsers() {
                   ))}
                 </select>
               </div>
+              {editUser.floorPlan && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <input
+                      type="date"
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                      value={editUser.startDate}
+                      onChange={(e) => setEditUser({ ...editUser, startDate: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Est. End Date</label>
+                    <input
+                      type="date"
+                      className="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                      value={editUser.estimatedEndDate}
+                      onChange={(e) => setEditUser({ ...editUser, estimatedEndDate: e.target.value })}
+                    />
+                  </div>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
