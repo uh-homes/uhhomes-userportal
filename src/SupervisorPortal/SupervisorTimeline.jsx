@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../Api/api";
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineClipboardCheck, HiOutlineCheckCircle, HiOutlineUpload, HiOutlineCalendar } from "react-icons/hi";
 import { toast } from "react-toastify";
+import { formatDate } from "../utils/formatDate";
 
 export default function SupervisorTimeline() {
   const [projects, setProjects] = useState([]);
@@ -377,7 +378,7 @@ export default function SupervisorTimeline() {
                           {isComplete ? "Complete" : isInProgress ? "In Progress" : "Planned"}
                         </span>
                         <span className="text-[11px] text-gray-400">
-                          {milestone.date ? new Date(milestone.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "No date"}
+                          {formatDate(milestone.date, { month: "short", day: "numeric", year: "numeric" }) || "No date"}
                         </span>
                         {isInProgress && <span className="text-[11px] font-medium text-[#C5A572]">{milestone.progress}%</span>}
                         {milestone.inspectedAt && (

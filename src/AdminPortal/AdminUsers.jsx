@@ -86,7 +86,7 @@ export default function AdminUsers() {
     }
   };
 
-  const toDateInput = (d) => (d ? new Date(d).toISOString().slice(0, 10) : "");
+  const toDateInput = (d) => (d ? String(d).slice(0, 10) : "");
 
   const handleEditOpen = (user) => {
     const project = user.projects?.[0];

@@ -7,6 +7,7 @@ import {
   HiOutlineLocationMarker,
   HiOutlineCalendar,
 } from "react-icons/hi";
+import { formatDate } from "../utils/formatDate";
 
 export default function ArchitectProjects() {
   const [projects, setProjects] = useState([]);
@@ -125,7 +126,7 @@ export default function ArchitectProjects() {
               {project.startDate && (
                 <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-3">
                   <HiOutlineCalendar className="text-[#C5A572]" />
-                  <span>{new Date(project.startDate).toLocaleDateString()}</span>
+                  <span>{formatDate(project.startDate)}</span>
                 </div>
               )}
               {project.description && (
@@ -160,7 +161,7 @@ export default function ArchitectProjects() {
               {selectedProject.startDate && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <HiOutlineCalendar className="text-[#C5A572]" />
-                  <span>Start: {new Date(selectedProject.startDate).toLocaleDateString()}</span>
+                  <span>Start: {formatDate(selectedProject.startDate)}</span>
                 </div>
               )}
               {selectedProject.description && (

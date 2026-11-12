@@ -26,7 +26,7 @@ const Milestone = sequelize.define(
       defaultValue: "PLANNED",
     },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
     },
     progress: {

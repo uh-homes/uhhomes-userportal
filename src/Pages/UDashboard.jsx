@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import api from "../Api/api";
+import { formatDate } from "../utils/formatDate";
 import {
   FaCheckCircle,
   FaHardHat,
@@ -248,13 +249,13 @@ export default function UDashboard() {
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] text-gray-400 font-bold">Start</span>
                 <span className="text-xs font-medium text-gray-800">
-                  {project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                  {formatDate(project.startDate, { month: "short", day: "numeric", year: "numeric" }) || "—"}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] text-gray-400 font-bold">Est. End</span>
                 <span className="text-xs font-medium text-gray-800">
-                  {project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—"}
+                  {formatDate(project.estimatedEndDate, { month: "short", day: "numeric", year: "numeric" }) || "—"}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -367,7 +368,7 @@ export default function UDashboard() {
                   <p className="text-lg font-semibold text-[#C5A572]">{progressPercentage}%</p>
                   <p className="text-[11px] text-gray-400">
                     {project.estimatedEndDate
-                      ? `Est. ${new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`
+                      ? `Est. ${formatDate(project.estimatedEndDate, { month: "short", year: "numeric" })}`
                       : "Timeline TBD"}
                   </p>
                 </div>
@@ -531,7 +532,7 @@ export default function UDashboard() {
                           {milestone.name}
                         </p>
                         <p className="text-[11px] text-gray-400">
-                          {milestone.date ? new Date(milestone.date).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : ""}
+                          {formatDate(milestone.date, { month: "short", year: "numeric" })}
                           {milestone.status === "IN_PROGRESS" && ` • ${milestone.progress || 0}%`}
                         </p>
                       </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../Api/api";
 import { HiOutlineDocumentDownload } from "react-icons/hi";
+import { formatDate } from "../utils/formatDate";
 
 export default function PMReports() {
   const [reports, setReports] = useState([]);
@@ -81,8 +82,8 @@ export default function PMReports() {
 
               {report.startDate && (
                 <p className="text-xs text-gray-400 mt-3">
-                  Started: {new Date(report.startDate).toLocaleDateString()}
-                  {report.expectedEnd && ` | Expected: ${new Date(report.expectedEnd).toLocaleDateString()}`}
+                  Started: {formatDate(report.startDate)}
+                  {report.expectedEnd && ` | Expected: ${formatDate(report.expectedEnd)}`}
                 </p>
               )}
             </div>

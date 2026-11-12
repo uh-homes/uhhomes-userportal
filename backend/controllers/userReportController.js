@@ -5,6 +5,12 @@ const https = require("https");
 const http = require("http");
 const { Project, Milestone, Update, User, Gallery, Media, Document } = require("../models");
 
+// Format a calendar date (YYYY-MM-DD / ISO) without a timezone shift
+const fmtDate = (d) => {
+  const [y, m, day] = String(d).slice(0, 10).split("-").map(Number);
+  return new Date(y, m - 1, day).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};
+
 // Helper: fetch image from URL and return as buffer
 const fetchImageBuffer = (url) => {
   return new Promise((resolve, reject) => {
@@ -140,8 +146,8 @@ const generateMyProjectReport = async (req, res) => {
       ["Project", project.name],
       ["Address", project.address || "N/A"],
       ["Status", project.status.replace(/_/g, " ")],
-      ["Start Date", project.startDate ? new Date(project.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"],
-      ["Est. Completion", project.estimatedEndDate ? new Date(project.estimatedEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"],
+      ["Start Date", project.startDate ? fmtDate(project.startDate) : "N/A"],
+      ["Est. Completion", project.estimatedEndDate ? fmtDate(project.estimatedEndDate) : "N/A"],
     ];
     projectFields.forEach(([label, value]) => {
       doc.font("Helvetica").fillColor(GRAY_500).text(label + ":", colLeft, infoY, { continued: true, width: 250 });

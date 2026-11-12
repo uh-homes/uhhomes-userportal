@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../Api/api";
 import { HiOutlineClock, HiOutlineCalendar, HiOutlineCheckCircle } from "react-icons/hi";
+import { formatDate } from "../utils/formatDate";
 
 export default function PMTimeline() {
   const [projects, setProjects] = useState([]);
@@ -155,7 +156,7 @@ export default function PMTimeline() {
                           </span>
                           {milestone.date && (
                             <span className="text-[11px] text-gray-400">
-                              {new Date(milestone.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                              {formatDate(milestone.date, { month: "short", day: "numeric", year: "numeric" })}
                             </span>
                           )}
                           {milestone.inspectedAt && (

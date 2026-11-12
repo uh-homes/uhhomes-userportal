@@ -1,5 +1,6 @@
 import React from "react";
 import { FaCheckCircle, FaHardHat, FaClock } from "react-icons/fa";
+import { formatDate } from "../../utils/formatDate";
 
 const ConstructionTimeline = ({ milestones = [] }) => {
   const sorted = [...milestones].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -89,7 +90,7 @@ const ConstructionTimeline = ({ milestones = [] }) => {
                     </span>
                     {milestone.date && (
                       <span className="text-[11px] text-gray-400">
-                        {new Date(milestone.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        {formatDate(milestone.date, { month: "short", day: "numeric", year: "numeric" })}
                       </span>
                     )}
                     {milestone.inspectedAt && (

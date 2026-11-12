@@ -30,11 +30,11 @@ const Project = sequelize.define(
       defaultValue: 0,
     },
     startDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
     },
     estimatedEndDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
     },
     propertyId: {

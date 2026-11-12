@@ -6,6 +6,7 @@ import {
   FaExclamationTriangle,
 } from "react-icons/fa";
 import { HiOutlineLocationMarker, HiOutlineCalendar } from "react-icons/hi";
+import { formatDate } from "../../utils/formatDate";
 
 const ConstructionProgress = ({ project }) => {
   const milestones = project?.milestones || [];
@@ -106,7 +107,7 @@ const ConstructionProgress = ({ project }) => {
               {currentMilestone.date && (
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <HiOutlineCalendar />
-                  {new Date(currentMilestone.date).toLocaleDateString()}
+                  {formatDate(currentMilestone.date)}
                 </div>
               )}
               {currentMilestone.progress !== undefined && currentMilestone.progress > 0 && (
@@ -166,7 +167,7 @@ const ConstructionProgress = ({ project }) => {
                 {/* Date */}
                 {milestone.date && (
                   <span className="text-xs text-gray-400">
-                    {new Date(milestone.date).toLocaleDateString("en-US", {
+                    {formatDate(milestone.date, {
                       month: "short",
                       day: "numeric",
                     })}

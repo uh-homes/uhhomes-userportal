@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import api from "../Api/api";
 import { toast } from "react-toastify";
 import { HiOutlineArrowLeft, HiOutlinePlus, HiOutlineCheck } from "react-icons/hi";
+import { formatDate } from "../utils/formatDate";
 
 export default function PMProjectDetail() {
   const { id } = useParams();
@@ -179,7 +180,7 @@ export default function PMProjectDetail() {
                 }`}>
                   {milestone.status}
                 </span>
-                {milestone.date && <p className="text-xs text-gray-400 mt-1">{new Date(milestone.date).toLocaleDateString()}</p>}
+                {milestone.date && <p className="text-xs text-gray-400 mt-1">{formatDate(milestone.date)}</p>}
               </div>
             </div>
           ))}
