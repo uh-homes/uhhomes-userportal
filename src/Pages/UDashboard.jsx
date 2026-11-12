@@ -162,13 +162,14 @@ export default function UDashboard() {
   const circumference = 2 * Math.PI * 40;
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
-  const projectImage =
-    project.property?.elevation ||
-    project.property?.thumbnail ||
-    (project.gallery?.length > 0 && project.gallery[0].media?.[0]?.url) ||
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
-
   const displayName = user?.fullName?.split(" ")[0] || "there";
+
+  // Real images for the linked floor plan (sourced from uhhomes.com via the property record)
+  const propertyImages = [
+    project.property?.elevation,
+    project.property?.thumbnail,
+    ...(project.property?.floorPlans || []).map((f) => f?.url),
+  ].filter((url) => url && !/\.pdf($|\?)/i.test(url));
 
   // Collect all available project images for the right panel
   const galleryImages = [];
@@ -183,18 +184,10 @@ export default function UDashboard() {
     });
   }
   if (galleryImages.length === 0) {
-    galleryImages.push(
-      projectImage,
-      "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=600",
-      "https://images.unsplash.com/photo-1590274853856-f22d5ee3d228?w=600",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600",
-      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600",
-      "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=600",
-      "https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=600",
-      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600",
-      "https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=600"
-    );
+    galleryImages.push(...propertyImages);
   }
+
+  const projectImage = propertyImages[0] || galleryImages[0] || null;
 
   return (
     <div className="flex-1 bg-[#FAFAFA] min-h-screen">
@@ -439,6 +432,9 @@ export default function UDashboard() {
                 <h3 className="text-sm font-semibold text-gray-900">Construction Photos</h3>
                 <span className="text-xs text-gray-400">{galleryImages.length} photos</span>
               </div>
+              {galleryImages.length === 0 ? (
+                <p className="text-sm text-gray-400">No photos yet.</p>
+              ) : (
               <div className="relative group">
                 <button
                   onClick={() => {
@@ -465,7 +461,7 @@ export default function UDashboard() {
                         alt={`Site photo ${idx + 1}`}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
-                          e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
+                          e.currentTarget.parentElement.style.display = "none";
                         }}
                       />
                     </div>
@@ -481,6 +477,7 @@ export default function UDashboard() {
                   <FaChevronRight className="w-3 h-3" />
                 </button>
               </div>
+              )}
             </div>
 
           </div>
@@ -490,14 +487,20 @@ export default function UDashboard() {
 
             {/* Project Hero Image */}
             <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <img
-                src={projectImage}
-                alt="Project"
-                className="w-full h-48 object-cover"
-                onError={(e) => {
-                  e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
-                }}
-              />
+              {projectImage ? (
+                <img
+                  src={projectImage}
+                  alt="Project"
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-48 bg-gradient-to-br from-[#F5EFE3] to-[#EDE6D8] flex items-center justify-center">
+                  <span className="text-5xl font-bold text-[#C5A572]">{project.name?.charAt(0) || "H"}</span>
+                </div>
+              )}
               <div className="p-4">
                 <p className="text-sm font-medium text-gray-800">{project.name}</p>
                 <p className="text-xs text-gray-500">{project.address}</p>

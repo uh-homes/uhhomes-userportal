@@ -62,7 +62,7 @@ export default function Lightbox({ images = [], currentIndex = 0, onClose, onInd
           alt={caption || `Photo ${currentIndex + 1}`}
           className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
           onError={(e) => {
-            e.target.src = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800";
+            e.currentTarget.style.display = "none";
           }}
         />
         {caption && (

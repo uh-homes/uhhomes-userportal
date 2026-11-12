@@ -2,6 +2,46 @@ const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Prope
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
 
+const STANDARD_PHASES = [
+  "Site Preparation",
+  "Foundation",
+  "Framing & Roofing",
+  "Electrical & Plumbing",
+  "Interior Finishing",
+  "Exterior & Landscaping",
+  "Final Inspection & Handover",
+];
+
+// Calendar-date helpers for DATEONLY fields — parse/format as local dates
+// so "YYYY-MM-DD" values never shift across timezones.
+const parseDateOnly = (s) => {
+  const [y, m, d] = String(s).slice(0, 10).split("-").map(Number);
+  return new Date(y, m - 1, d);
+};
+const toDateOnly = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+// Creates the standard construction milestone template for a project that has none
+const createStandardMilestones = async (project) => {
+  const count = await Milestone.count({ where: { projectId: project.id } });
+  if (count > 0) return;
+
+  const start = project.startDate ? parseDateOnly(project.startDate) : null;
+  const end = project.estimatedEndDate ? parseDateOnly(project.estimatedEndDate) : null;
+  const span = start && end && end > start ? end - start : 14 * 30 * 24 * 60 * 60 * 1000; // ~14 months
+
+  await Milestone.bulkCreate(
+    STANDARD_PHASES.map((name, i) => ({
+      projectId: project.id,
+      name,
+      status: "PLANNED",
+      progress: 0,
+      order: i + 1,
+      date: start ? toDateOnly(new Date(start.getTime() + (span * (i + 1)) / STANDARD_PHASES.length)) : null,
+    }))
+  );
+};
+
 // GET /admin/stats - Dashboard statistics
 const getStats = async (req, res) => {
   try {
@@ -196,8 +236,14 @@ const updateProject = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Project not found." });
     }
 
-    const { name, address, status, completionPercentage, startDate, estimatedEndDate } = req.body;
-    await project.update({ name, address, status, completionPercentage, startDate, estimatedEndDate });
+    const fields = {};
+    for (const key of ["name", "address", "status", "completionPercentage", "startDate", "estimatedEndDate", "propertyId"]) {
+      if (req.body[key] !== undefined) fields[key] = req.body[key];
+    }
+    await project.update(fields);
+
+    // Linking a floor plan to a project that has no milestones yet — seed the standard template
+    await createStandardMilestones(project);
 
     res.json({ status: "success", data: project });
   } catch (error) {
@@ -228,6 +274,9 @@ const createProject = async (req, res) => {
         { ignoreDuplicates: true }
       );
     }
+
+    // Seed the standard 7-phase construction timeline for the new project
+    await createStandardMilestones(project);
 
     res.status(201).json({ status: "success", data: project });
   } catch (error) {

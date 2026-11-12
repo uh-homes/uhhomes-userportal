@@ -27,6 +27,20 @@ exports.getUserProject = async (req, res) => {
           order: [["createdAt", "DESC"]],
           limit: 5,
         },
+        {
+          model: Gallery,
+          as: "gallery",
+          include: [{ model: Media, as: "media" }],
+        },
+        {
+          model: Document,
+          as: "documents",
+        },
+        {
+          model: Warranty,
+          as: "warranties",
+          include: [{ model: User, as: "uploader", attributes: ["id", "fullName"] }],
+        },
       ],
       order: [[{ model: Milestone, as: "milestones" }, "order", "ASC"]],
     });

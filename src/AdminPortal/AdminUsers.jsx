@@ -21,6 +21,7 @@ export default function AdminUsers() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editUser, setEditUser] = useState({ id: null, fullName: "", email: "", phone: "", isVerified: false, floorPlan: "", projectId: null, startDate: "", estimatedEndDate: "" });
   const [saving, setSaving] = useState(false);
+  const [properties, setProperties] = useState([]);
 
   const FLOOR_PLANS = ["Zyra", "Vista", "Velora", "Nexa", "Utopia", "Nirvaan"];
 
@@ -35,8 +36,18 @@ export default function AdminUsers() {
     }
   };
 
+  const fetchProperties = async () => {
+    try {
+      const res = await api.get("/admin/properties");
+      setProperties(res.data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch properties:", err);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchProperties();
   }, []);
 
   const handleDelete = async (id) => {
@@ -125,10 +136,15 @@ export default function AdminUsers() {
           startDate: editUser.startDate || null,
           estimatedEndDate: editUser.estimatedEndDate || null,
         };
+        const matchedProperty = properties.find(
+          (p) => p.name?.toLowerCase() === editUser.floorPlan.toLowerCase()
+        );
+        const propertyFields = matchedProperty ? { propertyId: matchedProperty.id } : {};
         if (editUser.projectId) {
           await api.put(`/admin/projects/${editUser.projectId}`, {
             name: `${editUser.floorPlan} at Park Place`,
             ...dates,
+            ...propertyFields,
           });
         } else {
           await api.post("/admin/projects", {
@@ -137,6 +153,7 @@ export default function AdminUsers() {
             address: editUser.address || "",
             status: "PLANNING",
             ...dates,
+            ...propertyFields,
           });
         }
       }
@@ -379,7 +396,7 @@ export default function AdminUsers() {
                   onChange={(e) => setEditUser({ ...editUser, floorPlan: e.target.value })}
                 >
                   <option value="">No plan assigned</option>
-                  {FLOOR_PLANS.map((plan) => (
+                  {(properties.length > 0 ? properties.map((p) => p.name) : FLOOR_PLANS).map((plan) => (
                     <option key={plan} value={plan}>{plan}</option>
                   ))}
                 </select>

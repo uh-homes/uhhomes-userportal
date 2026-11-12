@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 export default function AdminProjects() {
   const [projects, setProjects] = useState([]);
   const [users, setUsers] = useState([]);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
@@ -18,6 +19,7 @@ export default function AdminProjects() {
     completionPercentage: 0,
     startDate: "",
     estimatedEndDate: "",
+    propertyId: "",
   });
 
   const fetchProjects = async () => {
@@ -40,15 +42,25 @@ export default function AdminProjects() {
     }
   };
 
+  const fetchProperties = async () => {
+    try {
+      const res = await api.get("/admin/properties");
+      setProperties(res.data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch properties:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProjects();
     fetchUsers();
+    fetchProperties();
   }, []);
 
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/admin/projects", form);
+      await api.post("/admin/projects", { ...form, propertyId: form.propertyId || null });
       toast.success("Project created!");
       setShowCreate(false);
       resetForm();
@@ -61,7 +73,7 @@ export default function AdminProjects() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await api.put(`/admin/projects/${editProject.id}`, form);
+      await api.put(`/admin/projects/${editProject.id}`, { ...form, propertyId: form.propertyId || null });
       toast.success("Project updated!");
       setEditProject(null);
       resetForm();
@@ -81,12 +93,13 @@ export default function AdminProjects() {
       completionPercentage: project.completionPercentage,
       startDate: project.startDate?.split("T")[0] || "",
       estimatedEndDate: project.estimatedEndDate?.split("T")[0] || "",
+      propertyId: project.propertyId || "",
     });
     setShowCreate(false);
   };
 
   const resetForm = () => {
-    setForm({ userId: "", name: "", address: "", status: "PLANNED", completionPercentage: 0, startDate: "", estimatedEndDate: "" });
+    setForm({ userId: "", name: "", address: "", status: "PLANNED", completionPercentage: 0, startDate: "", estimatedEndDate: "", propertyId: "" });
   };
 
   const filteredProjects = projects.filter(
@@ -146,6 +159,27 @@ export default function AdminProjects() {
                 </select>
               </div>
             )}
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">Floor Plan</label>
+              <select
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
+                value={form.propertyId}
+                onChange={(e) => {
+                  const propertyId = e.target.value;
+                  const prop = properties.find((p) => String(p.id) === propertyId);
+                  setForm((f) => ({
+                    ...f,
+                    propertyId,
+                    name: !f.name && prop ? `${prop.name} at Park Place` : f.name,
+                  }));
+                }}
+              >
+                <option value="">No plan linked</option>
+                {properties.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Project Name</label>
               <input
