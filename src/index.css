@@ -30,7 +30,7 @@
     --color-dark: #1A1A1A;
     --color-dark-light: #333333;
     --color-dark-muted: #666666;
-    --font-gotham: 'Gotham', 'Open Sans', sans-serif;
+    --font-gotham: 'Open Sans', sans-serif;
 }
 
 @layer utilities {
