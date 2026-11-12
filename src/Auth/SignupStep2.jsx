@@ -21,13 +21,18 @@ export const SignupStep2 = ({ setStep, email, otp, setOtp }) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-      <h2 className="text-4xl text-center">Welcome</h2>
-      <p className="text-center text-gray-800 mt-1">
-        Enter the OTP sent to your email {email} to verify your identity.
+      <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-[#C5A572]">
+        Sign Up
+      </p>
+      <h2 className="text-3xl font-bold text-center text-white">
+        Verify your email
+      </h2>
+      <p className="text-center text-gray-400 mt-1">
+        Enter the OTP sent to <span className="text-gray-200">{email}</span> to
+        verify your identity.
       </p>
       <form onSubmit={handleVerify} className="space-y-4">
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center gap-3">
           {[0, 1, 2, 3].map((i) => (
             <input
               key={i}
@@ -35,7 +40,7 @@ export const SignupStep2 = ({ setStep, email, otp, setOtp }) => {
               type="text"
               maxLength="1"
               disabled={loading}
-              className="w-12 text-center border p-2 rounded text-xl disabled:opacity-60"
+              className="w-14 h-14 text-center bg-[#111] border border-[#333] text-white rounded-lg text-2xl focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
               value={otp[i] || ""}
               onChange={(e) => {
                 const val = e.target.value;
@@ -60,17 +65,17 @@ export const SignupStep2 = ({ setStep, email, otp, setOtp }) => {
         <button
           type="submit"
           disabled={loading || otp?.length !== 4}
-          className="w-full bg-primary text-white p-2 rounded cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-[#0D0D0D] font-semibold py-2.5 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-opacity"
         >
           {loading && (
-            <span className="h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+            <span className="h-4 w-4 border-2 border-[#0D0D0D]/50 border-t-transparent rounded-full animate-spin"></span>
           )}
           {loading ? "Verifying..." : "Verify OTP"}
         </button>
       </form>
       <button
         onClick={() => setStep("login")}
-        className="text-sm text-center text-primary w-full cursor-pointer"
+        className="text-sm text-center text-[#C5A572] hover:text-[#D4AF37] w-full cursor-pointer transition-colors"
       >
         Back to login account
       </button>

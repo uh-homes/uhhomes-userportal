@@ -46,16 +46,20 @@ export const SignupStep1 = ({ setStep, setEmail, setUserData }) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-      <h2 className="text-4xl text-center">Welcome</h2>
-      <p className="text-center text-gray-800 mt-1">
+      <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-[#C5A572]">
+        Sign Up
+      </p>
+      <h2 className="text-3xl font-bold text-center text-white">
+        Create your account
+      </h2>
+      <p className="text-center text-gray-400 mt-1">
         Your home journey made simple — live progress tracking, milestone
         updates, and timelines all in one place.
       </p>
       <form onSubmit={handleSendOtp} className="space-y-4">
         {/* Name Field */}
         <div className="relative">
-          <HiOutlineUser className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlineUser className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type="text"
             placeholder="Name"
@@ -63,13 +67,13 @@ export const SignupStep1 = ({ setStep, setEmail, setUserData }) => {
             onChange={(e) => setName(e.target.value)}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
         </div>
 
         {/* Phone Field */}
         <div className="relative">
-          <HiOutlinePhone className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlinePhone className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type="tel"
             placeholder="Phone Number"
@@ -78,13 +82,13 @@ export const SignupStep1 = ({ setStep, setEmail, setUserData }) => {
             maxLength={10}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
         </div>
 
         {/* Email Field */}
         <div className="relative">
-          <HiOutlineMail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlineMail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type="email"
             placeholder="Email"
@@ -92,7 +96,7 @@ export const SignupStep1 = ({ setStep, setEmail, setUserData }) => {
             onChange={(e) => updateEmail(e.target.value)}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
         </div>
 
@@ -100,21 +104,21 @@ export const SignupStep1 = ({ setStep, setEmail, setUserData }) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-[#0D0D0D] font-semibold py-2.5 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-opacity"
         >
           {loading && (
-            <span className="h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+            <span className="h-4 w-4 border-2 border-[#0D0D0D]/50 border-t-transparent rounded-full animate-spin"></span>
           )}
           {loading ? "Sending..." : "Send OTP"}
         </button>
         {errorMessage && (
-          <p className="mt-2 text-sm text-red-600 text-center">{errorMessage}</p>
+          <p className="mt-2 text-sm text-red-400 text-center">{errorMessage}</p>
         )}
       </form>
 
       <button
         onClick={() => setStep("login")}
-        className="text-sm text-center text-primary w-full cursor-pointer"
+        className="text-sm text-center text-[#C5A572] hover:text-[#D4AF37] w-full cursor-pointer transition-colors"
       >
         Back to login account
       </button>

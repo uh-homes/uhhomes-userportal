@@ -113,10 +113,10 @@ const AuthenticationModal = ({ isOpen, onClose }) => {
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-0 bg-white p-6 shadow-lg md:rounded-2xl fade-in-delay">
+      <div className="relative w-full max-w-md rounded-0 bg-[#1A1A1A] border border-[#2A2A2A] p-6 shadow-lg md:rounded-2xl fade-in-delay">
         <button
           onClick={handleClose}
-          className="absolute right-4 top-4 cursor-pointer rounded-full p-2.5 text-gray-500 hover:bg-gray-200"
+          className="absolute right-4 top-4 cursor-pointer rounded-full p-2.5 text-gray-400 hover:bg-[#2A2A2A] hover:text-white transition-colors"
         >
           <IoMdClose />
         </button>

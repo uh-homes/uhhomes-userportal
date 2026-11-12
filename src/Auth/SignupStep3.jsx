@@ -39,16 +39,19 @@ export const SignupStep3 = ({ userData, email, onClose, setStep }) => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-center">Sign Up</h2>
-      <h2 className="text-4xl text-center">Welcome</h2>
-      <p className="text-center text-gray-800 mt-1">
-        Your home journey made simple — live progress tracking, milestone
-        updates, and timelines all in one place.
+      <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-[#C5A572]">
+        Sign Up
+      </p>
+      <h2 className="text-3xl font-bold text-center text-white">
+        Set your password
+      </h2>
+      <p className="text-center text-gray-400 mt-1">
+        Choose a secure password to finish creating your account.
       </p>
       <form onSubmit={handleSetPassword} className="space-y-4">
         {/* Password */}
         <div className="relative">
-          <HiOutlineLockClosed className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlineLockClosed className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Enter Password"
@@ -56,11 +59,11 @@ export const SignupStep3 = ({ userData, email, onClose, setStep }) => {
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
           <button
             type="button"
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-800 cursor-pointer"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#C5A572] cursor-pointer transition-colors"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
@@ -73,7 +76,7 @@ export const SignupStep3 = ({ userData, email, onClose, setStep }) => {
 
         {/* Confirm Password */}
         <div className="relative">
-          <HiOutlineLockClosed className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400" />
+          <HiOutlineLockClosed className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Confirm Password"
@@ -81,11 +84,11 @@ export const SignupStep3 = ({ userData, email, onClose, setStep }) => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             disabled={loading}
-            className="w-full border rounded pl-10 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-60"
+            className="w-full bg-[#111] border border-[#333] text-white placeholder-gray-500 rounded-lg pl-10 pr-10 py-2.5 focus:outline-none focus:border-[#C5A572] focus:ring-1 focus:ring-[#C5A572] disabled:opacity-60 transition-colors"
           />
           <button
             type="button"
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-800 cursor-pointer"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-[#C5A572] cursor-pointer transition-colors"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? (
@@ -100,17 +103,17 @@ export const SignupStep3 = ({ userData, email, onClose, setStep }) => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-primary text-white py-2 rounded hover:bg-opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-[#C5A572] to-[#D4AF37] text-[#0D0D0D] font-semibold py-2.5 rounded-lg hover:opacity-90 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-opacity"
         >
           {loading && (
-            <span className="h-4 w-4 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+            <span className="h-4 w-4 border-2 border-[#0D0D0D]/50 border-t-transparent rounded-full animate-spin"></span>
           )}
           {loading ? "Saving..." : "Set Password"}
         </button>
       </form>
       <button
         onClick={() => setStep("login")}
-        className="text-sm text-center text-primary w-full cursor-pointer"
+        className="text-sm text-center text-[#C5A572] hover:text-[#D4AF37] w-full cursor-pointer transition-colors"
       >
         Back to login account
       </button>
