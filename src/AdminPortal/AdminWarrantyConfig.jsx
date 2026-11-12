@@ -9,6 +9,7 @@ import {
   HiOutlineCheck,
   HiOutlineX,
 } from "react-icons/hi";
+import { formatDate, dateOnly, todayDateString } from "../utils/formatDate";
 
 export default function AdminWarrantyConfig() {
   const [configs, setConfigs] = useState([]);
@@ -307,7 +308,7 @@ export default function AdminWarrantyConfig() {
           ) : (
             <div className="space-y-3">
               {warranties.map((w) => {
-                const isExpired = w.expiryDate && new Date(w.expiryDate) < new Date();
+                const isExpired = w.expiryDate && dateOnly(w.expiryDate) < todayDateString();
                 return (
                   <div key={w.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
                     <div className="flex items-start justify-between">
@@ -333,8 +334,8 @@ export default function AdminWarrantyConfig() {
                         <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                           {w.project && <span>Project: {w.project.name}</span>}
                           {w.uploader && <span>By: {w.uploader.fullName}</span>}
-                          <span>Issued: {new Date(w.issueDate).toLocaleDateString()}</span>
-                          {w.expiryDate && <span>Expires: {new Date(w.expiryDate).toLocaleDateString()}</span>}
+                          <span>Issued: {formatDate(w.issueDate)}</span>
+                          {w.expiryDate && <span>Expires: {formatDate(w.expiryDate)}</span>}
                         </div>
                       </div>
                     </div>

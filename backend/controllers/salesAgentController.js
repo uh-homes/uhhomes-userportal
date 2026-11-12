@@ -2,6 +2,12 @@ const { User, Property, Lead, Tour, Project, Question, Favorite, sequelize } = r
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
 
+// Today's date as "YYYY-MM-DD" in server-local time (toISOString() gives UTC)
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 // GET /sales/dashboard - Dashboard stats
 const getDashboard = async (req, res) => {
   try {
@@ -16,7 +22,7 @@ const getDashboard = async (req, res) => {
       where: {
         salesAgentId: agentId,
         status: "SCHEDULED",
-        scheduledDate: { [Op.gte]: new Date() },
+        scheduledDate: { [Op.gte]: todayStr() },
       },
     });
 
@@ -49,7 +55,7 @@ const getDashboard = async (req, res) => {
     const todaysTours = await Tour.findAll({
       where: {
         salesAgentId: agentId,
-        scheduledDate: new Date().toISOString().split("T")[0],
+        scheduledDate: todayStr(),
       },
       include: [
         { model: Lead, as: "lead", attributes: ["id", "name", "phone", "email"] },

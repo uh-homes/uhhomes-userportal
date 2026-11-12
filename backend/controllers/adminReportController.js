@@ -348,7 +348,9 @@ const generateSummaryReport = async (req, res) => {
     const doc = new PDFDocument({ margin: MARGIN, size: "letter" });
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="UHHomes_Summary_Report_${new Date().toISOString().split("T")[0]}.pdf"`);
+    const now = new Date();
+    const fileDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    res.setHeader("Content-Disposition", `attachment; filename="UHHomes_Summary_Report_${fileDate}.pdf"`);
     doc.pipe(res);
 
     // Header

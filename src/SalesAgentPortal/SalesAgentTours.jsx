@@ -11,6 +11,7 @@ import {
   HiChevronLeft,
   HiChevronRight,
 } from "react-icons/hi";
+import { dateOnly } from "../utils/formatDate";
 
 const TOUR_STATUS_COLORS = {
   SCHEDULED: "bg-blue-50 text-blue-700 border-blue-200",
@@ -168,7 +169,7 @@ export default function SalesAgentTours() {
 
   // Group tours by date for calendar lookup
   const toursByDate = tours.reduce((acc, tour) => {
-    const date = tour.scheduledDate || "";
+    const date = dateOnly(tour.scheduledDate);
     if (!acc[date]) acc[date] = [];
     acc[date].push(tour);
     return acc;

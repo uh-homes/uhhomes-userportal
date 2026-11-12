@@ -9,6 +9,7 @@ import {
   HiOutlineCalendar,
   HiOutlineClipboardList,
 } from "react-icons/hi";
+import { formatDate } from "../utils/formatDate";
 
 export default function ArchitectMilestones() {
   const [milestones, setMilestones] = useState([]);
@@ -171,7 +172,7 @@ export default function ArchitectMilestones() {
                     )}
                     {milestone.dueDate && (
                       <span className="flex items-center gap-1">
-                        <HiOutlineCalendar /> {new Date(milestone.dueDate).toLocaleDateString()}
+                        <HiOutlineCalendar /> {formatDate(milestone.dueDate)}
                       </span>
                     )}
                     {milestone.comments && milestone.comments.length > 0 && (
@@ -227,7 +228,7 @@ export default function ArchitectMilestones() {
                 {selectedMilestone.dueDate && (
                   <div>
                     <p className="text-xs text-gray-500">Due Date</p>
-                    <p className="text-sm font-medium text-[#1A1A1A]">{new Date(selectedMilestone.dueDate).toLocaleDateString()}</p>
+                    <p className="text-sm font-medium text-[#1A1A1A]">{formatDate(selectedMilestone.dueDate)}</p>
                   </div>
                 )}
                 {selectedMilestone.progress !== undefined && (

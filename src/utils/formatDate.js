@@ -10,3 +10,15 @@ export const formatDate = (value, options) => {
   if (!y || !m || !d) return "";
   return new Date(y, m - 1, d).toLocaleDateString("en-US", options);
 };
+
+// Returns "YYYY-MM-DD" for a date-only value or Date, in local terms.
+export const dateOnly = (value) => {
+  if (!value) return "";
+  if (value instanceof Date) {
+    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
+  }
+  return String(value).slice(0, 10);
+};
+
+// Today's date as "YYYY-MM-DD" in local time (toISOString() would give UTC).
+export const todayDateString = () => dateOnly(new Date());

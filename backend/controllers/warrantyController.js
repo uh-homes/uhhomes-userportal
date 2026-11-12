@@ -1,6 +1,19 @@
 const { Warranty, WarrantyConfig, Project, User, ProjectManager } = require("../models");
 const { Op } = require("sequelize");
 
+// Today's date as "YYYY-MM-DD" in server-local time (toISOString() gives UTC)
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+// Adds months to a "YYYY-MM-DD" date and returns "YYYY-MM-DD" (local, no TZ shift)
+const addMonths = (dateStr, months) => {
+  const [y, m, d] = String(dateStr).slice(0, 10).split("-").map(Number);
+  const dt = new Date(y, m - 1 + months, d);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+};
+
 // GET /pm/projects/:id/warranties - Get warranties for a project
 const getProjectWarranties = async (req, res) => {
   try {
@@ -47,9 +60,7 @@ const uploadWarranty = async (req, res) => {
       const config = await WarrantyConfig.findOne({ where: { warrantyType, isActive: true } });
       if (config) {
         computedValidityMonths = config.defaultValidityMonths;
-        const issue = new Date(issueDate);
-        issue.setMonth(issue.getMonth() + config.defaultValidityMonths);
-        computedExpiryDate = issue.toISOString().split("T")[0];
+        computedExpiryDate = addMonths(issueDate, config.defaultValidityMonths);
       }
     }
 
@@ -62,7 +73,7 @@ const uploadWarranty = async (req, res) => {
       name: name || req.file.originalname,
       description: description || null,
       url: `${baseUrl}/uploads/${req.file.filename}`,
-      issueDate: issueDate || new Date().toISOString().split("T")[0],
+      issueDate: issueDate || todayStr(),
       expiryDate: computedExpiryDate,
       validityMonths: computedValidityMonths,
       notes: notes || null,

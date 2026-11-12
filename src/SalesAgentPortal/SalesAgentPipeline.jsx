@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
 import { HiOutlineTrendingUp } from "react-icons/hi";
+import { formatDate } from "../utils/formatDate";
 
 const STAGES = [
   { key: "NEW", label: "New", color: "border-blue-400", bg: "bg-blue-50", dot: "bg-blue-400" },
@@ -119,7 +120,7 @@ export default function SalesAgentPipeline() {
                     )}
                     {lead.tours?.length > 0 && (
                       <p className="text-xs text-gray-400 mt-1">
-                        {lead.tours.length} tour(s) • Next: {lead.tours.find((t) => t.status === "SCHEDULED")?.scheduledDate || "—"}
+                        {lead.tours.length} tour(s) • Next: {formatDate(lead.tours.find((t) => t.status === "SCHEDULED")?.scheduledDate) || "—"}
                       </p>
                     )}
 

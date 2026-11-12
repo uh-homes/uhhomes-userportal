@@ -9,6 +9,14 @@ import {
   HiOutlinePencil,
   HiOutlineX,
 } from "react-icons/hi";
+import { formatDate, dateOnly, todayDateString } from "../utils/formatDate";
+
+// Adds months to a "YYYY-MM-DD" date and returns "YYYY-MM-DD" (local, no TZ shift)
+const addMonths = (dateStr, months) => {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const dt = new Date(y, m - 1 + months, d);
+  return dateOnly(dt);
+};
 
 export default function PMWarranties() {
   const [projects, setProjects] = useState([]);
@@ -23,7 +31,7 @@ export default function PMWarranties() {
     warrantyType: "",
     name: "",
     description: "",
-    issueDate: new Date().toISOString().split("T")[0],
+    issueDate: todayDateString(),
     expiryDate: "",
     notes: "",
   });
@@ -67,9 +75,7 @@ export default function PMWarranties() {
     if (warrantyType && form.issueDate) {
       const config = warrantyConfigs.find((c) => c.warrantyType === warrantyType);
       if (config) {
-        const issue = new Date(form.issueDate);
-        issue.setMonth(issue.getMonth() + config.defaultValidityMonths);
-        setForm((prev) => ({ ...prev, warrantyType, expiryDate: issue.toISOString().split("T")[0] }));
+        setForm((prev) => ({ ...prev, warrantyType, expiryDate: addMonths(form.issueDate, config.defaultValidityMonths) }));
       }
     }
   };
@@ -80,9 +86,7 @@ export default function PMWarranties() {
     if (form.warrantyType && issueDate) {
       const config = warrantyConfigs.find((c) => c.warrantyType === form.warrantyType);
       if (config) {
-        const issue = new Date(issueDate);
-        issue.setMonth(issue.getMonth() + config.defaultValidityMonths);
-        setForm((prev) => ({ ...prev, issueDate, expiryDate: issue.toISOString().split("T")[0] }));
+        setForm((prev) => ({ ...prev, issueDate, expiryDate: addMonths(issueDate, config.defaultValidityMonths) }));
       }
     }
   };
@@ -115,7 +119,7 @@ export default function PMWarranties() {
       });
       toast.success(`${form.type === "COMPLETION_CERTIFICATE" ? "Certificate" : "Warranty"} uploaded successfully`);
       setShowUpload(false);
-      setForm({ type: "WARRANTY", warrantyType: "", name: "", description: "", issueDate: new Date().toISOString().split("T")[0], expiryDate: "", notes: "" });
+      setForm({ type: "WARRANTY", warrantyType: "", name: "", description: "", issueDate: todayDateString(), expiryDate: "", notes: "" });
       setFile(null);
       fetchWarranties();
     } catch (err) {
@@ -139,14 +143,14 @@ export default function PMWarranties() {
   const getStatusColor = (warranty) => {
     if (warranty.status === "REVOKED") return "bg-red-100 text-red-700";
     if (warranty.status === "EXPIRED") return "bg-gray-100 text-gray-600";
-    if (warranty.expiryDate && new Date(warranty.expiryDate) < new Date()) return "bg-orange-100 text-orange-700";
+    if (warranty.expiryDate && dateOnly(warranty.expiryDate) < todayDateString()) return "bg-orange-100 text-orange-700";
     return "bg-green-100 text-green-700";
   };
 
   const getStatusLabel = (warranty) => {
     if (warranty.status === "REVOKED") return "Revoked";
     if (warranty.status === "EXPIRED") return "Expired";
-    if (warranty.expiryDate && new Date(warranty.expiryDate) < new Date()) return "Expired";
+    if (warranty.expiryDate && dateOnly(warranty.expiryDate) < todayDateString()) return "Expired";
     return "Active";
   };
 
@@ -370,8 +374,8 @@ export default function PMWarranties() {
                     </div>
                     {w.description && <p className="text-xs text-gray-500 mt-1">{w.description}</p>}
                     <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
-                      <span>Issued: {new Date(w.issueDate).toLocaleDateString()}</span>
-                      {w.expiryDate && <span>Expires: {new Date(w.expiryDate).toLocaleDateString()}</span>}
+                      <span>Issued: {formatDate(w.issueDate)}</span>
+                      {w.expiryDate && <span>Expires: {formatDate(w.expiryDate)}</span>}
                       {w.validityMonths && <span>({w.validityMonths} months)</span>}
                     </div>
                   </div>

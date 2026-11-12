@@ -1,5 +1,6 @@
 import React from "react";
 import { FaRegFileAlt, FaDownload, FaShieldAlt, FaCertificate } from "react-icons/fa";
+import { formatDate, dateOnly, todayDateString } from "../../utils/formatDate";
 
 export default function DocumentsSection({ documents = [], warranties = [] }) {
   // Group documents by type for better organization
@@ -117,7 +118,7 @@ export default function DocumentsSection({ documents = [], warranties = [] }) {
           <h2 className="text-xl mb-6">Warranties & Certificates</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {warranties.map((w) => {
-              const isExpired = w.expiryDate && new Date(w.expiryDate) < new Date();
+              const isExpired = w.expiryDate && dateOnly(w.expiryDate) < todayDateString();
               const isCertificate = w.type === "COMPLETION_CERTIFICATE";
               return (
                 <a
@@ -161,11 +162,11 @@ export default function DocumentsSection({ documents = [], warranties = [] }) {
 
                   <div className="mt-auto pt-2 border-t border-gray-100 space-y-1">
                     <p className="text-xs text-gray-500">
-                      Issued: {new Date(w.issueDate).toLocaleDateString()}
+                      Issued: {formatDate(w.issueDate)}
                     </p>
                     {w.expiryDate && (
                       <p className={`text-xs ${isExpired ? "text-red-500 font-medium" : "text-gray-500"}`}>
-                        {isExpired ? "Expired" : "Valid until"}: {new Date(w.expiryDate).toLocaleDateString()}
+                        {isExpired ? "Expired" : "Valid until"}: {formatDate(w.expiryDate)}
                       </p>
                     )}
                     {!w.expiryDate && !isCertificate && (

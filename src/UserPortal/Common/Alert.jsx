@@ -13,6 +13,7 @@ import {
   FaTrashAlt,
 } from "react-icons/fa";
 import api from "../../Api/api";
+import { dateOnly } from "../../utils/formatDate";
 
 const Alert = () => {
   const [alerts, setAlerts] = useState([]);
@@ -39,13 +40,13 @@ const Alert = () => {
       if (dateFilter !== "ALL") {
         const now = new Date();
         if (dateFilter === "TODAY") {
-          params.append("startDate", now.toISOString().split("T")[0]);
+          params.append("startDate", dateOnly(now));
         } else if (dateFilter === "WEEK") {
           const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-          params.append("startDate", weekAgo.toISOString().split("T")[0]);
+          params.append("startDate", dateOnly(weekAgo));
         } else if (dateFilter === "MONTH") {
           const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-          params.append("startDate", monthAgo.toISOString().split("T")[0]);
+          params.append("startDate", dateOnly(monthAgo));
         }
       }
 
