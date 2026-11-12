@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
 import {
@@ -75,13 +75,18 @@ export default function AdminUserManagement() {
       const res = await api.get("/admin/permissions");
       setUsers(res.data.data);
     } catch (err) {
-      toast.error("Failed to load users");
+      toast.error("Failed to load users", { toastId: "load-users-error" });
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchUsers(); }, []);
+  const didFetch = useRef(false);
+  useEffect(() => {
+    if (didFetch.current) return;
+    didFetch.current = true;
+    fetchUsers();
+  }, []);
 
   const fetchUserProjects = async (userId) => {
     try {
