@@ -2,6 +2,14 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 const bcrypt = require("bcryptjs");
 
+const toTitleCase = (name) =>
+  name
+    .trim()
+    .replace(/\s+/g, " ")
+    .split(" ")
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w))
+    .join(" ");
+
 const User = sequelize.define(
   "User",
   {
@@ -13,6 +21,9 @@ const User = sequelize.define(
     fullName: {
       type: DataTypes.STRING,
       allowNull: false,
+      set(value) {
+        this.setDataValue("fullName", typeof value === "string" ? toTitleCase(value) : value);
+      },
     },
     email: {
       type: DataTypes.STRING,
