@@ -127,9 +127,9 @@ const PMSidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: "auto" }}
                 exit={{ opacity: 0, width: 0 }}
-                className="overflow-hidden"
+                className="overflow-hidden min-w-0 flex-1"
               >
-                <p className="text-sm font-medium text-[#C5A572] truncate">{user?.fullName || "Project Manager"}</p>
+                <p className="text-sm font-medium text-[#C5A572] leading-tight break-words">{user?.fullName || "Project Manager"}</p>
                 <p className="text-xs text-gray-400 truncate">{user?.email}</p>
               </motion.div>
             )}

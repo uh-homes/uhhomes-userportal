@@ -302,7 +302,7 @@ const Sidebar = ({ open, setOpen, sidebarWidth = 250 }) => {
               initial={{ opacity: 0, width: 0 }}
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
-              className="font-medium whitespace-nowrap overflow-hidden text-[#C5A572]"
+              className="font-medium leading-tight break-words min-w-0 text-[#C5A572]"
             >
               {user?.fullName}
             </motion.span>
