@@ -10,13 +10,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async ({ to, from, subject, html }) => {
+const stripHtml = (html) =>
+  html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const sendEmail = async ({ to, from, subject, html, text, replyTo }) => {
   try {
     await transporter.sendMail({
-      from: from || process.env.SMTP_FROM || `"UHHomes" <noreply@uhhomes.com>`,
+      // Sender must match the authenticated account or providers flag it as spoofed
+      from: from || process.env.SMTP_FROM || `"UHHomes" <${process.env.SMTP_USER}>`,
+      replyTo: replyTo || process.env.SMTP_USER,
       to,
       subject,
       html,
+      text: text || stripHtml(html),
     });
     return true;
   } catch (error) {
@@ -32,15 +42,46 @@ const sendEmail = async ({ to, from, subject, html }) => {
 const sendOtpEmail = async (email, otp) => {
   return sendEmail({
     to: email,
-    subject: "Your UHHomes Verification Code",
+    subject: `${otp} is your UHHomes verification code`,
+    text: `Hi,
+
+You requested a verification code for your UHHomes account.
+
+Your code: ${otp}
+
+This code expires in 10 minutes. Do not share it with anyone.
+
+If you didn't request this, you can safely ignore this email.
+
+— UHHomes Team
+${process.env.FRONTEND_URL || "http://localhost:5173"}`,
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #22c55e;">UHHomes</h2>
-        <p>Your verification code is:</p>
-        <div style="background: #f3f4f6; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;">
-          <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #111827;">${otp}</span>
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 0;">
+        <div style="background: #1A1A1A; padding: 24px; text-align: center; border-radius: 8px 8px 0 0;">
+          <h1 style="color: #C5A572; margin: 0; font-size: 24px;">UH HOMES</h1>
         </div>
-        <p style="color: #6b7280; font-size: 14px;">This code expires in 10 minutes. Do not share it with anyone.</p>
+        <div style="background: #ffffff; padding: 32px; border: 1px solid #eee; border-top: none;">
+          <p style="color: #333; font-size: 15px; margin-top: 0;">Hi,</p>
+          <p style="color: #333; font-size: 15px; line-height: 1.6;">
+            You requested a verification code for your UHHomes account.
+            Enter the code below to continue:
+          </p>
+          <div style="background: #FAF6ED; border: 1px solid #E8D5A3; padding: 20px; text-align: center; border-radius: 8px; margin: 24px 0;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #1A1A1A;">${otp}</span>
+          </div>
+          <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+            This code expires in 10 minutes. Do not share it with anyone —
+            UHHomes will never ask for this code.
+          </p>
+          <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+            If you didn't request this code, you can safely ignore this email.
+          </p>
+        </div>
+        <div style="background: #1A1A1A; padding: 16px; text-align: center; border-radius: 0 0 8px 8px;">
+          <p style="color: #888; font-size: 12px; margin: 0;">
+            &copy; ${new Date().getFullYear()} UHHomes. All rights reserved.
+          </p>
+        </div>
       </div>
     `,
   });
@@ -90,7 +131,6 @@ const sendWelcomeEmail = async (email, fullName) => {
 const sendInquiryNotificationToAdmin = async (adminEmail, { userName, userEmail, homeAddress, projectName, subject, message, submittedAt }) => {
   return sendEmail({
     to: adminEmail,
-    from: `"UH Homes" <smalipeddi@uhhomes.com>`,
     subject: `New Inquiry from ${userName} — ${subject}`,
     html: `
       <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 0;">
@@ -156,7 +196,6 @@ const sendInquiryNotificationToAdmin = async (adminEmail, { userName, userEmail,
 const sendInquiryResponseToUser = async (userEmail, { userName, subject, originalMessage, responseMessage, respondedAt }) => {
   return sendEmail({
     to: userEmail,
-    from: `"UH Homes" <smalipeddi@uhhomes.com>`,
     subject: `Re: ${subject} — UH Homes Response`,
     html: `
       <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 0;">
