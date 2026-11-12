@@ -183,10 +183,6 @@ export default function UDashboard() {
       u.media?.forEach((m) => { if (m.url) galleryImages.push(m.url); });
     });
   }
-  if (galleryImages.length === 0) {
-    galleryImages.push(...propertyImages);
-  }
-
   const projectImage = propertyImages[0] || galleryImages[0] || null;
 
   return (
