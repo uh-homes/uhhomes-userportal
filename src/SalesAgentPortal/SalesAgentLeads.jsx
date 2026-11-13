@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineSearch,
   HiOutlinePlus,
@@ -24,6 +25,7 @@ const STATUS_COLORS = {
 };
 
 export default function SalesAgentLeads() {
+  const [confirmDialog, confirm] = useConfirm();
   const [leads, setLeads] = useState([]);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +101,7 @@ export default function SalesAgentLeads() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this lead?")) return;
+    if (!(await confirm("Delete this lead?"))) return;
     try {
       await api.delete(`/sales/leads/${id}`);
       toast.success("Lead deleted.");
@@ -293,6 +295,7 @@ export default function SalesAgentLeads() {
           ))}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

@@ -14,8 +14,10 @@ import {
 } from "react-icons/fa";
 import api from "../../Api/api";
 import { dateOnly } from "../../utils/formatDate";
+import useConfirm from "../../hooks/useConfirm";
 
 const Alert = () => {
+  const [confirmDialog, confirm] = useConfirm();
   const [alerts, setAlerts] = useState([]);
   const [filteredAlerts, setFilteredAlerts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -159,7 +161,7 @@ const Alert = () => {
 
   // Delete all alerts
   const deleteAllAlerts = async () => {
-    if (!window.confirm("Are you sure you want to delete all alerts?")) return;
+    if (!(await confirm("Are you sure you want to delete all alerts?"))) return;
     try {
       await api.delete("/alerts/all");
       setAlerts([]);
@@ -396,6 +398,7 @@ const Alert = () => {
           </div>
         )}
       </div>
+      {confirmDialog}
     </div>
   );
 };

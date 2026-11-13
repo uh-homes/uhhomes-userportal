@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineShieldCheck,
   HiOutlinePlus,
@@ -12,6 +13,7 @@ import {
 import { formatDate, dateOnly, todayDateString } from "../utils/formatDate";
 
 export default function AdminWarrantyConfig() {
+  const [confirmDialog, confirm] = useConfirm();
   const [configs, setConfigs] = useState([]);
   const [warranties, setWarranties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,7 +81,7 @@ export default function AdminWarrantyConfig() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete warranty type "${name}"?`)) return;
+    if (!(await confirm(`Delete warranty type "${name}"?`))) return;
     try {
       await api.delete(`/admin/warranty-configs/${id}`);
       toast.success("Deleted");
@@ -346,6 +348,7 @@ export default function AdminWarrantyConfig() {
           )}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

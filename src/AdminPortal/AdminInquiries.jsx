@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineMail,
   HiOutlineReply,
@@ -13,6 +14,7 @@ import {
 import { toast } from "react-toastify";
 
 export default function AdminInquiries() {
+  const [confirmDialog, confirm] = useConfirm();
   const [data, setData] = useState({ questions: [], stats: {} });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,7 +62,7 @@ export default function AdminInquiries() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this inquiry?")) return;
+    if (!(await confirm("Delete this inquiry?"))) return;
     try {
       await api.delete(`/admin/inquiries/${id}`);
       toast.success("Inquiry deleted");
@@ -389,6 +391,7 @@ export default function AdminInquiries() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

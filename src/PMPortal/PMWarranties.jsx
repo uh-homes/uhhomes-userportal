@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineShieldCheck,
   HiOutlinePlus,
@@ -19,6 +20,7 @@ const addMonths = (dateStr, months) => {
 };
 
 export default function PMWarranties() {
+  const [confirmDialog, confirm] = useConfirm();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [warranties, setWarranties] = useState([]);
@@ -130,7 +132,7 @@ export default function PMWarranties() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this warranty/certificate?")) return;
+    if (!(await confirm("Delete this warranty/certificate?"))) return;
     try {
       await api.delete(`/pm/warranties/${id}`);
       toast.success("Deleted successfully");
@@ -406,6 +408,7 @@ export default function PMWarranties() {
           ))}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

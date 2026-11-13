@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineBriefcase,
   HiOutlinePlus,
@@ -11,6 +12,7 @@ import {
 } from "react-icons/hi";
 
 export default function AdminProjectManagers() {
+  const [confirmDialog, confirm] = useConfirm();
   const [managers, setManagers] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +64,7 @@ export default function AdminProjectManagers() {
   };
 
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Delete Project Manager "${name}"? This will remove all project assignments.`)) return;
+    if (!(await confirm(`Delete Project Manager "${name}"? This will remove all project assignments.`))) return;
     try {
       await api.delete(`/admin/project-managers/${id}`);
       toast.success("Project Manager deleted");
@@ -89,7 +91,7 @@ export default function AdminProjectManagers() {
   };
 
   const handleUnassign = async (managerId, projectId, projectName) => {
-    if (!window.confirm(`Unassign project "${projectName}" from this manager?`)) return;
+    if (!(await confirm(`Unassign project "${projectName}" from this manager?`))) return;
     try {
       await api.delete(`/admin/project-managers/${managerId}/unassign/${projectId}`);
       toast.success("Project unassigned");
@@ -350,6 +352,7 @@ export default function AdminProjectManagers() {
           ))}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

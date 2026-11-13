@@ -3,8 +3,10 @@ import api from "../Api/api";
 import { HiOutlinePlus, HiOutlineTrash, HiOutlinePhotograph, HiOutlineUpload } from "react-icons/hi";
 import { toast } from "react-toastify";
 import Lightbox from "../Components/Lightbox";
+import useConfirm from "../hooks/useConfirm";
 
 export default function AdminGallery() {
+  const [confirmDialog, confirm] = useConfirm();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [galleries, setGalleries] = useState([]);
@@ -127,7 +129,7 @@ export default function AdminGallery() {
   };
 
   const handleDeletePhoto = async (mediaId) => {
-    if (!window.confirm("Delete this photo?")) return;
+    if (!(await confirm("Delete this photo?"))) return;
     try {
       await api.delete(`/admin/gallery/photo/${mediaId}`);
       toast.success("Photo deleted");
@@ -138,7 +140,7 @@ export default function AdminGallery() {
   };
 
   const handleDeleteGallery = async (galleryId) => {
-    if (!window.confirm("Delete this entire gallery phase and all its photos?")) return;
+    if (!(await confirm("Delete this entire gallery phase and all its photos?"))) return;
     try {
       await api.delete(`/admin/gallery/${galleryId}`);
       toast.success("Gallery deleted");
@@ -418,6 +420,7 @@ export default function AdminGallery() {
           onIndexChange={(idx) => setLightboxIndex(idx)}
         />
       )}
+      {confirmDialog}
     </div>
   );
 }

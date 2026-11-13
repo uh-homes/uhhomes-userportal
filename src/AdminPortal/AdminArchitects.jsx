@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlinePencilAlt,
   HiOutlinePlus,
@@ -11,6 +12,7 @@ import {
 } from "react-icons/hi";
 
 export default function AdminArchitects() {
+  const [confirmDialog, confirm] = useConfirm();
   const [architects, setArchitects] = useState([]);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,7 @@ export default function AdminArchitects() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to remove this architect?")) return;
+    if (!(await confirm("Are you sure you want to remove this architect?"))) return;
     try {
       await api.delete(`/admin/users/${id}`);
       toast.success("Architect removed");
@@ -336,6 +338,7 @@ export default function AdminArchitects() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

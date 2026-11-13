@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlinePlus,
   HiOutlineX,
@@ -42,6 +43,7 @@ function formatDateKey(year, month, day) {
 }
 
 export default function SalesAgentTours() {
+  const [confirmDialog, confirm] = useConfirm();
   const [tours, setTours] = useState([]);
   const [leads, setLeads] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -132,7 +134,7 @@ export default function SalesAgentTours() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this tour?")) return;
+    if (!(await confirm("Delete this tour?"))) return;
     try {
       await api.delete(`/sales/tours/${id}`);
       toast.success("Tour deleted.");
@@ -512,6 +514,7 @@ export default function SalesAgentTours() {
           })}
         </div>
       </div>
+      {confirmDialog}
     </div>
   );
 }

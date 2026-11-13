@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { HiOutlinePlus, HiOutlinePencil, HiOutlineTrash } from "react-icons/hi";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 
 export default function AdminProperties() {
+  const [confirmDialog, confirm] = useConfirm();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -60,7 +62,7 @@ export default function AdminProperties() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this property?")) return;
+    if (!(await confirm("Delete this property?"))) return;
     try {
       await api.delete(`/admin/properties/${id}`);
       toast.success("Property deleted");
@@ -214,6 +216,7 @@ export default function AdminProperties() {
       {properties.length === 0 && (
         <div className="text-center py-10 text-gray-500">No properties yet.</div>
       )}
+      {confirmDialog}
     </div>
   );
 }

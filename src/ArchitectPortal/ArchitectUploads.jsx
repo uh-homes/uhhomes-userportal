@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlinePhotograph,
   HiOutlineUpload,
@@ -20,6 +21,7 @@ const FILE_CATEGORIES = [
 ];
 
 export default function ArchitectUploads() {
+  const [confirmDialog, confirm] = useConfirm();
   const [uploads, setUploads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -92,7 +94,7 @@ export default function ArchitectUploads() {
   };
 
   const handleDelete = async (uploadId) => {
-    if (!window.confirm("Are you sure you want to delete this file?")) return;
+    if (!(await confirm("Are you sure you want to delete this file?"))) return;
     try {
       await api.delete(`/architect/uploads/${uploadId}`);
       toast.success("File deleted");
@@ -324,6 +326,7 @@ export default function ArchitectUploads() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

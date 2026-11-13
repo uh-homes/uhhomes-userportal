@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineSearch,
   HiOutlineRefresh,
@@ -51,6 +52,7 @@ const ACTION_COLORS = {
 };
 
 export default function AdminUserManagement() {
+  const [confirmDialog, confirm] = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -184,7 +186,7 @@ export default function AdminUserManagement() {
 
   const handleResetPermissions = async () => {
     if (!selectedUser) return;
-    if (!window.confirm(`Reset permissions for ${selectedUser.fullName} to category defaults?`)) return;
+    if (!(await confirm(`Reset permissions for ${selectedUser.fullName} to category defaults?`))) return;
     setSaving(true);
     try {
       const res = await api.post(`/admin/permissions/reset/${selectedUser.id}`);
@@ -710,6 +712,7 @@ export default function AdminUserManagement() {
           )}
         </div>
       </div>
+      {confirmDialog}
     </div>
   );
 }

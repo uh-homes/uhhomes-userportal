@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { HiOutlineSparkles, HiOutlineMailOpen, HiOutlineRefresh } from "react-icons/hi";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 
 export default function AdminAISummary() {
+  const [confirmDialog, confirm] = useConfirm();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [summary, setSummary] = useState(null);
@@ -56,7 +58,7 @@ export default function AdminAISummary() {
   };
 
   const handleSendAll = async () => {
-    if (!window.confirm("Send weekly summaries to all active project homeowners?")) return;
+    if (!(await confirm("Send weekly summaries to all active project homeowners?"))) return;
     setSendingAll(true);
     try {
       const res = await api.post("/admin/ai-summary/send-all");
@@ -203,6 +205,7 @@ export default function AdminAISummary() {
           ))}
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

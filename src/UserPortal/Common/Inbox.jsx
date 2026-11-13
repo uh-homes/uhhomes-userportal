@@ -15,8 +15,10 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import api from "../../Api/api";
+import useConfirm from "../../hooks/useConfirm";
 
 const Inbox = () => {
+  const [confirmDialog, confirm] = useConfirm();
   const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const [filteredQuestions, setFilteredQuestions] = useState([]);
@@ -111,7 +113,7 @@ const Inbox = () => {
   };
 
   const handleDelete = async (questionId) => {
-    if (!window.confirm("Are you sure you want to delete this question?")) return;
+    if (!(await confirm("Are you sure you want to delete this question?"))) return;
     try {
       await api.delete(`/user-projects/question/${questionId}`);
       setQuestions((prev) => prev.filter((q) => q.id !== questionId));
@@ -553,6 +555,7 @@ const Inbox = () => {
           </div>
         )}
       </div>
+      {confirmDialog}
     </div>
   );
 };

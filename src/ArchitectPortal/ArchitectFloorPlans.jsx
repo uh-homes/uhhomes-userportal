@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import api from "../Api/api";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 import {
   HiOutlineDocumentText,
   HiOutlineUpload,
@@ -13,6 +14,7 @@ import {
 } from "react-icons/hi";
 
 export default function ArchitectFloorPlans() {
+  const [confirmDialog, confirm] = useConfirm();
   const [floorPlans, setFloorPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -99,7 +101,7 @@ export default function ArchitectFloorPlans() {
   };
 
   const handleDelete = async (planId) => {
-    if (!window.confirm("Are you sure you want to delete this floor plan?")) return;
+    if (!(await confirm("Are you sure you want to delete this floor plan?"))) return;
     try {
       await api.delete(`/architect/floorplans/${planId}`);
       toast.success("Floor plan deleted");
@@ -377,6 +379,7 @@ export default function ArchitectFloorPlans() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

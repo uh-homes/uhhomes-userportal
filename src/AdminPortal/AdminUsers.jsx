@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../Api/api";
 import { HiOutlineSearch, HiOutlineTrash, HiOutlineEye, HiOutlineMail, HiOutlinePlus, HiOutlineX, HiOutlinePencil } from "react-icons/hi";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 
 export default function AdminUsers() {
+  const [confirmDialog, confirm] = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -51,7 +53,7 @@ export default function AdminUsers() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    if (!(await confirm("Are you sure you want to delete this user?"))) return;
     try {
       await api.delete(`/admin/users/${id}`);
       toast.success("User deleted successfully");
@@ -556,6 +558,7 @@ export default function AdminUsers() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import api from "../Api/api";
-import { HiOutlineTrash, HiOutlinePaperAirplane, HiOutlineX } from "react-icons/hi";
+import { HiOutlineTrash, HiOutlinePaperAirplane, HiOutlineX, HiOutlineBell, HiOutlineMail } from "react-icons/hi";
 import { toast } from "react-toastify";
+import useConfirm from "../hooks/useConfirm";
 
 const DEFAULT_CATEGORIES = [
   { key: "ALL", label: "All", color: "text-gray-700", bg: "bg-gray-100", dot: "bg-gray-500" },
@@ -21,6 +22,7 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export default function AdminAlerts() {
+  const [confirmDialog, confirm] = useConfirm();
   const [alerts, setAlerts] = useState([]);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,7 +98,7 @@ export default function AdminAlerts() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this alert?")) return;
+    if (!(await confirm("Delete this alert?"))) return;
     try {
       await api.delete(`/admin/alerts/${id}`);
       toast.success("Alert deleted");
@@ -166,7 +168,7 @@ export default function AdminAlerts() {
       {showCreate && (
         <form onSubmit={handleCreate} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-6">
           <h2 className="font-semibold text-[#1A1A1A] mb-4">Create & Send New Alert</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div>
               <label className="block text-sm text-gray-600 mb-1">Title</label>
               <input
@@ -258,14 +260,32 @@ export default function AdminAlerts() {
             </div>
             <div>
               <label className="block text-sm text-gray-600 mb-1">Channel</label>
-              <select
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C5A572] focus:border-transparent"
-                value={form.channel}
-                onChange={(e) => setForm({ ...form, channel: e.target.value })}
-              >
-                <option value="IN_APP">In-App</option>
-                <option value="EMAIL">Email</option>
-              </select>
+              <div className="flex items-center gap-4 border border-gray-200 rounded-lg px-3 py-2.5 bg-white">
+                <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="channel"
+                    value="IN_APP"
+                    checked={form.channel === "IN_APP"}
+                    onChange={(e) => setForm({ ...form, channel: e.target.value })}
+                    className="accent-[#C5A572]"
+                  />
+                  <HiOutlineBell className="text-[#C5A572]" />
+                  In-App
+                </label>
+                <label className="flex items-center gap-1.5 text-sm text-gray-700 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="channel"
+                    value="EMAIL"
+                    checked={form.channel === "EMAIL"}
+                    onChange={(e) => setForm({ ...form, channel: e.target.value })}
+                    className="accent-[#C5A572]"
+                  />
+                  <HiOutlineMail className="text-[#C5A572]" />
+                  Email
+                </label>
+              </div>
             </div>
           </div>
           <div className="mb-4">
@@ -451,6 +471,7 @@ export default function AdminAlerts() {
           </div>
         </div>
       )}
+      {confirmDialog}
     </div>
   );
 }
