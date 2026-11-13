@@ -1,6 +1,7 @@
 const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, ProjectSupervisor, ProjectManager, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
+const { sendEmail } = require("../utils/sendEmail");
 
 const STANDARD_PHASES = [
   "Site Preparation",
@@ -344,15 +345,17 @@ const createAlert = async (req, res) => {
     const { userId, userIds, title, message, type, channel } = req.body;
 
     const targetIds = userIds || (userId ? [userId] : []);
+    let targetUsers;
     if (targetIds.length === 0) {
       // Send to all users
-      const allUsers = await User.findAll({ where: { role: "user" }, attributes: ["id"] });
-      targetIds.push(...allUsers.map((u) => u.id));
+      targetUsers = await User.findAll({ where: { role: "user" }, attributes: ["id", "email", "fullName", "notificationPrefs"] });
+    } else {
+      targetUsers = await User.findAll({ where: { id: targetIds }, attributes: ["id", "email", "fullName", "notificationPrefs"] });
     }
 
     const alerts = await Alert.bulkCreate(
-      targetIds.map((id) => ({
-        userId: id,
+      targetUsers.map((u) => ({
+        userId: u.id,
         title,
         message,
         type: type || "GENERAL",
@@ -361,7 +364,37 @@ const createAlert = async (req, res) => {
       }))
     );
 
-    res.status(201).json({ status: "success", data: alerts, count: alerts.length });
+    // Deliver the alert to each user's inbox when the Email channel is selected
+    let emailsSent = 0;
+    if (channel === "EMAIL") {
+      for (const user of targetUsers) {
+        if (user.notificationPrefs?.email === false) continue;
+        try {
+          const sent = await sendEmail({
+            to: user.email,
+            subject: `UH Homes Alert: ${title}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <div style="background: linear-gradient(135deg, #C5A572, #D4AF37); padding: 20px; border-radius: 8px 8px 0 0;">
+                  <h2 style="color: white; margin: 0;">UH Homes Alert</h2>
+                </div>
+                <div style="background: #fff; padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+                  <h3 style="color: #1a1a1a; margin-top: 0;">${title}</h3>
+                  <p style="color: #666; line-height: 1.6;">${message}</p>
+                  <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+                  <p style="color: #999; font-size: 12px;">Hi ${user.fullName}, this alert was sent from your UH Homes project portal.</p>
+                </div>
+              </div>
+            `,
+          });
+          if (sent) emailsSent++;
+        } catch (err) {
+          console.error(`Failed to send alert email to ${user.email}:`, err.message);
+        }
+      }
+    }
+
+    res.status(201).json({ status: "success", data: alerts, count: alerts.length, emailsSent });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });
   }

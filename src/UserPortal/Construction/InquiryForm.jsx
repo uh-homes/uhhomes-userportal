@@ -6,7 +6,6 @@ export default function InquiryForm({ projectId }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selected, setSelected] = useState("GENERAL QUESTION");
   const [message, setMessage] = useState("");
-  const [replyMethod, setReplyMethod] = useState("email");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -113,29 +112,6 @@ export default function InquiryForm({ projectId }) {
               rows="6"
               required
             />
-
-            {/* <div className="flex items-center gap-6 mb-4 text-sm">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="reply"
-                  value="email"
-                  checked={replyMethod === "email"}
-                  onChange={() => setReplyMethod("email")}
-                />
-                Reply by Email
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="reply"
-                  value="phone"
-                  checked={replyMethod === "phone"}
-                  onChange={() => setReplyMethod("phone")}
-                />
-                Reply by Phone/SMS
-              </label>
-            </div> */}
 
             <button
               type="submit"

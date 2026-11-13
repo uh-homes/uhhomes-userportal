@@ -265,7 +265,6 @@ export default function AdminAlerts() {
               >
                 <option value="IN_APP">In-App</option>
                 <option value="EMAIL">Email</option>
-                <option value="SMS">SMS</option>
               </select>
             </div>
           </div>

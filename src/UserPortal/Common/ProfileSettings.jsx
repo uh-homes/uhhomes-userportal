@@ -5,7 +5,6 @@ import {
   FaDownload,
   FaTrash,
   FaEnvelope,
-  FaSms,
   FaBell,
   FaShieldAlt,
   FaSignOutAlt,
@@ -239,29 +238,6 @@ const ProfileSettings = () => {
                 <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
               </label>
             </div>
-
-            {/* SMS Notifications */}
-            <div className="flex justify-between items-center p-3">
-              <span className="flex items-center gap-2">
-                <FaSms className="text-gray-800" />
-                SMS Notifications
-              </span>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={notificationPrefs?.sms || false}
-                  onChange={(e) =>
-                    updateNotificationPreference("sms", e.target.checked)
-                  }
-                  disabled={isLoading}
-                />
-                <div className="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-gradient transition-colors"></div>
-                <div className="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
-              </label>
-            </div>
-
-
 
           </div>
         </div>
