@@ -15,7 +15,7 @@ export default function AdminProjects() {
     userId: "",
     name: "",
     address: "",
-    status: "PLANNED",
+    status: "PLANNING",
     completionPercentage: 0,
     startDate: "",
     estimatedEndDate: "",
@@ -66,7 +66,7 @@ export default function AdminProjects() {
       resetForm();
       fetchProjects();
     } catch (err) {
-      toast.error("Failed to create project");
+      toast.error(err.response?.data?.message || "Failed to create project");
     }
   };
 
@@ -79,7 +79,7 @@ export default function AdminProjects() {
       resetForm();
       fetchProjects();
     } catch (err) {
-      toast.error("Failed to update project");
+      toast.error(err.response?.data?.message || "Failed to update project");
     }
   };
 
@@ -99,7 +99,7 @@ export default function AdminProjects() {
   };
 
   const resetForm = () => {
-    setForm({ userId: "", name: "", address: "", status: "PLANNED", completionPercentage: 0, startDate: "", estimatedEndDate: "", propertyId: "" });
+    setForm({ userId: "", name: "", address: "", status: "PLANNING", completionPercentage: 0, startDate: "", estimatedEndDate: "", propertyId: "" });
   };
 
   const filteredProjects = projects.filter(
@@ -117,7 +117,7 @@ export default function AdminProjects() {
   }
 
   const statusColors = {
-    PLANNED: "bg-gray-100 text-gray-700",
+    PLANNING: "bg-gray-100 text-gray-700",
     IN_PROGRESS: "bg-blue-100 text-blue-700",
     COMPLETED: "bg-green-100 text-green-700",
     ON_HOLD: "bg-yellow-100 text-yellow-700",
@@ -206,7 +206,7 @@ export default function AdminProjects() {
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
               >
-                <option value="PLANNED">Planned</option>
+                <option value="PLANNING">Planned</option>
                 <option value="IN_PROGRESS">In Progress</option>
                 <option value="COMPLETED">Completed</option>
                 <option value="ON_HOLD">On Hold</option>

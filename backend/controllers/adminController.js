@@ -237,9 +237,11 @@ const updateProject = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Project not found." });
     }
 
+    const nullable = new Set(["address", "startDate", "estimatedEndDate", "propertyId"]);
     const fields = {};
     for (const key of ["name", "address", "status", "completionPercentage", "startDate", "estimatedEndDate", "propertyId"]) {
-      if (req.body[key] !== undefined) fields[key] = req.body[key];
+      const value = req.body[key];
+      if (value !== undefined) fields[key] = nullable.has(key) && value === "" ? null : value;
     }
     await project.update(fields);
 
@@ -263,8 +265,10 @@ const createProject = async (req, res) => {
     }
 
     const project = await Project.create({
-      userId, name, address, status: status || "PLANNED",
-      completionPercentage: completionPercentage || 0, startDate, estimatedEndDate, propertyId,
+      userId, name, address: address || null, status: status || "PLANNING",
+      completionPercentage: completionPercentage || 0,
+      startDate: startDate || null, estimatedEndDate: estimatedEndDate || null,
+      propertyId: propertyId || null,
     });
 
     // Auto-assign all site supervisors to the new project
