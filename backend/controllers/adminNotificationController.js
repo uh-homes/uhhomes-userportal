@@ -42,6 +42,7 @@ const sendPushNotification = async (req, res) => {
           await sendEmail({
             to: user.email,
             subject: `UH Homes: ${title}`,
+            unsubscribeUrl: `${process.env.FRONTEND_URL || "http://localhost:5173"}/settings`,
             html: `
               <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <div style="background: linear-gradient(135deg, #C5A572, #D4AF37); padding: 20px; border-radius: 8px 8px 0 0;">

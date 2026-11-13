@@ -17,16 +17,24 @@ const stripHtml = (html) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const sendEmail = async ({ to, from, subject, html, text, replyTo }) => {
+const sendEmail = async ({ to, from, subject, html, text, replyTo, headers, unsubscribeUrl }) => {
   try {
+    // Bulk/notification mail should offer one-click unsubscribe (Gmail/Yahoo sender rules)
+    const mailHeaders = { ...headers };
+    if (unsubscribeUrl) {
+      mailHeaders["List-Unsubscribe"] = `<${unsubscribeUrl}>`;
+      mailHeaders["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
+    }
+
     await transporter.sendMail({
       // Sender must match the authenticated account or providers flag it as spoofed
       from: from || process.env.SMTP_FROM || `"UHHomes" <${process.env.SMTP_USER}>`,
-      replyTo: replyTo || process.env.SMTP_USER,
+      replyTo: replyTo || process.env.SMTP_REPLY_TO || process.env.SMTP_USER,
       to,
       subject,
       html,
       text: text || stripHtml(html),
+      headers: Object.keys(mailHeaders).length ? mailHeaders : undefined,
     });
     return true;
   } catch (error) {
