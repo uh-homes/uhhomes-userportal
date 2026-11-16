@@ -2,6 +2,7 @@ const { User, Project, Milestone, Update, Media, Gallery, Document, Question, Al
 const { Op } = require("sequelize");
 const multer = require("multer");
 const path = require("path");
+const { sendMilestoneUpdateEmail, sendSiteUpdateEmail } = require("../utils/sendEmail");
 
 // GET /supervisor/projects - Get all assigned projects
 const getAssignedProjects = async (req, res) => {
@@ -117,8 +118,29 @@ const updateMilestone = async (req, res) => {
       return res.status(403).json({ status: "error", message: "Not assigned to this project." });
     }
 
+    const oldStatus = milestone.status;
     const { name, description, status, date, progress, order } = req.body;
     await milestone.update({ name, description, status, date, progress, order });
+
+    // Send email notification to the project owner
+    try {
+      const project = await Project.findByPk(milestone.projectId, {
+        include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+      });
+      if (project?.user && project.user.notificationPrefs?.email !== false) {
+        await sendMilestoneUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          milestoneName: milestone.name,
+          oldStatus,
+          newStatus: status || oldStatus,
+          progress,
+          description,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send milestone update email:", emailErr.message);
+    }
 
     res.json({ status: "success", data: milestone });
   } catch (error) {
@@ -181,6 +203,23 @@ const createUpdate = async (req, res) => {
       title,
       description,
     });
+
+    // Send email notification to the project owner
+    try {
+      const project = await Project.findByPk(parseInt(req.params.id), {
+        include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+      });
+      if (project?.user && project.user.notificationPrefs?.email !== false) {
+        await sendSiteUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          updateTitle: title,
+          updateDescription: description,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send site update email:", emailErr.message);
+    }
 
     res.status(201).json({ status: "success", data: update });
   } catch (error) {

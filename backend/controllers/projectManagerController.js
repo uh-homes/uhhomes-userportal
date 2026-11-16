@@ -1,5 +1,6 @@
 const { User, Project, Milestone, Update, Media, Gallery, Document, Question, Alert, ProjectManager, sequelize } = require("../models");
 const { Op } = require("sequelize");
+const { sendMilestoneUpdateEmail } = require("../utils/sendEmail");
 
 // GET /pm/dashboard - Dashboard stats for project manager
 const getDashboard = async (req, res) => {
@@ -136,8 +137,29 @@ const updateMilestone = async (req, res) => {
       return res.status(403).json({ status: "error", message: "Not assigned to this project." });
     }
 
+    const oldStatus = milestone.status;
     const { name, description, status, date, progress, order } = req.body;
     await milestone.update({ name, description, status, date, progress, order });
+
+    // Send email notification to the project owner
+    try {
+      const project = await Project.findByPk(milestone.projectId, {
+        include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+      });
+      if (project?.user && project.user.notificationPrefs?.email !== false) {
+        await sendMilestoneUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          milestoneName: milestone.name,
+          oldStatus,
+          newStatus: status || oldStatus,
+          progress,
+          description,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send milestone update email:", emailErr.message);
+    }
 
     res.json({ status: "success", data: milestone });
   } catch (error) {

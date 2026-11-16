@@ -1,4 +1,5 @@
 const { Gallery, Media, Project, Milestone, User } = require("../models");
+const { sendGalleryUpdateEmail } = require("../utils/sendEmail");
 
 // GET /admin/gallery/:projectId - Get all galleries for a project grouped by phase
 const getProjectGallery = async (req, res) => {
@@ -49,6 +50,23 @@ const addPhotos = async (req, res) => {
       urls.map((url) => ({ galleryId: gallery.id, url, type: "image" }))
     );
 
+    // Send email notification to the project owner
+    try {
+      const project = await Project.findByPk(gallery.projectId, {
+        include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+      });
+      if (project?.user && project.user.notificationPrefs?.email !== false) {
+        await sendGalleryUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          phase: gallery.phase || null,
+          photoCount: urls.length,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send gallery update email:", emailErr.message);
+    }
+
     res.status(201).json({ status: "success", data: media });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });
@@ -75,6 +93,23 @@ const uploadPhotos = async (req, res) => {
         type: "image",
       }))
     );
+
+    // Send email notification to the project owner
+    try {
+      const project = await Project.findByPk(gallery.projectId, {
+        include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+      });
+      if (project?.user && project.user.notificationPrefs?.email !== false) {
+        await sendGalleryUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          phase: gallery.phase || null,
+          photoCount: req.files.length,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send gallery upload email:", emailErr.message);
+    }
 
     res.status(201).json({ status: "success", data: media });
   } catch (error) {

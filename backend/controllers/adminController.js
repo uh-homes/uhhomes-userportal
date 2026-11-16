@@ -1,7 +1,7 @@
 const { User, Project, Milestone, Update, Media, Gallery, Document, Alert, Property, Favorite, Question, ProjectSupervisor, ProjectManager, sequelize } = require("../models");
 const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
-const { sendEmail } = require("../utils/sendEmail");
+const { sendEmail, sendMilestoneUpdateEmail, sendProjectStatusEmail } = require("../utils/sendEmail");
 
 const STANDARD_PHASES = [
   "Site Preparation",
@@ -232,11 +232,14 @@ const getProjectById = async (req, res) => {
 // PUT /admin/projects/:id - Update project
 const updateProject = async (req, res) => {
   try {
-    const project = await Project.findByPk(req.params.id);
+    const project = await Project.findByPk(req.params.id, {
+      include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+    });
     if (!project) {
       return res.status(404).json({ status: "error", message: "Project not found." });
     }
 
+    const oldStatus = project.status;
     const nullable = new Set(["address", "startDate", "estimatedEndDate", "propertyId"]);
     const fields = {};
     for (const key of ["name", "address", "status", "completionPercentage", "startDate", "estimatedEndDate", "propertyId"]) {
@@ -247,6 +250,22 @@ const updateProject = async (req, res) => {
 
     // Linking a floor plan to a project that has no milestones yet — seed the standard template
     await createStandardMilestones(project);
+
+    // Send email notification if project status changed
+    if (fields.status && fields.status !== oldStatus) {
+      try {
+        if (project.user && project.user.notificationPrefs?.email !== false) {
+          await sendProjectStatusEmail(project.user.email, {
+            userName: project.user.fullName,
+            projectName: project.name,
+            oldStatus,
+            newStatus: fields.status,
+          });
+        }
+      } catch (emailErr) {
+        console.error("Failed to send project status email:", emailErr.message);
+      }
+    }
 
     res.json({ status: "success", data: project });
   } catch (error) {
@@ -292,7 +311,9 @@ const createProject = async (req, res) => {
 // POST /admin/projects/:id/milestones - Add milestone
 const addMilestone = async (req, res) => {
   try {
-    const project = await Project.findByPk(req.params.id);
+    const project = await Project.findByPk(req.params.id, {
+      include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+    });
     if (!project) {
       return res.status(404).json({ status: "error", message: "Project not found." });
     }
@@ -302,6 +323,23 @@ const addMilestone = async (req, res) => {
       projectId: project.id, name, description, status: status || "PLANNED",
       date, progress: progress || 0, order,
     });
+
+    // Send email notification to the project owner
+    try {
+      if (project.user && project.user.notificationPrefs?.email !== false) {
+        await sendMilestoneUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          milestoneName: name,
+          oldStatus: null,
+          newStatus: status || "PLANNED",
+          progress: progress || 0,
+          description,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send new milestone email:", emailErr.message);
+    }
 
     res.status(201).json({ status: "success", data: milestone });
   } catch (error) {
@@ -317,8 +355,29 @@ const updateMilestone = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Milestone not found." });
     }
 
+    const oldStatus = milestone.status;
     const { name, description, status, date, progress, order } = req.body;
     await milestone.update({ name, description, status, date, progress, order });
+
+    // Send email notification to the project owner
+    try {
+      const project = await Project.findByPk(milestone.projectId, {
+        include: [{ model: User, as: "user", attributes: ["id", "email", "fullName", "notificationPrefs"] }],
+      });
+      if (project?.user && project.user.notificationPrefs?.email !== false) {
+        await sendMilestoneUpdateEmail(project.user.email, {
+          userName: project.user.fullName,
+          projectName: project.name,
+          milestoneName: milestone.name,
+          oldStatus,
+          newStatus: status || oldStatus,
+          progress,
+          description,
+        });
+      }
+    } catch (emailErr) {
+      console.error("Failed to send milestone update email:", emailErr.message);
+    }
 
     res.json({ status: "success", data: milestone });
   } catch (error) {
