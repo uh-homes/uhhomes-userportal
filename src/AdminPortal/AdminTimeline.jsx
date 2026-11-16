@@ -280,9 +280,11 @@ export default function AdminTimeline() {
                         }`}>
                           {isComplete ? "Complete" : isInProgress ? "In Progress" : "Planned"}
                         </span>
-                        <span className="text-[11px] text-gray-400">
-                          {formatDate(milestone.date, { month: "short", day: "numeric", year: "numeric" }) || "No date"}
-                        </span>
+                        {milestone.status !== "PLANNED" && milestone.date && (
+                          <span className="text-[11px] text-gray-400">
+                            {formatDate(milestone.date, { month: "short", day: "numeric", year: "numeric" })}
+                          </span>
+                        )}
                         {isInProgress && <span className="text-[11px] font-medium text-[#C5A572]">{milestone.progress}%</span>}
                         {milestone.inspectedAt && (
                           <span className="text-[11px] px-2 py-0.5 rounded-full bg-green-600 text-white font-medium flex items-center gap-1">

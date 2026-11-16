@@ -88,7 +88,7 @@ const ConstructionTimeline = ({ milestones = [] }) => {
                     }`}>
                       {isComplete ? "Complete" : isInProgress ? "In Progress" : "Planned"}
                     </span>
-                    {milestone.date && (
+                    {milestone.status !== "PLANNED" && milestone.date && (
                       <span className="text-[11px] text-gray-400">
                         {formatDate(milestone.date, { month: "short", day: "numeric", year: "numeric" })}
                       </span>

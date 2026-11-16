@@ -104,7 +104,7 @@ const ConstructionProgress = ({ project }) => {
               )}
             </div>
             <div className="text-right">
-              {currentMilestone.date && (
+              {currentMilestone.status !== "PLANNED" && currentMilestone.date && (
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <HiOutlineCalendar />
                   {formatDate(currentMilestone.date)}
@@ -164,8 +164,8 @@ const ConstructionProgress = ({ project }) => {
                   {milestone.name}
                 </span>
 
-                {/* Date */}
-                {milestone.date && (
+                {/* Date - only show for non-planned milestones */}
+                {milestone.status !== "PLANNED" && milestone.date && (
                   <span className="text-xs text-gray-400">
                     {formatDate(milestone.date, {
                       month: "short",

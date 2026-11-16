@@ -180,7 +180,7 @@ export default function PMProjectDetail() {
                 }`}>
                   {milestone.status}
                 </span>
-                {milestone.date && <p className="text-xs text-gray-400 mt-1">{formatDate(milestone.date)}</p>}
+                {milestone.status !== "PLANNED" && milestone.date && <p className="text-xs text-gray-400 mt-1">{formatDate(milestone.date)}</p>}
               </div>
             </div>
           ))}

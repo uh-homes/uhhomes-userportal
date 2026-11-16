@@ -531,7 +531,7 @@ export default function UDashboard() {
                           {milestone.name}
                         </p>
                         <p className="text-[11px] text-gray-400">
-                          {formatDate(milestone.date, { month: "short", year: "numeric" })}
+                          {milestone.status !== "PLANNED" && milestone.date ? formatDate(milestone.date, { month: "short", year: "numeric" }) : ""}
                           {milestone.status === "IN_PROGRESS" && ` • ${milestone.progress || 0}%`}
                         </p>
                       </div>
